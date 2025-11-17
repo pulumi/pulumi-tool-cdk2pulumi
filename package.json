@@ -23,6 +23,7 @@
     "@swc/jest": "^0.2.39",
     "@types/fs-extra": "^11.0.4",
     "@types/jest": "^30.0.0",
+    "@types/mock-fs": "^4.13.4",
     "@types/node": "^24.10.1",
     "@typescript-eslint/eslint-plugin": "^8",
     "@typescript-eslint/parser": "^8",
@@ -44,6 +45,7 @@
     "@aws-cdk/cdk-assets-lib": "^1.0.4",
     "aws-cdk-lib": "^2.225.0",
     "fs-extra": "^11.3.2",
+    "mock-fs": "^5.5.0",
     "yaml": "^2.8.1"
   },
   "main": "lib/index.js",

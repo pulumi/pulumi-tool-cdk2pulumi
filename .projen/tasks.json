@@ -171,13 +171,13 @@
       },
       "steps": [
         {
-          "exec": "npx npm-check-updates@16 --upgrade --target=minor --peer --no-deprecated --dep=dev,peer,prod,optional --filter=@hallcor/pulumi-projen-project-types,@swc/core,@swc/jest,@types/fs-extra,@types/jest,@types/node,eslint-config-prettier,eslint-import-resolver-typescript,eslint-plugin-import,eslint-plugin-prettier,jest,prettier,projen,ts-jest,ts-node,typescript,@aws-cdk/cdk-assets-lib,aws-cdk-lib,fs-extra,yaml"
+          "exec": "npx npm-check-updates@16 --upgrade --target=minor --peer --no-deprecated --dep=dev,peer,prod,optional --filter=@hallcor/pulumi-projen-project-types,@swc/core,@swc/jest,@types/fs-extra,@types/jest,@types/mock-fs,@types/node,eslint-config-prettier,eslint-import-resolver-typescript,eslint-plugin-import,eslint-plugin-prettier,jest,prettier,projen,ts-jest,ts-node,typescript,@aws-cdk/cdk-assets-lib,aws-cdk-lib,fs-extra,mock-fs,yaml"
         },
         {
           "exec": "npm install"
         },
         {
-          "exec": "npm update @hallcor/pulumi-projen-project-types @swc/core @swc/jest @types/fs-extra @types/jest @types/node @typescript-eslint/eslint-plugin @typescript-eslint/parser constructs eslint-config-prettier eslint-import-resolver-typescript eslint-plugin-import eslint-plugin-prettier eslint jest jest-junit prettier projen ts-jest ts-node typescript @aws-cdk/cdk-assets-lib aws-cdk-lib fs-extra yaml"
+          "exec": "npm update @hallcor/pulumi-projen-project-types @swc/core @swc/jest @types/fs-extra @types/jest @types/mock-fs @types/node @typescript-eslint/eslint-plugin @typescript-eslint/parser constructs eslint-config-prettier eslint-import-resolver-typescript eslint-plugin-import eslint-plugin-prettier eslint jest jest-junit prettier projen ts-jest ts-node typescript @aws-cdk/cdk-assets-lib aws-cdk-lib fs-extra mock-fs yaml"
         },
         {
           "exec": "npx projen"

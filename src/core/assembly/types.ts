@@ -8,7 +8,7 @@ import { ConstructInfo as CoreConstructInfo } from 'aws-cdk-lib/core/lib/private
 export interface Node {
   readonly id: string;
   readonly path: string;
-  readonly children?: { [key: string]: Node };
+  children?: { [key: string]: Node };
   readonly attributes?: { [key: string]: any };
 
   /**

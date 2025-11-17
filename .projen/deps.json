@@ -21,6 +21,10 @@
       "type": "build"
     },
     {
+      "name": "@types/mock-fs",
+      "type": "build"
+    },
+    {
       "name": "@types/node",
       "type": "build"
     },
@@ -99,6 +103,10 @@
     },
     {
       "name": "fs-extra",
+      "type": "runtime"
+    },
+    {
+      "name": "mock-fs",
       "type": "runtime"
     },
     {
