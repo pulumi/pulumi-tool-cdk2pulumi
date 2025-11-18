@@ -1,5 +1,8 @@
 import { StackManifest } from '../assembly';
+import { Metadata } from '../metadata';
+import { PulumiProvider } from '../providers';
 import {
+  ResourcePrimaryIdentifierSummary,
   ResourceInstanceSummary,
   ResourceInventorySummary,
   ResourceTypeSummary,
@@ -9,6 +12,7 @@ interface MutableResourceTypeEntry {
   readonly type: string;
   count: number;
   resources: ResourceInstanceSummary[];
+  primaryIdentifier?: ResourcePrimaryIdentifierSummary;
 }
 
 /**
@@ -17,6 +21,7 @@ interface MutableResourceTypeEntry {
 export function summarizeResourceInventory(
   stacks: StackManifest[],
 ): ResourceInventorySummary {
+  const metadata = new Metadata(PulumiProvider.AWS_NATIVE);
   const aggregates = new Map<string, MutableResourceTypeEntry>();
   let total = 0;
 
@@ -34,7 +39,7 @@ export function summarizeResourceInventory(
           resource.Metadata,
         );
 
-        const aggregate = getOrCreateAggregate(aggregates, type);
+        const aggregate = getOrCreateAggregate(aggregates, type, metadata);
         aggregate.count += 1;
         aggregate.resources.push({
           stackId: stack.id,
@@ -55,12 +60,18 @@ export function summarizeResourceInventory(
 function getOrCreateAggregate(
   map: Map<string, MutableResourceTypeEntry>,
   type: string,
+  metadata: Metadata,
 ): MutableResourceTypeEntry {
   let aggregate = map.get(type);
   if (aggregate) {
     return aggregate;
   }
-  aggregate = { type, count: 0, resources: [] };
+  aggregate = {
+    type,
+    count: 0,
+    resources: [],
+    primaryIdentifier: lookupPrimaryIdentifierSummary(metadata, type),
+  };
   map.set(type, aggregate);
   return aggregate;
 }
@@ -73,6 +84,7 @@ function finalizeResourceAggregates(
       type: entry.type,
       count: entry.count,
       resources: sortResourceInstances(entry.resources),
+      primaryIdentifier: entry.primaryIdentifier,
     }))
     .sort((a, b) => {
       if (b.count !== a.count) {
@@ -115,4 +127,18 @@ export function resourceUsesAsset(
     return false;
   }
   return Object.keys(metadata).some((key) => key.startsWith('aws:asset:'));
+}
+
+function lookupPrimaryIdentifierSummary(
+  metadata: Metadata,
+  cfnType: string,
+): ResourcePrimaryIdentifierSummary | undefined {
+  const parts = metadata.primaryIdentifier(cfnType);
+  if (!parts || parts.length === 0) {
+    return undefined;
+  }
+  return {
+    parts,
+    format: parts.join('|'),
+  };
 }

@@ -51,6 +51,10 @@ describe('summarizeResourceInventory', () => {
       {
         type: 'AWS::Lambda::Function',
         count: 1,
+        primaryIdentifier: {
+          parts: ['functionName'],
+          format: 'functionName',
+        },
         resources: [
           {
             stackId: 'AppStack',
@@ -63,6 +67,10 @@ describe('summarizeResourceInventory', () => {
       {
         type: 'AWS::S3::Bucket',
         count: 1,
+        primaryIdentifier: {
+          parts: ['bucketName'],
+          format: 'bucketName',
+        },
         resources: [
           {
             stackId: 'AppStack',
@@ -74,6 +82,10 @@ describe('summarizeResourceInventory', () => {
       {
         type: 'AWS::S3::BucketPolicy',
         count: 1,
+        primaryIdentifier: {
+          parts: ['bucket'],
+          format: 'bucket',
+        },
         resources: [
           {
             stackId: 'AppStack',
@@ -96,6 +108,10 @@ describe('summarizeResourceInventory', () => {
       {
         type: 'AWS::SQS::Queue',
         count: 2,
+        primaryIdentifier: {
+          parts: ['queueUrl'],
+          format: 'queueUrl',
+        },
         resources: [
           {
             stackId: 'AlphaStack',

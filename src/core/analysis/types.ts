@@ -4,7 +4,7 @@
  * Keeping this constant in one location makes it easy to bump whenever the
  * report structure changes in a backwards incompatible manner.
  */
-export const ANALYSIS_REPORT_VERSION = '1.0.0';
+export const ANALYSIS_REPORT_VERSION = '1.1.0';
 
 /**
  * Top level data structure returned by the CDK assembly analyzer.
@@ -208,7 +208,13 @@ export interface ResourceInventorySummary {
 export interface ResourceTypeSummary {
   readonly type: string;
   readonly count: number;
+  readonly primaryIdentifier?: ResourcePrimaryIdentifierSummary;
   readonly resources: ResourceInstanceSummary[];
+}
+
+export interface ResourcePrimaryIdentifierSummary {
+  readonly parts: string[];
+  readonly format: string;
 }
 
 export interface ResourceInstanceSummary {

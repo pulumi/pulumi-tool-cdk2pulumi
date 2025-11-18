@@ -38,6 +38,10 @@ export class Metadata {
   public types(): { [key: string]: PulumiType } {
     return this.pulumiMetadata.types;
   }
+
+  public primaryIdentifier(cfnType: string): string[] | undefined {
+    return this.tryFindResource(cfnType)?.primaryIdentifier;
+  }
 }
 
 export interface PulumiMetadata {
@@ -62,6 +66,7 @@ export interface PulumiProperty extends PulumiPropertyItems {
 
 export interface PulumiResource {
   cfRef?: CfRefBehavior;
+  primaryIdentifier?: string[];
   inputs: { [key: string]: PulumiProperty };
   outputs: { [key: string]: PulumiProperty };
 }
