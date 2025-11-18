@@ -1,8 +1,5 @@
-import {
-  IrIntrinsicValueAdapter,
-  StackAddress,
-  PropertyValue,
-} from '../../src/core';
+import { StackAddress, PropertyValue } from '../../src/core';
+import { IrIntrinsicValueAdapter } from '../../src/core/resolvers';
 
 const adapter = new IrIntrinsicValueAdapter();
 

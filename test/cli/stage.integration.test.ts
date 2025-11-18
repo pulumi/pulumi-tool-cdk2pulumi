@@ -4,7 +4,10 @@ import * as fs from 'fs-extra';
 import { runCliWithOptions } from '../../src/cli/cli-runner';
 
 describe('cli stage integration', () => {
-  const assemblyDir = path.resolve(__dirname, '../../cdk-with-stages.out');
+  const assemblyDir = path.resolve(
+    __dirname,
+    '../test-data/cdk-with-stages.out',
+  );
 
   // This test runs against the real staged assembly fixture checked into the repo to ensure
   // we can convert nested stages end-to-end.

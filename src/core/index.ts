@@ -1,4 +1,5 @@
 import * as assembly from './assembly';
+import * as resolvers from './resolvers';
 export * from './cfn';
 export * from './errors';
 export * from './graph';
@@ -18,4 +19,5 @@ export * from './naming';
 export * from './providers';
 export * from './metadata';
 export * from './normalization';
-export { assembly };
+
+export { assembly, resolvers };

@@ -1,0 +1,36 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "faa95a81ae7d7373f3e1f242268f904eb748d8d0fdd306e8a6fe515a1905a7d6": {
+      "displayName": "chall-cdk-test-app-dev/Custom::S3AutoDeleteObjectsCustomResourceProvider Code",
+      "source": {
+        "path": "asset.faa95a81ae7d7373f3e1f242268f904eb748d8d0fdd306e8a6fe515a1905a7d6",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "616138583583-us-east-2-58b5a9d9": {
+          "bucketName": "cdk-chall-cdk-staging-616138583583-us-east-2",
+          "objectKey": "faa95a81ae7d7373f3e1f242268f904eb748d8d0fdd306e8a6fe515a1905a7d6.zip",
+          "region": "us-east-2",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::616138583583:role/cdk-chall-cdk-file-role-us-east-2"
+        }
+      }
+    },
+    "ad04c47cb7f73cb2d686c20a80a23d3ebdc10a45e4750d13d61a5a9a5bbf9996": {
+      "displayName": "chall-cdk-test-app-dev Template",
+      "source": {
+        "path": "chall-cdk-test-app-dev.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "616138583583-us-east-2-a3bd617e": {
+          "bucketName": "cdk-chall-cdk-staging-616138583583-us-east-2",
+          "objectKey": "deploy-time/ad04c47cb7f73cb2d686c20a80a23d3ebdc10a45e4750d13d61a5a9a5bbf9996.json",
+          "region": "us-east-2",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::616138583583:role/cdk-chall-cdk-file-role-us-east-2"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

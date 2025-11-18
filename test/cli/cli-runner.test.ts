@@ -12,7 +12,7 @@ import {
   convertStageInAssemblyDirectoryToProgramIr,
 } from '../../src/core/assembly';
 
-jest.mock('@pulumi/cdk-convert-core/src/assembly', () => ({
+jest.mock('../../src/core/assembly', () => ({
   convertAssemblyDirectoryToProgramIr: jest.fn(),
   convertStageInAssemblyDirectoryToProgramIr: jest.fn(),
 }));

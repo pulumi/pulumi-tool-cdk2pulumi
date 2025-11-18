@@ -1,0 +1,21 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "579560cd8f700d6486954d72aed3ccfcd87d498ad5ce0c41bb5de5a7b6b87cb8": {
+      "displayName": "PreProdStage-MonitoringStack Template",
+      "source": {
+        "path": "PreProdStageMonitoringStack3F8DD52C.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "616138583583-us-east-2-49efebff": {
+          "bucketName": "cdk-hnb659fds-assets-616138583583-us-east-2",
+          "objectKey": "579560cd8f700d6486954d72aed3ccfcd87d498ad5ce0c41bb5de5a7b6b87cb8.json",
+          "region": "us-east-2",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::616138583583:role/cdk-hnb659fds-file-publishing-role-616138583583-us-east-2"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

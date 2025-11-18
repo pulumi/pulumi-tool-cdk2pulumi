@@ -1,7 +1,7 @@
 import { AssemblyManifestReader } from './manifest';
 import { StackManifest } from './stack';
 import { CloudFormationTemplate } from '../cfn';
-import { ProgramIR, StackIR, StackOutputReference } from '../ir';
+import { ProgramIR, StackOutputReference } from '../ir';
 import {
   convertStackToIr,
   StackConversionInput,

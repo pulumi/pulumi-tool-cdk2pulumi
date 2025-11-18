@@ -8,7 +8,6 @@ import {
   StackOutputReference,
   ParameterReference,
   ConcatValue,
-  DynamicReferenceValue,
 } from '../ir';
 import { parseSub } from '../sub';
 import { tryParseDynamicReference } from './dynamic-references';

@@ -10,7 +10,7 @@ import {
 import { PulumiProvider } from '../src/core/providers';
 
 jest.mock(
-  '../packages/cdk-convert-core/schemas/aws-native-metadata.json',
+  '../schemas/aws-native-metadata.json',
   () => {
     return {
       types: {

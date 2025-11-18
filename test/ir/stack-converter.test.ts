@@ -1,4 +1,5 @@
-import { convertStackToIr, CloudFormationTemplate } from '../../src/core';
+import { CloudFormationTemplate } from '../../src/core';
+import { convertStackToIr } from '../../src/core/resolvers';
 
 describe('convertStackToIr', () => {
   test('converts resources with options and outputs', () => {

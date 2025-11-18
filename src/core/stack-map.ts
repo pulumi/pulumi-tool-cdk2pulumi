@@ -138,7 +138,7 @@ export class StackMap<T> implements Map<StackAddress, T> {
    * Returns an iterator of key-value pairs for every entry in the map
    * @returns An iterator yielding [StackAddress, T] pairs
    */
-  *entries(): IterableIterator<[StackAddress, T]> {
+  *entries(): MapIterator<[StackAddress, T]> {
     for (const [stackPath, innerMap] of this._map) {
       for (const [id, value] of innerMap) {
         yield [{ stackPath, id: id }, value];
@@ -150,7 +150,7 @@ export class StackMap<T> implements Map<StackAddress, T> {
    * Returns an iterator of keys in the map
    * @returns An iterator yielding StackAddress keys
    */
-  *keys(): IterableIterator<StackAddress> {
+  *keys(): MapIterator<StackAddress> {
     for (const [stackPath, innerMap] of this._map) {
       for (const id of innerMap.keys()) {
         yield { stackPath, id: id };
@@ -162,7 +162,7 @@ export class StackMap<T> implements Map<StackAddress, T> {
    * Returns an iterator of values in the map
    * @returns An iterator yielding the values
    */
-  *values(): IterableIterator<T> {
+  *values(): MapIterator<T> {
     for (const innerMap of this._map.values()) {
       yield* innerMap.values();
     }
@@ -172,7 +172,7 @@ export class StackMap<T> implements Map<StackAddress, T> {
    * Returns the default iterator for the map
    * @returns An iterator for entries in the map
    */
-  [Symbol.iterator](): IterableIterator<[StackAddress, T]> {
+  [Symbol.iterator](): MapIterator<[StackAddress, T]> {
     return this.entries();
   }
 }

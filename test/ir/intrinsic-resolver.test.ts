@@ -1,15 +1,18 @@
 import {
   CloudFormationTemplate,
   ConcatValue,
-  IntrinsicValueAdapter,
-  IrIntrinsicResolver,
-  IrIntrinsicValueAdapter,
   PropertyValue,
   ResourceAttributeReference,
-  ResourceMetadataProvider,
   CfRefBehavior,
   StackOutputReference,
 } from '../../src/core';
+import { IntrinsicValueAdapter } from '../../src/core/converters/intrinsic-value-adapter';
+
+import {
+  IrIntrinsicValueAdapter,
+  IrIntrinsicResolver,
+  ResourceMetadataProvider,
+} from '../../src/core/resolvers';
 
 class StubIntrinsicValueAdapter
   implements IntrinsicValueAdapter<any, PropertyValue>

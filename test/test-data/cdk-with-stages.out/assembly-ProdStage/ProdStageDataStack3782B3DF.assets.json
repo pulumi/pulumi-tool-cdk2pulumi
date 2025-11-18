@@ -1,0 +1,21 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "d5c3304c5a714df3eb316ff46140fb1d8e8a27578d12ab1585fc0acd5ff096c0": {
+      "displayName": "ProdStage-DataStack Template",
+      "source": {
+        "path": "ProdStageDataStack3782B3DF.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "202865745565-us-east-2-d6961b69": {
+          "bucketName": "cdk-hnb659fds-assets-202865745565-us-east-2",
+          "objectKey": "d5c3304c5a714df3eb316ff46140fb1d8e8a27578d12ab1585fc0acd5ff096c0.json",
+          "region": "us-east-2",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::202865745565:role/cdk-hnb659fds-file-publishing-role-202865745565-us-east-2"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

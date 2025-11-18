@@ -1,5 +1,5 @@
 import * as path from 'path';
-import * as mockfs from 'mock-fs';
+import mockfs from 'mock-fs';
 import { AssemblyManifestReader } from '../../src/core/assembly';
 
 describe('cloud assembly manifest reader', () => {
@@ -13,17 +13,17 @@ describe('cloud assembly manifest reader', () => {
       mockfs({
         // Recursively loads all node_modules
         node_modules: {
+          '@aws-cdk': {
+            'cloud-assembly-schema': mockfs.load(
+              path.resolve(
+                __dirname,
+                '../../node_modules/@aws-cdk/cloud-assembly-schema',
+              ),
+            ),
+          },
           'aws-cdk-lib': mockfs.load(
             path.resolve(__dirname, '../../node_modules/aws-cdk-lib'),
           ),
-          '@pulumi': {
-            aws: mockfs.load(
-              path.resolve(__dirname, '../../node_modules/@pulumi/aws'),
-            ),
-            'aws-native': mockfs.load(
-              path.resolve(__dirname, '../../node_modules/@pulumi/aws-native'),
-            ),
-          },
         },
         [manifestAssets]: JSON.stringify({
           version: '36.0.0',

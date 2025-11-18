@@ -1,0 +1,988 @@
+{
+ "Resources": {
+  "MonitoringDynamicDashboardsInfrastructure3F937209": {
+   "Type": "AWS::CloudWatch::Dashboard",
+   "Properties": {
+    "DashboardBody": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"start\":\"-PT8H\",\"periodOverride\":\"inherit\",\"widgets\":[{\"type\":\"text\",\"width\":24,\"height\":1,\"x\":0,\"y\":0,\"properties\":{\"markdown\":\"# ",
+       {
+        "Fn::ImportValue": "ProdStage-DataStack:ExportsOutputRefPostsTableC82B36F06B4D022D"
+       },
+       "\"}},{\"type\":\"metric\",\"width\":6,\"height\":6,\"x\":0,\"y\":1,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Get Item Errors\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[{\"label\":\"Sum of errors across all operations\",\"expression\":\"getitem\"}],[\"AWS/DynamoDB\",\"SystemErrors\",\"Operation\",\"GetItem\",\"TableName\",\"",
+       {
+        "Fn::ImportValue": "ProdStage-DataStack:ExportsOutputRefPostsTableC82B36F06B4D022D"
+       },
+       "\",{\"label\":\"get item error\",\"id\":\"getitem\",\"visible\":false,\"stat\":\"Sum\"}]],\"yAxis\":{}}},{\"type\":\"metric\",\"width\":6,\"height\":6,\"x\":6,\"y\":1,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Put Item Errors\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[{\"label\":\"Sum of errors across all operations\",\"expression\":\"putitem\"}],[\"AWS/DynamoDB\",\"SystemErrors\",\"Operation\",\"PutItem\",\"TableName\",\"",
+       {
+        "Fn::ImportValue": "ProdStage-DataStack:ExportsOutputRefPostsTableC82B36F06B4D022D"
+       },
+       "\",{\"label\":\"put item error\",\"id\":\"putitem\",\"visible\":false,\"stat\":\"Sum\"}]],\"yAxis\":{}}},{\"type\":\"metric\",\"width\":6,\"height\":6,\"x\":12,\"y\":1,\"properties\":{\"view\":\"timeSeries\",\"title\":\"User Errors\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[\"AWS/DynamoDB\",\"UserErrors\",{\"label\":\"user errors\",\"stat\":\"Sum\"}]],\"yAxis\":{}}},{\"type\":\"metric\",\"width\":6,\"height\":6,\"x\":18,\"y\":1,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Condition Checks Failed\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[\"AWS/DynamoDB\",\"ConditionalCheckFailedRequests\",\"TableName\",\"",
+       {
+        "Fn::ImportValue": "ProdStage-DataStack:ExportsOutputRefPostsTableC82B36F06B4D022D"
+       },
+       "\",{\"label\":\"condition checks failed\",\"stat\":\"Sum\"}]],\"yAxis\":{}}},{\"type\":\"metric\",\"width\":6,\"height\":6,\"x\":0,\"y\":7,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Successful Request Latency\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[\"AWS/DynamoDB\",\"SuccessfulRequestLatency\",\"Operation\",\"GetItem\",\"TableName\",\"",
+       {
+        "Fn::ImportValue": "ProdStage-DataStack:ExportsOutputRefPostsTableC82B36F06B4D022D"
+       },
+       "\",{\"label\":\"successful request latency\"}]],\"yAxis\":{}}},{\"type\":\"metric\",\"width\":6,\"height\":6,\"x\":6,\"y\":7,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Put Item Throttled\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[{\"label\":\"Sum of throttled requests across all operations\",\"expression\":\"putitem\"}],[\"AWS/DynamoDB\",\"ThrottledRequests\",\"Operation\",\"PutItem\",\"TableName\",\"",
+       {
+        "Fn::ImportValue": "ProdStage-DataStack:ExportsOutputRefPostsTableC82B36F06B4D022D"
+       },
+       "\",{\"label\":\"put item throttled\",\"id\":\"putitem\",\"visible\":false,\"stat\":\"Sum\"}]],\"yAxis\":{}}},{\"type\":\"metric\",\"width\":6,\"height\":6,\"x\":12,\"y\":7,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Consumed Write Capacity\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[\"AWS/DynamoDB\",\"ConsumedWriteCapacityUnits\",\"TableName\",\"",
+       {
+        "Fn::ImportValue": "ProdStage-DataStack:ExportsOutputRefPostsTableC82B36F06B4D022D"
+       },
+       "\",{\"label\":\"write capacity\",\"stat\":\"Sum\"}]],\"yAxis\":{}}},{\"type\":\"metric\",\"width\":6,\"height\":6,\"x\":18,\"y\":7,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Consumed Read Capacity\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[\"AWS/DynamoDB\",\"ConsumedReadCapacityUnits\",\"TableName\",\"",
+       {
+        "Fn::ImportValue": "ProdStage-DataStack:ExportsOutputRefPostsTableC82B36F06B4D022D"
+       },
+       "\",{\"label\":\"read capacity\",\"stat\":\"Sum\"}]],\"yAxis\":{}}},{\"type\":\"metric\",\"width\":6,\"height\":6,\"x\":0,\"y\":13,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Get Item Throttled\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[{\"label\":\"Sum of throttled requests across all operations\",\"expression\":\"getitem\"}],[\"AWS/DynamoDB\",\"ThrottledRequests\",\"Operation\",\"GetItem\",\"TableName\",\"",
+       {
+        "Fn::ImportValue": "ProdStage-DataStack:ExportsOutputRefPostsTableC82B36F06B4D022D"
+       },
+       "\",{\"label\":\"get item throttled\",\"id\":\"getitem\",\"visible\":false,\"stat\":\"Sum\"}]],\"yAxis\":{}}},{\"type\":\"text\",\"width\":24,\"height\":1,\"x\":0,\"y\":19,\"properties\":{\"markdown\":\"# ",
+       {
+        "Fn::ImportValue": "ProdStage-AppStack:ExportsOutputRefApiF70053CD5653BA4D"
+       },
+       "\"}},{\"type\":\"metric\",\"width\":6,\"height\":6,\"x\":0,\"y\":20,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Client Errors\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[\"AWS/ApiGateway\",\"4xx\",\"ApiId\",\"",
+       {
+        "Fn::ImportValue": "ProdStage-AppStack:ExportsOutputRefApiF70053CD5653BA4D"
+       },
+       "\",{\"label\":\"client error\",\"stat\":\"Sum\"}]],\"yAxis\":{}}},{\"type\":\"metric\",\"width\":6,\"height\":6,\"x\":6,\"y\":20,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Integration Latency\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[\"AWS/ApiGateway\",\"IntegrationLatency\",\"ApiId\",\"",
+       {
+        "Fn::ImportValue": "ProdStage-AppStack:ExportsOutputRefApiF70053CD5653BA4D"
+       },
+       "\",{\"label\":\"integration latency\"}]],\"yAxis\":{}}},{\"type\":\"metric\",\"width\":6,\"height\":6,\"x\":12,\"y\":20,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Latency\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[\"AWS/ApiGateway\",\"Latency\",\"ApiId\",\"",
+       {
+        "Fn::ImportValue": "ProdStage-AppStack:ExportsOutputRefApiF70053CD5653BA4D"
+       },
+       "\",{\"label\":\"latency\"}]],\"yAxis\":{}}},{\"type\":\"metric\",\"width\":6,\"height\":6,\"x\":18,\"y\":20,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Requests\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[\"AWS/ApiGateway\",\"Count\",\"ApiId\",\"",
+       {
+        "Fn::ImportValue": "ProdStage-AppStack:ExportsOutputRefApiF70053CD5653BA4D"
+       },
+       "\",{\"label\":\"total requests\",\"stat\":\"SampleCount\"}]],\"yAxis\":{}}},{\"type\":\"metric\",\"width\":6,\"height\":6,\"x\":0,\"y\":26,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Server Errors\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[\"AWS/ApiGateway\",\"5xx\",\"ApiId\",\"",
+       {
+        "Fn::ImportValue": "ProdStage-AppStack:ExportsOutputRefApiF70053CD5653BA4D"
+       },
+       "\",{\"label\":\"server error\",\"stat\":\"Sum\"}]],\"yAxis\":{}}},{\"type\":\"text\",\"width\":24,\"height\":1,\"x\":0,\"y\":32,\"properties\":{\"markdown\":\"# ",
+       {
+        "Fn::ImportValue": "ProdStage-AppStack:ExportsOutputFnGetAttGetPostAppServiceA50C5323Name6E4CBB98"
+       },
+       "\"}},{\"type\":\"metric\",\"width\":6,\"height\":6,\"x\":0,\"y\":33,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Cpu Utilization\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[\"AWS/ECS\",\"CPUUtilization\",\"ClusterName\",\"",
+       {
+        "Fn::ImportValue": "ProdStage-AppStack:ExportsOutputRefNetworkCluster17B54D113FA77A85"
+       },
+       "\",\"ServiceName\",\"",
+       {
+        "Fn::ImportValue": "ProdStage-AppStack:ExportsOutputFnGetAttGetPostAppServiceA50C5323Name6E4CBB98"
+       },
+       "\",{\"label\":\"cpu\"}]],\"yAxis\":{}}},{\"type\":\"metric\",\"width\":6,\"height\":6,\"x\":6,\"y\":33,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Memory Utilization\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[\"AWS/ECS\",\"MemoryUtilization\",\"ClusterName\",\"",
+       {
+        "Fn::ImportValue": "ProdStage-AppStack:ExportsOutputRefNetworkCluster17B54D113FA77A85"
+       },
+       "\",\"ServiceName\",\"",
+       {
+        "Fn::ImportValue": "ProdStage-AppStack:ExportsOutputFnGetAttGetPostAppServiceA50C5323Name6E4CBB98"
+       },
+       "\",{\"label\":\"memory\"}]],\"yAxis\":{}}},{\"type\":\"text\",\"width\":24,\"height\":1,\"x\":0,\"y\":39,\"properties\":{\"markdown\":\"# ",
+       {
+        "Fn::ImportValue": "ProdStage-AppStack:ExportsOutputRefCreatePostD3E67D61CCFCD440"
+       },
+       "\"}},{\"type\":\"metric\",\"width\":6,\"height\":6,\"x\":0,\"y\":40,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Invocations\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[\"AWS/Lambda\",\"Invocations\",\"FunctionName\",\"",
+       {
+        "Fn::ImportValue": "ProdStage-AppStack:ExportsOutputRefCreatePostD3E67D61CCFCD440"
+       },
+       "\",{\"label\":\"invocations\",\"stat\":\"Sum\"}]],\"yAxis\":{}}},{\"type\":\"metric\",\"width\":6,\"height\":6,\"x\":6,\"y\":40,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Duration\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[\"AWS/Lambda\",\"Duration\",\"FunctionName\",\"",
+       {
+        "Fn::ImportValue": "ProdStage-AppStack:ExportsOutputRefCreatePostD3E67D61CCFCD440"
+       },
+       "\",{\"label\":\"duration\"}]],\"yAxis\":{}}},{\"type\":\"metric\",\"width\":6,\"height\":6,\"x\":12,\"y\":40,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Errors\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[\"AWS/Lambda\",\"Errors\",\"FunctionName\",\"",
+       {
+        "Fn::ImportValue": "ProdStage-AppStack:ExportsOutputRefCreatePostD3E67D61CCFCD440"
+       },
+       "\",{\"label\":\"errors\",\"stat\":\"Sum\"}]],\"yAxis\":{}}}]}"
+      ]
+     ]
+    },
+    "DashboardName": "BlogAppDashboards-Infrastructure"
+   },
+   "Metadata": {
+    "aws:cdk:path": "ProdStage/MonitoringStack/Monitoring/DynamicDashboards/Infrastructure/Resource"
+   }
+  },
+  "MonitoringFacadeFacadeSuccessLatencyAnomalyCriticalE31EEC42": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ActionsEnabled": true,
+    "AlarmDescription": "Anomaly detection: value is outside of the expected band.",
+    "AlarmName": "Facade--SuccessLatency-Anomaly-Critical",
+    "ComparisonOperator": "LessThanLowerOrGreaterThanUpperThreshold",
+    "DatapointsToAlarm": 3,
+    "EvaluationPeriods": 3,
+    "Metrics": [
+     {
+      "Expression": "ANOMALY_DETECTION_BAND(successLatency,3)",
+      "Id": "expr_1",
+      "Label": "successLatency",
+      "ReturnData": true
+     },
+     {
+      "Id": "successLatency",
+      "Label": "successful request latency",
+      "MetricStat": {
+       "Metric": {
+        "Dimensions": [
+         {
+          "Name": "Operation",
+          "Value": "GetItem"
+         },
+         {
+          "Name": "TableName",
+          "Value": {
+           "Fn::ImportValue": "ProdStage-DataStack:ExportsOutputRefPostsTableC82B36F06B4D022D"
+          }
+         }
+        ],
+        "MetricName": "SuccessfulRequestLatency",
+        "Namespace": "AWS/DynamoDB"
+       },
+       "Period": 300,
+       "Stat": "Average"
+      },
+      "ReturnData": true
+     }
+    ],
+    "ThresholdMetricId": "expr_1",
+    "TreatMissingData": "missing"
+   },
+   "Metadata": {
+    "aws:cdk:path": "ProdStage/MonitoringStack/Monitoring/Facade/Facade--SuccessLatency-Anomaly-Critical/Resource"
+   }
+  },
+  "MonitoringFacadePostsTableDashboardA675B264": {
+   "Type": "AWS::CloudWatch::Dashboard",
+   "Properties": {
+    "DashboardBody": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"widgets\":[{\"type\":\"text\",\"width\":24,\"height\":1,\"x\":0,\"y\":0,\"properties\":{\"markdown\":\"### IntegrationLatencyAnomalyDetectionAlarm\"}},{\"type\":\"metric\",\"width\":24,\"height\":5,\"x\":0,\"y\":1,\"properties\":{\"view\":\"timeSeries\",\"title\":\"",
+       {
+        "Fn::ImportValue": "ProdStage-DataStack:ExportsOutputRefPostsTableC82B36F06B4D022D"
+       },
+       " Integration Latency\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[{\"label\":\"successLatency\",\"expression\":\"ANOMALY_DETECTION_BAND(successLatency,3)\"}],[\"AWS/DynamoDB\",\"SuccessfulRequestLatency\",\"Operation\",\"GetItem\",\"TableName\",\"",
+       {
+        "Fn::ImportValue": "ProdStage-DataStack:ExportsOutputRefPostsTableC82B36F06B4D022D"
+       },
+       "\",{\"label\":\"successful request latency\",\"id\":\"successLatency\",\"visible\":false}]],\"yAxis\":{}}}]}"
+      ]
+     ]
+    },
+    "DashboardName": "BlogAppDashboards-PostsTable-Alarms"
+   },
+   "Metadata": {
+    "aws:cdk:path": "ProdStage/MonitoringStack/Monitoring/Facade/PostsTableDashboard/Resource"
+   }
+  },
+  "MonitoringFacadePostsTableDashboardDetail502B1727": {
+   "Type": "AWS::CloudWatch::Dashboard",
+   "Properties": {
+    "DashboardBody": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"widgets\":[{\"type\":\"metric\",\"width\":6,\"height\":6,\"x\":0,\"y\":0,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Get Item Errors\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[{\"label\":\"Sum of errors across all operations\",\"expression\":\"getitem\"}],[\"AWS/DynamoDB\",\"SystemErrors\",\"Operation\",\"GetItem\",\"TableName\",\"",
+       {
+        "Fn::ImportValue": "ProdStage-DataStack:ExportsOutputRefPostsTableC82B36F06B4D022D"
+       },
+       "\",{\"label\":\"get item error\",\"id\":\"getitem\",\"visible\":false,\"stat\":\"Sum\"}]],\"yAxis\":{}}},{\"type\":\"metric\",\"width\":6,\"height\":6,\"x\":6,\"y\":0,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Put Item Errors\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[{\"label\":\"Sum of errors across all operations\",\"expression\":\"putitem\"}],[\"AWS/DynamoDB\",\"SystemErrors\",\"Operation\",\"PutItem\",\"TableName\",\"",
+       {
+        "Fn::ImportValue": "ProdStage-DataStack:ExportsOutputRefPostsTableC82B36F06B4D022D"
+       },
+       "\",{\"label\":\"put item error\",\"id\":\"putitem\",\"visible\":false,\"stat\":\"Sum\"}]],\"yAxis\":{}}},{\"type\":\"metric\",\"width\":6,\"height\":6,\"x\":12,\"y\":0,\"properties\":{\"view\":\"timeSeries\",\"title\":\"User Errors\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[\"AWS/DynamoDB\",\"UserErrors\",{\"label\":\"user errors\",\"stat\":\"Sum\"}]],\"yAxis\":{}}},{\"type\":\"metric\",\"width\":6,\"height\":6,\"x\":18,\"y\":0,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Condition Checks Failed\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[\"AWS/DynamoDB\",\"ConditionalCheckFailedRequests\",\"TableName\",\"",
+       {
+        "Fn::ImportValue": "ProdStage-DataStack:ExportsOutputRefPostsTableC82B36F06B4D022D"
+       },
+       "\",{\"label\":\"condition checks failed\",\"stat\":\"Sum\"}]],\"yAxis\":{}}},{\"type\":\"metric\",\"width\":6,\"height\":6,\"x\":0,\"y\":6,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Successful Request Latency\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[\"AWS/DynamoDB\",\"SuccessfulRequestLatency\",\"Operation\",\"GetItem\",\"TableName\",\"",
+       {
+        "Fn::ImportValue": "ProdStage-DataStack:ExportsOutputRefPostsTableC82B36F06B4D022D"
+       },
+       "\",{\"label\":\"successful request latency\"}]],\"yAxis\":{}}},{\"type\":\"metric\",\"width\":6,\"height\":6,\"x\":6,\"y\":6,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Put Item Throttled\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[{\"label\":\"Sum of throttled requests across all operations\",\"expression\":\"putitem\"}],[\"AWS/DynamoDB\",\"ThrottledRequests\",\"Operation\",\"PutItem\",\"TableName\",\"",
+       {
+        "Fn::ImportValue": "ProdStage-DataStack:ExportsOutputRefPostsTableC82B36F06B4D022D"
+       },
+       "\",{\"label\":\"put item throttled\",\"id\":\"putitem\",\"visible\":false,\"stat\":\"Sum\"}]],\"yAxis\":{}}},{\"type\":\"metric\",\"width\":6,\"height\":6,\"x\":12,\"y\":6,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Consumed Write Capacity\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[\"AWS/DynamoDB\",\"ConsumedWriteCapacityUnits\",\"TableName\",\"",
+       {
+        "Fn::ImportValue": "ProdStage-DataStack:ExportsOutputRefPostsTableC82B36F06B4D022D"
+       },
+       "\",{\"label\":\"write capacity\",\"stat\":\"Sum\"}]],\"yAxis\":{}}},{\"type\":\"metric\",\"width\":6,\"height\":6,\"x\":18,\"y\":6,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Consumed Read Capacity\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[\"AWS/DynamoDB\",\"ConsumedReadCapacityUnits\",\"TableName\",\"",
+       {
+        "Fn::ImportValue": "ProdStage-DataStack:ExportsOutputRefPostsTableC82B36F06B4D022D"
+       },
+       "\",{\"label\":\"read capacity\",\"stat\":\"Sum\"}]],\"yAxis\":{}}},{\"type\":\"metric\",\"width\":6,\"height\":6,\"x\":0,\"y\":12,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Get Item Throttled\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[{\"label\":\"Sum of throttled requests across all operations\",\"expression\":\"getitem\"}],[\"AWS/DynamoDB\",\"ThrottledRequests\",\"Operation\",\"GetItem\",\"TableName\",\"",
+       {
+        "Fn::ImportValue": "ProdStage-DataStack:ExportsOutputRefPostsTableC82B36F06B4D022D"
+       },
+       "\",{\"label\":\"get item throttled\",\"id\":\"getitem\",\"visible\":false,\"stat\":\"Sum\"}]],\"yAxis\":{}}}]}"
+      ]
+     ]
+    },
+    "DashboardName": "BlogAppDashboards-PostsTable-Detail"
+   },
+   "Metadata": {
+    "aws:cdk:path": "ProdStage/MonitoringStack/Monitoring/Facade/PostsTableDashboardDetail/Resource"
+   }
+  },
+  "MonitoringFacadeFacadeIntegrationLatencyAnomalyCritical87620799": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ActionsEnabled": true,
+    "AlarmDescription": "Anomaly detection: value is outside of the expected band.",
+    "AlarmName": "Facade--IntegrationLatency-Anomaly-Critical",
+    "ComparisonOperator": "LessThanLowerOrGreaterThanUpperThreshold",
+    "DatapointsToAlarm": 3,
+    "EvaluationPeriods": 3,
+    "Metrics": [
+     {
+      "Expression": "ANOMALY_DETECTION_BAND(integrationLatency,3)",
+      "Id": "expr_1",
+      "Label": "integrationLatency",
+      "ReturnData": true
+     },
+     {
+      "Id": "integrationLatency",
+      "Label": "integration latency",
+      "MetricStat": {
+       "Metric": {
+        "Dimensions": [
+         {
+          "Name": "ApiId",
+          "Value": {
+           "Fn::ImportValue": "ProdStage-AppStack:ExportsOutputRefApiF70053CD5653BA4D"
+          }
+         }
+        ],
+        "MetricName": "IntegrationLatency",
+        "Namespace": "AWS/ApiGateway"
+       },
+       "Period": 300,
+       "Stat": "Average"
+      },
+      "ReturnData": true
+     }
+    ],
+    "ThresholdMetricId": "expr_1",
+    "TreatMissingData": "missing"
+   },
+   "Metadata": {
+    "aws:cdk:path": "ProdStage/MonitoringStack/Monitoring/Facade/Facade--IntegrationLatency-Anomaly-Critical/Resource"
+   }
+  },
+  "MonitoringFacadeApiMonitorDashboard300D862E": {
+   "Type": "AWS::CloudWatch::Dashboard",
+   "Properties": {
+    "DashboardBody": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"widgets\":[{\"type\":\"text\",\"width\":24,\"height\":1,\"x\":0,\"y\":0,\"properties\":{\"markdown\":\"### IntegrationLatencyAnomalyDetectionAlarm\"}},{\"type\":\"metric\",\"width\":24,\"height\":5,\"x\":0,\"y\":1,\"properties\":{\"view\":\"timeSeries\",\"title\":\"",
+       {
+        "Fn::ImportValue": "ProdStage-AppStack:ExportsOutputRefApiF70053CD5653BA4D"
+       },
+       " Integration Latency\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[{\"label\":\"integrationLatency\",\"expression\":\"ANOMALY_DETECTION_BAND(integrationLatency,3)\"}],[\"AWS/ApiGateway\",\"IntegrationLatency\",\"ApiId\",\"",
+       {
+        "Fn::ImportValue": "ProdStage-AppStack:ExportsOutputRefApiF70053CD5653BA4D"
+       },
+       "\",{\"label\":\"integration latency\",\"id\":\"integrationLatency\",\"visible\":false}]],\"yAxis\":{}}}]}"
+      ]
+     ]
+    },
+    "DashboardName": "BlogAppDashboards-ApiMonitor-Alarms"
+   },
+   "Metadata": {
+    "aws:cdk:path": "ProdStage/MonitoringStack/Monitoring/Facade/ApiMonitorDashboard/Resource"
+   }
+  },
+  "MonitoringFacadeApiMonitorDashboardDetailFD87266C": {
+   "Type": "AWS::CloudWatch::Dashboard",
+   "Properties": {
+    "DashboardBody": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"widgets\":[{\"type\":\"metric\",\"width\":6,\"height\":6,\"x\":0,\"y\":0,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Client Errors\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[\"AWS/ApiGateway\",\"4xx\",\"ApiId\",\"",
+       {
+        "Fn::ImportValue": "ProdStage-AppStack:ExportsOutputRefApiF70053CD5653BA4D"
+       },
+       "\",{\"label\":\"client error\",\"stat\":\"Sum\"}]],\"yAxis\":{}}},{\"type\":\"metric\",\"width\":6,\"height\":6,\"x\":6,\"y\":0,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Integration Latency\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[\"AWS/ApiGateway\",\"IntegrationLatency\",\"ApiId\",\"",
+       {
+        "Fn::ImportValue": "ProdStage-AppStack:ExportsOutputRefApiF70053CD5653BA4D"
+       },
+       "\",{\"label\":\"integration latency\"}]],\"yAxis\":{}}},{\"type\":\"metric\",\"width\":6,\"height\":6,\"x\":12,\"y\":0,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Latency\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[\"AWS/ApiGateway\",\"Latency\",\"ApiId\",\"",
+       {
+        "Fn::ImportValue": "ProdStage-AppStack:ExportsOutputRefApiF70053CD5653BA4D"
+       },
+       "\",{\"label\":\"latency\"}]],\"yAxis\":{}}},{\"type\":\"metric\",\"width\":6,\"height\":6,\"x\":18,\"y\":0,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Requests\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[\"AWS/ApiGateway\",\"Count\",\"ApiId\",\"",
+       {
+        "Fn::ImportValue": "ProdStage-AppStack:ExportsOutputRefApiF70053CD5653BA4D"
+       },
+       "\",{\"label\":\"total requests\",\"stat\":\"SampleCount\"}]],\"yAxis\":{}}},{\"type\":\"metric\",\"width\":6,\"height\":6,\"x\":0,\"y\":6,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Server Errors\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[\"AWS/ApiGateway\",\"5xx\",\"ApiId\",\"",
+       {
+        "Fn::ImportValue": "ProdStage-AppStack:ExportsOutputRefApiF70053CD5653BA4D"
+       },
+       "\",{\"label\":\"server error\",\"stat\":\"Sum\"}]],\"yAxis\":{}}}]}"
+      ]
+     ]
+    },
+    "DashboardName": "BlogAppDashboards-ApiMonitor-Detail"
+   },
+   "Metadata": {
+    "aws:cdk:path": "ProdStage/MonitoringStack/Monitoring/Facade/ApiMonitorDashboardDetail/Resource"
+   }
+  },
+  "MonitoringFacadeFacadeAppServiceCPUUsageCpu64732953": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ActionsEnabled": true,
+    "AlarmDescription": "The CPU usage is too high.",
+    "AlarmName": "Facade-AppService-CPU-Usage-Cpu",
+    "ComparisonOperator": "GreaterThanThreshold",
+    "DatapointsToAlarm": 3,
+    "EvaluationPeriods": 3,
+    "Metrics": [
+     {
+      "Id": "m1",
+      "Label": "Cluster CPU Utilization",
+      "MetricStat": {
+       "Metric": {
+        "Dimensions": [
+         {
+          "Name": "ClusterName",
+          "Value": {
+           "Fn::ImportValue": "ProdStage-AppStack:ExportsOutputRefNetworkCluster17B54D113FA77A85"
+          }
+         },
+         {
+          "Name": "ServiceName",
+          "Value": {
+           "Fn::ImportValue": "ProdStage-AppStack:ExportsOutputFnGetAttGetPostAppServiceA50C5323Name6E4CBB98"
+          }
+         }
+        ],
+        "MetricName": "CPUUtilization",
+        "Namespace": "AWS/ECS"
+       },
+       "Period": 300,
+       "Stat": "Average"
+      },
+      "ReturnData": true
+     }
+    ],
+    "Threshold": 70,
+    "TreatMissingData": "missing"
+   },
+   "Metadata": {
+    "aws:cdk:path": "ProdStage/MonitoringStack/Monitoring/Facade/Facade-AppService-CPU-Usage-Cpu/Resource"
+   }
+  },
+  "MonitoringFacadeFacadeAppServiceMemoryUsageMemory6367B9DF": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ActionsEnabled": true,
+    "AlarmDescription": "The memory usage is too high.",
+    "AlarmName": "Facade-AppService-Memory-Usage-Memory",
+    "ComparisonOperator": "GreaterThanThreshold",
+    "DatapointsToAlarm": 3,
+    "EvaluationPeriods": 3,
+    "Metrics": [
+     {
+      "Id": "m1",
+      "Label": "Cluster Memory Utilization",
+      "MetricStat": {
+       "Metric": {
+        "Dimensions": [
+         {
+          "Name": "ClusterName",
+          "Value": {
+           "Fn::ImportValue": "ProdStage-AppStack:ExportsOutputRefNetworkCluster17B54D113FA77A85"
+          }
+         },
+         {
+          "Name": "ServiceName",
+          "Value": {
+           "Fn::ImportValue": "ProdStage-AppStack:ExportsOutputFnGetAttGetPostAppServiceA50C5323Name6E4CBB98"
+          }
+         }
+        ],
+        "MetricName": "MemoryUtilization",
+        "Namespace": "AWS/ECS"
+       },
+       "Period": 300,
+       "Stat": "Average"
+      },
+      "ReturnData": true
+     }
+    ],
+    "Threshold": 70,
+    "TreatMissingData": "missing"
+   },
+   "Metadata": {
+    "aws:cdk:path": "ProdStage/MonitoringStack/Monitoring/Facade/Facade-AppService-Memory-Usage-Memory/Resource"
+   }
+  },
+  "MonitoringFacadeFacadeRunningTasksAnomalyCritical987D801F": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ActionsEnabled": true,
+    "AlarmDescription": "Anomaly detection: value is outside of the expected band.",
+    "AlarmName": "Facade--RunningTasks-Anomaly-Critical",
+    "ComparisonOperator": "LessThanLowerOrGreaterThanUpperThreshold",
+    "DatapointsToAlarm": 3,
+    "EvaluationPeriods": 3,
+    "Metrics": [
+     {
+      "Expression": "ANOMALY_DETECTION_BAND(runningTasks,3)",
+      "Id": "expr_1",
+      "Label": "runningTasks",
+      "ReturnData": true
+     },
+     {
+      "Id": "runningTasks",
+      "Label": "Running Tasks",
+      "MetricStat": {
+       "Metric": {
+        "Dimensions": [
+         {
+          "Name": "ClusterName",
+          "Value": {
+           "Fn::ImportValue": "ProdStage-AppStack:ExportsOutputRefNetworkCluster17B54D113FA77A85"
+          }
+         },
+         {
+          "Name": "ServiceName",
+          "Value": {
+           "Fn::ImportValue": "ProdStage-AppStack:ExportsOutputFnGetAttGetPostAppServiceA50C5323Name6E4CBB98"
+          }
+         }
+        ],
+        "MetricName": "RunningTaskCount",
+        "Namespace": "ECS/ContainerInsights"
+       },
+       "Period": 300,
+       "Stat": "Average"
+      },
+      "ReturnData": true
+     }
+    ],
+    "ThresholdMetricId": "expr_1",
+    "TreatMissingData": "missing"
+   },
+   "Metadata": {
+    "aws:cdk:path": "ProdStage/MonitoringStack/Monitoring/Facade/Facade--RunningTasks-Anomaly-Critical/Resource"
+   }
+  },
+  "MonitoringFacadeGetPostDashboardE32DA821": {
+   "Type": "AWS::CloudWatch::Dashboard",
+   "Properties": {
+    "DashboardBody": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"widgets\":[{\"type\":\"text\",\"width\":24,\"height\":1,\"x\":0,\"y\":0,\"properties\":{\"markdown\":\"### RunningTasksAnomalyDetectionAlarm\"}},{\"type\":\"metric\",\"width\":24,\"height\":5,\"x\":0,\"y\":1,\"properties\":{\"view\":\"timeSeries\",\"title\":\"",
+       {
+        "Fn::ImportValue": "ProdStage-AppStack:ExportsOutputFnGetAttGetPostAppServiceA50C5323Name6E4CBB98"
+       },
+       " Running Tasks\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[{\"label\":\"runningTasks\",\"expression\":\"ANOMALY_DETECTION_BAND(runningTasks,3)\"}],[\"ECS/ContainerInsights\",\"RunningTaskCount\",\"ClusterName\",\"",
+       {
+        "Fn::ImportValue": "ProdStage-AppStack:ExportsOutputRefNetworkCluster17B54D113FA77A85"
+       },
+       "\",\"ServiceName\",\"",
+       {
+        "Fn::ImportValue": "ProdStage-AppStack:ExportsOutputFnGetAttGetPostAppServiceA50C5323Name6E4CBB98"
+       },
+       "\",{\"label\":\"Running Tasks\",\"id\":\"runningTasks\",\"visible\":false}]],\"yAxis\":{}}}]}"
+      ]
+     ]
+    },
+    "DashboardName": "BlogAppDashboards-GetPost-Alarms"
+   },
+   "Metadata": {
+    "aws:cdk:path": "ProdStage/MonitoringStack/Monitoring/Facade/GetPostDashboard/Resource"
+   }
+  },
+  "MonitoringFacadeGetPostDashboardDetail52D19D2E": {
+   "Type": "AWS::CloudWatch::Dashboard",
+   "Properties": {
+    "DashboardBody": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"widgets\":[{\"type\":\"metric\",\"width\":6,\"height\":6,\"x\":0,\"y\":0,\"properties\":{\"view\":\"timeSeries\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[\"blogApp\",\"getItemSuccess\",\"service\",\"GetPost\"]],\"yAxis\":{}}},{\"type\":\"metric\",\"width\":6,\"height\":6,\"x\":6,\"y\":0,\"properties\":{\"view\":\"timeSeries\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[\"blogApp\",\"getItemFailure\",\"service\",\"GetItem\"]],\"yAxis\":{}}},{\"type\":\"metric\",\"width\":6,\"height\":6,\"x\":0,\"y\":6,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Cpu Utilization\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[\"AWS/ECS\",\"CPUUtilization\",\"ClusterName\",\"",
+       {
+        "Fn::ImportValue": "ProdStage-AppStack:ExportsOutputRefNetworkCluster17B54D113FA77A85"
+       },
+       "\",\"ServiceName\",\"",
+       {
+        "Fn::ImportValue": "ProdStage-AppStack:ExportsOutputFnGetAttGetPostAppServiceA50C5323Name6E4CBB98"
+       },
+       "\",{\"label\":\"cpu\"}]],\"yAxis\":{}}},{\"type\":\"metric\",\"width\":6,\"height\":6,\"x\":6,\"y\":6,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Memory Utilization\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[\"AWS/ECS\",\"MemoryUtilization\",\"ClusterName\",\"",
+       {
+        "Fn::ImportValue": "ProdStage-AppStack:ExportsOutputRefNetworkCluster17B54D113FA77A85"
+       },
+       "\",\"ServiceName\",\"",
+       {
+        "Fn::ImportValue": "ProdStage-AppStack:ExportsOutputFnGetAttGetPostAppServiceA50C5323Name6E4CBB98"
+       },
+       "\",{\"label\":\"memory\"}]],\"yAxis\":{}}}]}"
+      ]
+     ]
+    },
+    "DashboardName": "BlogAppDashboards-GetPost-Detail"
+   },
+   "Metadata": {
+    "aws:cdk:path": "ProdStage/MonitoringStack/Monitoring/Facade/GetPostDashboardDetail/Resource"
+   }
+  },
+  "MonitoringFacadeFacadeInvocationsAnomalyCritical116062A4": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ActionsEnabled": true,
+    "AlarmDescription": "Anomaly detection: value is outside of the expected band.",
+    "AlarmName": "Facade--Invocations-Anomaly-Critical",
+    "ComparisonOperator": "LessThanLowerOrGreaterThanUpperThreshold",
+    "DatapointsToAlarm": 3,
+    "EvaluationPeriods": 3,
+    "Metrics": [
+     {
+      "Expression": "ANOMALY_DETECTION_BAND(invocations,3)",
+      "Id": "expr_1",
+      "Label": "invocations",
+      "ReturnData": true
+     },
+     {
+      "Id": "invocations",
+      "Label": "invocations",
+      "MetricStat": {
+       "Metric": {
+        "Dimensions": [
+         {
+          "Name": "FunctionName",
+          "Value": {
+           "Fn::ImportValue": "ProdStage-AppStack:ExportsOutputRefCreatePostD3E67D61CCFCD440"
+          }
+         }
+        ],
+        "MetricName": "Invocations",
+        "Namespace": "AWS/Lambda"
+       },
+       "Period": 300,
+       "Stat": "Sum"
+      },
+      "ReturnData": true
+     }
+    ],
+    "ThresholdMetricId": "expr_1",
+    "TreatMissingData": "missing"
+   },
+   "Metadata": {
+    "aws:cdk:path": "ProdStage/MonitoringStack/Monitoring/Facade/Facade--Invocations-Anomaly-Critical/Resource"
+   }
+  },
+  "MonitoringFacadeFacadeDurationAnomalyCriticalEE856D00": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ActionsEnabled": true,
+    "AlarmDescription": "Anomaly detection: value is outside of the expected band.",
+    "AlarmName": "Facade--Duration-Anomaly-Critical",
+    "ComparisonOperator": "LessThanLowerOrGreaterThanUpperThreshold",
+    "DatapointsToAlarm": 3,
+    "EvaluationPeriods": 3,
+    "Metrics": [
+     {
+      "Expression": "ANOMALY_DETECTION_BAND(duration,3)",
+      "Id": "expr_1",
+      "Label": "duration",
+      "ReturnData": true
+     },
+     {
+      "Id": "duration",
+      "Label": "duration",
+      "MetricStat": {
+       "Metric": {
+        "Dimensions": [
+         {
+          "Name": "FunctionName",
+          "Value": {
+           "Fn::ImportValue": "ProdStage-AppStack:ExportsOutputRefCreatePostD3E67D61CCFCD440"
+          }
+         }
+        ],
+        "MetricName": "Duration",
+        "Namespace": "AWS/Lambda"
+       },
+       "Period": 300,
+       "Stat": "Average"
+      },
+      "ReturnData": true
+     }
+    ],
+    "ThresholdMetricId": "expr_1",
+    "TreatMissingData": "missing"
+   },
+   "Metadata": {
+    "aws:cdk:path": "ProdStage/MonitoringStack/Monitoring/Facade/Facade--Duration-Anomaly-Critical/Resource"
+   }
+  },
+  "MonitoringFacadeCreateFunctionDashboard962BFA4B": {
+   "Type": "AWS::CloudWatch::Dashboard",
+   "Properties": {
+    "DashboardBody": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"widgets\":[{\"type\":\"text\",\"width\":24,\"height\":1,\"x\":0,\"y\":0,\"properties\":{\"markdown\":\"### DurationAnomalyDetectionAlarm\"}},{\"type\":\"metric\",\"width\":24,\"height\":5,\"x\":0,\"y\":1,\"properties\":{\"view\":\"timeSeries\",\"title\":\"",
+       {
+        "Fn::ImportValue": "ProdStage-AppStack:ExportsOutputRefCreatePostD3E67D61CCFCD440"
+       },
+       " Duration\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[{\"label\":\"duration\",\"expression\":\"ANOMALY_DETECTION_BAND(duration,3)\"}],[\"AWS/Lambda\",\"Duration\",\"FunctionName\",\"",
+       {
+        "Fn::ImportValue": "ProdStage-AppStack:ExportsOutputRefCreatePostD3E67D61CCFCD440"
+       },
+       "\",{\"label\":\"duration\",\"id\":\"duration\",\"visible\":false}]],\"yAxis\":{}}},{\"type\":\"text\",\"width\":24,\"height\":1,\"x\":0,\"y\":6,\"properties\":{\"markdown\":\"### ErrorsAlarm\"}},{\"type\":\"metric\",\"width\":24,\"height\":5,\"x\":0,\"y\":7,\"properties\":{\"view\":\"timeSeries\",\"title\":\"",
+       {
+        "Fn::ImportValue": "ProdStage-AppStack:ExportsOutputRefCreatePostD3E67D61CCFCD440"
+       },
+       " Errors\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[\"AWS/Lambda\",\"Errors\",\"FunctionName\",\"",
+       {
+        "Fn::ImportValue": "ProdStage-AppStack:ExportsOutputRefCreatePostD3E67D61CCFCD440"
+       },
+       "\",{\"label\":\"errors\",\"stat\":\"Sum\"}]],\"annotations\":{\"horizontal\":[{\"label\":\"errors >= 3 for 3 datapoints within 15 minutes\",\"value\":3,\"yAxis\":\"left\"}]},\"yAxis\":{}}},{\"type\":\"text\",\"width\":24,\"height\":1,\"x\":0,\"y\":12,\"properties\":{\"markdown\":\"### InvocationsAnomalyDetectionAlarm\"}},{\"type\":\"metric\",\"width\":24,\"height\":5,\"x\":0,\"y\":13,\"properties\":{\"view\":\"timeSeries\",\"title\":\"",
+       {
+        "Fn::ImportValue": "ProdStage-AppStack:ExportsOutputRefCreatePostD3E67D61CCFCD440"
+       },
+       " Invocations\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[{\"label\":\"invocations\",\"expression\":\"ANOMALY_DETECTION_BAND(invocations,3)\"}],[\"AWS/Lambda\",\"Invocations\",\"FunctionName\",\"",
+       {
+        "Fn::ImportValue": "ProdStage-AppStack:ExportsOutputRefCreatePostD3E67D61CCFCD440"
+       },
+       "\",{\"label\":\"invocations\",\"id\":\"invocations\",\"visible\":false,\"stat\":\"Sum\"}]],\"yAxis\":{}}}]}"
+      ]
+     ]
+    },
+    "DashboardName": "BlogAppDashboards-CreateFunction-Alarms"
+   },
+   "Metadata": {
+    "aws:cdk:path": "ProdStage/MonitoringStack/Monitoring/Facade/CreateFunctionDashboard/Resource"
+   }
+  },
+  "MonitoringFacadeCreateFunctionDashboardDetail0018D365": {
+   "Type": "AWS::CloudWatch::Dashboard",
+   "Properties": {
+    "DashboardBody": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"widgets\":[{\"type\":\"metric\",\"width\":6,\"height\":6,\"x\":0,\"y\":0,\"properties\":{\"view\":\"timeSeries\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[\"blogApp\",\"ColdStart\",\"service\",\"CreateFunction\"]],\"yAxis\":{}}},{\"type\":\"metric\",\"width\":6,\"height\":6,\"x\":6,\"y\":0,\"properties\":{\"view\":\"timeSeries\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[\"blogApp\",\"createPostFailure\",\"service\",\"CreateFunction\"]],\"yAxis\":{}}},{\"type\":\"metric\",\"width\":6,\"height\":6,\"x\":12,\"y\":0,\"properties\":{\"view\":\"timeSeries\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[\"blogApp\",\"createPostSuccess\",\"service\",\"CreateFunction\"]],\"yAxis\":{}}},{\"type\":\"metric\",\"width\":6,\"height\":6,\"x\":0,\"y\":6,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Invocations\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[\"AWS/Lambda\",\"Invocations\",\"FunctionName\",\"",
+       {
+        "Fn::ImportValue": "ProdStage-AppStack:ExportsOutputRefCreatePostD3E67D61CCFCD440"
+       },
+       "\",{\"label\":\"invocations\",\"stat\":\"Sum\"}]],\"yAxis\":{}}},{\"type\":\"metric\",\"width\":6,\"height\":6,\"x\":6,\"y\":6,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Duration\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[\"AWS/Lambda\",\"Duration\",\"FunctionName\",\"",
+       {
+        "Fn::ImportValue": "ProdStage-AppStack:ExportsOutputRefCreatePostD3E67D61CCFCD440"
+       },
+       "\",{\"label\":\"duration\"}]],\"yAxis\":{}}},{\"type\":\"metric\",\"width\":6,\"height\":6,\"x\":12,\"y\":6,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Errors\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[\"AWS/Lambda\",\"Errors\",\"FunctionName\",\"",
+       {
+        "Fn::ImportValue": "ProdStage-AppStack:ExportsOutputRefCreatePostD3E67D61CCFCD440"
+       },
+       "\",{\"label\":\"errors\",\"stat\":\"Sum\"}]],\"yAxis\":{}}}]}"
+      ]
+     ]
+    },
+    "DashboardName": "BlogAppDashboards-CreateFunction-Detail"
+   },
+   "Metadata": {
+    "aws:cdk:path": "ProdStage/MonitoringStack/Monitoring/Facade/CreateFunctionDashboardDetail/Resource"
+   }
+  },
+  "MonitoringFacadeFacadeErrorsAlarmerrorsCritical8260EAC6": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ActionsEnabled": true,
+    "AlarmDescription": "Threshold of 3 has been breached.",
+    "AlarmName": "Facade-ErrorsAlarm-errors-Critical",
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "DatapointsToAlarm": 3,
+    "EvaluationPeriods": 3,
+    "Metrics": [
+     {
+      "Id": "m1",
+      "Label": "errors",
+      "MetricStat": {
+       "Metric": {
+        "Dimensions": [
+         {
+          "Name": "FunctionName",
+          "Value": {
+           "Fn::ImportValue": "ProdStage-AppStack:ExportsOutputRefCreatePostD3E67D61CCFCD440"
+          }
+         }
+        ],
+        "MetricName": "Errors",
+        "Namespace": "AWS/Lambda"
+       },
+       "Period": 300,
+       "Stat": "Sum"
+      },
+      "ReturnData": true
+     }
+    ],
+    "Threshold": 3,
+    "TreatMissingData": "missing"
+   },
+   "Metadata": {
+    "aws:cdk:path": "ProdStage/MonitoringStack/Monitoring/Facade/Facade-ErrorsAlarm-errors-Critical/Resource"
+   }
+  },
+  "CDKMetadata": {
+   "Type": "AWS::CDK::Metadata",
+   "Properties": {
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/+2WTU+EMBCGf8v2aFhUvHEzu978iho9bDZmth1hFFoyHZYD4b8bWNaom2j84LAJB0LnpX1n5iFtGoVRdBIeTaDyU21ephmtwvpWQL8EUPlHnbnSVCA6Des5+HTlgM2iVmY7voQcVawOVKC8AEs/LpDJmas1MpNpJ5BNkUlUE9QKjHkgk6B4FS9qVZGRtF+XIiXp1qQCtmQT/ym8jzqhCTr162c5cL5d/yEyDtVF57v7K3ezNT+ZPTTz/e5gmIr/Vt9/9/uLHn+qD85kqH23bJbB7Mm+HabBaQacL2qVozBpFdffO0G75N3J28Vz9JqpEHK2l7XLC2Dyzl4VyCCO+w8GBApHVvyd69L3uqSMPnWZ6WNcQ1ZC63jdnef+o47nrrqFvMhw5kor18garVC2LUsYQS7Ie7LJHARUrPJN1NasW19/ZmGVoVGxcIktbnGn1jqBTR+brTiiGdGMaEY0I5oRzYhmn9B0d52uyqYJrDMYPvvDdRSF0XF4PHn2RFMurVCO4c3m/Qqb5qQZkQ4AAA=="
+   },
+   "Metadata": {
+    "aws:cdk:path": "ProdStage/MonitoringStack/CDKMetadata/Default"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
