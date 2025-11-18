@@ -338,6 +338,34 @@ export class AssemblyManifestReader {
     );
   }
 
+  /**
+   * Returns the underlying Cloud Assembly manifest object.
+   */
+  public get assemblyManifest(): AssemblyManifest {
+    return this.manifest;
+  }
+
+  /**
+   * Returns the construct tree associated with this assembly reader.
+   */
+  public get constructTree(): ConstructTree {
+    return this.tree;
+  }
+
+  /**
+   * Looks up the manifest artifact for the provided identifier.
+   */
+  public getArtifact(artifactId: string): ArtifactManifest | undefined {
+    return this.manifest.artifacts?.[artifactId];
+  }
+
+  /**
+   * Returns the manifest artifacts map, falling back to an empty object when undefined.
+   */
+  public get artifacts(): Record<string, ArtifactManifest> {
+    return this.manifest.artifacts ?? {};
+  }
+
   private matchesStageIdentifier(
     identifier: string,
     artifactId: string,

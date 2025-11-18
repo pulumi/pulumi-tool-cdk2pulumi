@@ -1,9 +1,11 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
+import * as YAML from 'yaml';
 import { ProgramIR } from '../core';
 import { ConversionReportBuilder } from './conversion-report';
 import { postProcessProgramIr, PostProcessOptions } from './ir-post-processor';
 import { serializeProgramIr } from './ir-to-yaml';
+import { AssemblyAnalyzer } from '../core/analysis';
 import {
   convertAssemblyDirectoryToProgramIr,
   convertStageInAssemblyDirectoryToProgramIr,
@@ -11,7 +13,7 @@ import {
 
 export const DEFAULT_OUTPUT_FILE = 'Pulumi.yaml';
 
-export interface CliOptions {
+export interface ConvertCliOptions {
   assemblyDir: string;
   outFile: string;
   skipCustomResources: boolean;
@@ -20,9 +22,52 @@ export interface CliOptions {
   reportFile?: string;
 }
 
+export interface AnalyzeCliOptions {
+  assemblyDir: string;
+  stage?: string;
+  format: 'json' | 'yaml';
+  outputFile?: string;
+}
+
+export type ParsedCliCommand =
+  | { command: 'convert'; options: ConvertCliOptions }
+  | { command: 'analyze'; options: AnalyzeCliOptions };
+
 class CliError extends Error {}
 
-export function parseArguments(argv: string[]): CliOptions {
+export function parseArguments(argv: string[]): ParsedCliCommand {
+  if (argv.length === 0) {
+    throw new CliError(usage());
+  }
+
+  const { command, args } = extractCommand(argv);
+  if (command === 'analyze') {
+    return { command, options: parseAnalyzeArguments(args) };
+  }
+  return { command: 'convert', options: parseConvertArguments(args) };
+}
+
+function extractCommand(argv: string[]): {
+  command: 'convert' | 'analyze';
+  args: string[];
+} {
+  if (argv.length === 0) {
+    return { command: 'convert', args: [] };
+  }
+  const candidate = argv[0];
+  if (candidate === 'convert') {
+    return { command: 'convert', args: argv.slice(1) };
+  }
+  if (candidate === 'analyze') {
+    return { command: 'analyze', args: argv.slice(1) };
+  }
+  if (candidate.startsWith('--')) {
+    return { command: 'convert', args: argv };
+  }
+  throw new CliError(`Unknown command: ${candidate}\n${usage()}`);
+}
+
+function parseConvertArguments(argv: string[]): ConvertCliOptions {
   let assemblyDir: string | undefined;
   let outFile: string | undefined;
   let skipCustomResources = false;
@@ -88,7 +133,50 @@ export function parseArguments(argv: string[]): CliOptions {
   };
 }
 
-export function runCliWithOptions(options: CliOptions): void {
+function parseAnalyzeArguments(argv: string[]): AnalyzeCliOptions {
+  let assemblyDir: string | undefined;
+  let stage: string | undefined;
+  let format: 'json' | 'yaml' = 'json';
+  let outputFile: string | undefined;
+
+  for (let i = 0; i < argv.length; i++) {
+    const arg = argv[i];
+    switch (arg) {
+      case '--assembly':
+        assemblyDir = requireValue(arg, argv[++i]);
+        break;
+      case '--stage':
+        stage = requireValue(arg, argv[++i]);
+        break;
+      case '--format': {
+        const value = requireValue(arg, argv[++i]).toLowerCase();
+        if (value !== 'json' && value !== 'yaml') {
+          throw new CliError(
+            `Invalid format '${value}'. Expected json or yaml.`,
+          );
+        }
+        format = value;
+        break;
+      }
+      case '--output':
+        outputFile = requireValue(arg, argv[++i]);
+        break;
+      case '--help':
+      case '-h':
+        throw new CliError(usage());
+      default:
+        throw new CliError(`Unknown argument: ${arg}\n${usage()}`);
+    }
+  }
+
+  if (!assemblyDir) {
+    throw new CliError(`Missing required option --assembly\n${usage()}`);
+  }
+
+  return { assemblyDir, stage, format, outputFile };
+}
+
+export function runCliWithOptions(options: ConvertCliOptions): void {
   const reportBuilder = options.reportFile
     ? new ConversionReportBuilder()
     : undefined;
@@ -115,24 +203,59 @@ export function runCliWithOptions(options: CliOptions): void {
   }
 }
 
+export function runAnalyzeWithOptions(
+  options: AnalyzeCliOptions,
+  logger: Pick<Console, 'log'> = console,
+): void {
+  const analyzer = new AssemblyAnalyzer();
+  const report = analyzer.analyze({
+    assemblyDirectory: options.assemblyDir,
+    stage: options.stage,
+  });
+  const serialized =
+    options.format === 'yaml'
+      ? YAML.stringify(report)
+      : JSON.stringify(report, null, 2);
+  if (options.outputFile) {
+    const dir = path.dirname(options.outputFile);
+    fs.ensureDirSync(dir);
+    fs.writeFileSync(options.outputFile, serialized);
+    logger.log(`Wrote analysis report to ${options.outputFile}`);
+    return;
+  }
+  logger.log(serialized);
+}
+
 export function runCli(
   argv: string[],
   logger: Pick<Console, 'log' | 'error'> = console,
 ): number {
   try {
-    const options = parseArguments(argv);
-    const resolved: CliOptions = {
-      assemblyDir: path.resolve(options.assemblyDir),
-      outFile: path.resolve(options.outFile),
-      skipCustomResources: options.skipCustomResources,
-      stackFilters: options.stackFilters,
-      stage: options.stage,
-      reportFile: options.reportFile
-        ? path.resolve(options.reportFile)
-        : undefined,
-    };
-    runCliWithOptions(resolved);
-    logger.log(`Wrote Pulumi YAML to ${resolved.outFile}`);
+    const parsed = parseArguments(argv);
+    if (parsed.command === 'convert') {
+      const resolved: ConvertCliOptions = {
+        assemblyDir: path.resolve(parsed.options.assemblyDir),
+        outFile: path.resolve(parsed.options.outFile),
+        skipCustomResources: parsed.options.skipCustomResources,
+        stackFilters: parsed.options.stackFilters,
+        stage: parsed.options.stage,
+        reportFile: parsed.options.reportFile
+          ? path.resolve(parsed.options.reportFile)
+          : undefined,
+      };
+      runCliWithOptions(resolved);
+      logger.log(`Wrote Pulumi YAML to ${resolved.outFile}`);
+    } else {
+      const resolved: AnalyzeCliOptions = {
+        assemblyDir: path.resolve(parsed.options.assemblyDir),
+        stage: parsed.options.stage,
+        format: parsed.options.format,
+        outputFile: parsed.options.outputFile
+          ? path.resolve(parsed.options.outputFile)
+          : undefined,
+      };
+      runAnalyzeWithOptions(resolved, logger);
+    }
     return 0;
   } catch (err) {
     if (err instanceof CliError) {
@@ -180,7 +303,7 @@ function requireValue(flag: string, value: string | undefined): string {
 }
 
 function usage(): string {
-  return 'Usage: cdk-to-pulumi --assembly <cdk.out> [--stage <name>] [--out <pulumi.yaml>] [--skip-custom] [--stacks <name1,name2>] [--report <path>] [--no-report]';
+  return `Usage:\n  cdk-to-pulumi [convert] --assembly <cdk.out> [--stage <name>] [--out <pulumi.yaml>] [--skip-custom] [--stacks <name1,name2>] [--report <path>] [--no-report]\n  cdk-to-pulumi analyze --assembly <cdk.out> [--stage <name>] [--format json|yaml] [--output <file>]`;
 }
 
 function parseList(value: string): string[] {

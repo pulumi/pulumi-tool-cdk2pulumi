@@ -4,9 +4,11 @@ import {
   parseArguments,
   runCliWithOptions,
   runCli,
+  runAnalyzeWithOptions,
 } from '../../src/cli/cli-runner';
 import { postProcessProgramIr } from '../../src/cli/ir-post-processor';
 import { serializeProgramIr } from '../../src/cli/ir-to-yaml';
+import { AssemblyAnalyzer } from '../../src/core/analysis';
 import {
   convertAssemblyDirectoryToProgramIr,
   convertStageInAssemblyDirectoryToProgramIr,
@@ -30,6 +32,10 @@ jest.mock('fs-extra', () => ({
   writeFileSync: jest.fn(),
 }));
 
+jest.mock('../../src/core/analysis', () => ({
+  AssemblyAnalyzer: jest.fn(),
+}));
+
 const mockedConvert =
   convertAssemblyDirectoryToProgramIr as jest.MockedFunction<
     typeof convertAssemblyDirectoryToProgramIr
@@ -45,21 +51,33 @@ const mockedFs = fs as jest.Mocked<typeof fs>;
 const mockedPostProcess = postProcessProgramIr as jest.MockedFunction<
   typeof postProcessProgramIr
 >;
+const mockedAnalyzer = AssemblyAnalyzer as jest.MockedClass<
+  typeof AssemblyAnalyzer
+>;
 
 beforeEach(() => {
   jest.clearAllMocks();
   mockedPostProcess.mockImplementation((program) => program);
+  mockedAnalyzer.mockImplementation(
+    () =>
+      ({
+        analyze: jest.fn().mockReturnValue(createMockAnalysisReport()),
+      }) as any,
+  );
 });
 
 describe('parseArguments', () => {
   test('returns defaults when only assembly provided', () => {
     expect(parseArguments(['--assembly', './cdk.out'])).toEqual({
-      assemblyDir: './cdk.out',
-      outFile: DEFAULT_OUTPUT_FILE,
-      skipCustomResources: false,
-      stackFilters: [],
-      stage: undefined,
-      reportFile: `${DEFAULT_OUTPUT_FILE}.report.json`,
+      command: 'convert',
+      options: {
+        assemblyDir: './cdk.out',
+        outFile: DEFAULT_OUTPUT_FILE,
+        skipCustomResources: false,
+        stackFilters: [],
+        stage: undefined,
+        reportFile: `${DEFAULT_OUTPUT_FILE}.report.json`,
+      },
     });
   });
 
@@ -71,12 +89,15 @@ describe('parseArguments', () => {
     expect(
       parseArguments(['--assembly', './cdk.out', '--skip-custom']),
     ).toEqual({
-      assemblyDir: './cdk.out',
-      outFile: DEFAULT_OUTPUT_FILE,
-      skipCustomResources: true,
-      stackFilters: [],
-      stage: undefined,
-      reportFile: `${DEFAULT_OUTPUT_FILE}.report.json`,
+      command: 'convert',
+      options: {
+        assemblyDir: './cdk.out',
+        outFile: DEFAULT_OUTPUT_FILE,
+        skipCustomResources: true,
+        stackFilters: [],
+        stage: undefined,
+        reportFile: `${DEFAULT_OUTPUT_FILE}.report.json`,
+      },
     });
   });
 
@@ -84,12 +105,15 @@ describe('parseArguments', () => {
     expect(
       parseArguments(['--assembly', './cdk.out', '--stacks', 'StackA,StackB']),
     ).toEqual({
-      assemblyDir: './cdk.out',
-      outFile: DEFAULT_OUTPUT_FILE,
-      skipCustomResources: false,
-      stackFilters: ['StackA', 'StackB'],
-      stage: undefined,
-      reportFile: `${DEFAULT_OUTPUT_FILE}.report.json`,
+      command: 'convert',
+      options: {
+        assemblyDir: './cdk.out',
+        outFile: DEFAULT_OUTPUT_FILE,
+        skipCustomResources: false,
+        stackFilters: ['StackA', 'StackB'],
+        stage: undefined,
+        reportFile: `${DEFAULT_OUTPUT_FILE}.report.json`,
+      },
     });
   });
 
@@ -97,12 +121,15 @@ describe('parseArguments', () => {
     expect(
       parseArguments(['--assembly', './cdk.out', '--stage', 'DevStage']),
     ).toEqual({
-      assemblyDir: './cdk.out',
-      outFile: DEFAULT_OUTPUT_FILE,
-      skipCustomResources: false,
-      stackFilters: [],
-      stage: 'DevStage',
-      reportFile: `${DEFAULT_OUTPUT_FILE}.report.json`,
+      command: 'convert',
+      options: {
+        assemblyDir: './cdk.out',
+        outFile: DEFAULT_OUTPUT_FILE,
+        skipCustomResources: false,
+        stackFilters: [],
+        stage: 'DevStage',
+        reportFile: `${DEFAULT_OUTPUT_FILE}.report.json`,
+      },
     });
   });
 
@@ -117,23 +144,67 @@ describe('parseArguments', () => {
         'foo.json',
       ]),
     ).toEqual({
-      assemblyDir: './cdk.out',
-      outFile: 'foo.yaml',
-      skipCustomResources: false,
-      stackFilters: [],
-      stage: undefined,
-      reportFile: 'foo.json',
+      command: 'convert',
+      options: {
+        assemblyDir: './cdk.out',
+        outFile: 'foo.yaml',
+        skipCustomResources: false,
+        stackFilters: [],
+        stage: undefined,
+        reportFile: 'foo.json',
+      },
     });
   });
 
   test('disables reports when requested', () => {
     expect(parseArguments(['--assembly', './cdk.out', '--no-report'])).toEqual({
-      assemblyDir: './cdk.out',
-      outFile: DEFAULT_OUTPUT_FILE,
-      skipCustomResources: false,
-      stackFilters: [],
-      stage: undefined,
-      reportFile: undefined,
+      command: 'convert',
+      options: {
+        assemblyDir: './cdk.out',
+        outFile: DEFAULT_OUTPUT_FILE,
+        skipCustomResources: false,
+        stackFilters: [],
+        stage: undefined,
+        reportFile: undefined,
+      },
+    });
+  });
+
+  test('supports explicit convert subcommand', () => {
+    expect(parseArguments(['convert', '--assembly', './cdk.out'])).toEqual({
+      command: 'convert',
+      options: {
+        assemblyDir: './cdk.out',
+        outFile: DEFAULT_OUTPUT_FILE,
+        skipCustomResources: false,
+        stackFilters: [],
+        stage: undefined,
+        reportFile: `${DEFAULT_OUTPUT_FILE}.report.json`,
+      },
+    });
+  });
+
+  test('parses analyze subcommand flags', () => {
+    expect(
+      parseArguments([
+        'analyze',
+        '--assembly',
+        '../cdk.out',
+        '--stage',
+        'Beta',
+        '--format',
+        'yaml',
+        '--output',
+        'report.yaml',
+      ]),
+    ).toEqual({
+      command: 'analyze',
+      options: {
+        assemblyDir: '../cdk.out',
+        stage: 'Beta',
+        format: 'yaml',
+        outputFile: 'report.yaml',
+      },
     });
   });
 });
@@ -253,13 +324,83 @@ describe('runCliWithOptions', () => {
   });
 });
 
+describe('runAnalyzeWithOptions', () => {
+  test('writes serialized report to stdout by default', () => {
+    const logger = { log: jest.fn() };
+    runAnalyzeWithOptions(
+      { assemblyDir: '/app/cdk.out', format: 'json' },
+      logger as any,
+    );
+
+    expect(mockedAnalyzer).toHaveBeenCalled();
+    expect(logger.log).toHaveBeenCalledWith(
+      expect.stringContaining('"schemaVersion"'),
+    );
+  });
+
+  test('writes to file when output path provided', () => {
+    const logger = { log: jest.fn() };
+    runAnalyzeWithOptions(
+      {
+        assemblyDir: '/app/cdk.out',
+        format: 'yaml',
+        outputFile: '/tmp/report.yaml',
+      },
+      logger as any,
+    );
+
+    expect(mockedFs.ensureDirSync).toHaveBeenCalledWith('/tmp');
+    expect(mockedFs.writeFileSync.mock.calls[0][0]).toBe('/tmp/report.yaml');
+    expect(logger.log).toHaveBeenCalledWith(
+      'Wrote analysis report to /tmp/report.yaml',
+    );
+  });
+});
+
 describe('runCli', () => {
   test('returns error code when required args missing', () => {
     const logger = { log: jest.fn(), error: jest.fn() };
     const code = runCli([], logger as any);
     expect(code).toBe(1);
-    expect(logger.error).toHaveBeenCalledWith(
-      expect.stringContaining('--assembly'),
-    );
+    expect(logger.error).toHaveBeenCalledWith(expect.stringContaining('Usage'));
+  });
+
+  test('invokes analyze flow when subcommand specified', () => {
+    const logger = { log: jest.fn(), error: jest.fn() };
+    const code = runCli(['analyze', '--assembly', './cdk.out'], logger as any);
+    expect(code).toBe(0);
+    expect(logger.log).toHaveBeenCalled();
   });
 });
+
+function createMockAnalysisReport() {
+  return {
+    metadata: {
+      schemaVersion: '1.0.0',
+      generatedAt: new Date().toISOString(),
+      assemblyDirectory: '/tmp/cdk.out',
+    },
+    app: {
+      language: { language: 'unknown', confidence: 'low', signals: [] },
+      stageUsage: { usesStages: false, stageCount: 0, stackCount: 0 },
+      stages: [],
+      stacks: [],
+    },
+    environments: [],
+    constructs: {
+      totals: {
+        coreL2: 0,
+        l1: 0,
+        customResources: 0,
+        userDefined: 0,
+        thirdParty: 0,
+        unknown: 0,
+      },
+      constructs: [],
+      userDefined: [],
+      pipelines: [],
+    },
+    resources: { total: 0, byType: [] },
+    assets: { total: 0, customResources: [], lambdaFunctions: [], assets: [] },
+  };
+}
