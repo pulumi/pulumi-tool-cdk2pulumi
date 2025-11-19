@@ -24,4 +24,12 @@ const project = new TypeScriptProject({
   // description: undefined,  /* The description is just a string that helps people understand the purpose of the package. */
   // packageName: undefined,  /* The "name" in package.json. */
 });
+
+project.addTask('extract-identifiers', {
+  exec: 'npx ts-node extract-primary-identifiers.ts',
+  description: 'Extracts primary identifiers from aws-native-metadata.json',
+});
+
+project.gitignore.include('AGENTS.md');
+project.gitignore.exclude('primary-identifiers.json');
 project.synth();

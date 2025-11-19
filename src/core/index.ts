@@ -19,5 +19,6 @@ export * from './naming';
 export * from './providers';
 export * from './metadata';
 export * from './normalization';
+export * from './analysis';
 
 export { assembly, resolvers };
