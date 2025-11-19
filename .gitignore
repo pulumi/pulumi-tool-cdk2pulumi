@@ -48,4 +48,5 @@ junit.xml
 /dist/
 !/.eslintrc.json
 !AGENTS.md
+primary-identifiers.json
 !/.projenrc.ts

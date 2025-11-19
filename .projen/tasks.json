@@ -99,6 +99,15 @@
         }
       ]
     },
+    "extract-identifiers": {
+      "name": "extract-identifiers",
+      "description": "Extracts primary identifiers from aws-native-metadata.json",
+      "steps": [
+        {
+          "exec": "npx ts-node extract-primary-identifiers.ts"
+        }
+      ]
+    },
     "install": {
       "name": "install",
       "description": "Install project dependencies and update lockfile (non-frozen)",
