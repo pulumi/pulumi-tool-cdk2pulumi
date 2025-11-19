@@ -6,6 +6,11 @@
  */
 export const ANALYSIS_REPORT_VERSION = '1.1.0';
 
+export interface AnalyzeAssemblyOptions {
+  readonly assemblyDirectory: string;
+  readonly stage?: string;
+}
+
 /**
  * Top level data structure returned by the CDK assembly analyzer.
  */
@@ -191,7 +196,14 @@ export interface ResourceInstanceSummary {
   readonly stackId: string;
   readonly logicalId: string;
   readonly path?: string;
-  readonly usesAsset?: boolean;
+  readonly asset?: AssetDetails;
+}
+
+export interface AssetDetails {
+  readonly id: string;
+  readonly sourcePath: string;
+  readonly packaging: string;
+  readonly destinations: Record<string, unknown>;
 }
 
 export interface AssetUsageSummary {

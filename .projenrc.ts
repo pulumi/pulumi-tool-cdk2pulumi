@@ -30,6 +30,15 @@ project.addTask('extract-identifiers', {
   description: 'Extracts primary identifiers from aws-native-metadata.json',
 });
 
+const packageLinuxArm = project.addTask('package:linux:arm', {
+  exec: 'bun build --compile --minify --sourcemap --target bun-linux-arm64 --outfile dist/bin/linux-arm64/cdk2pulumi src/cli/cli-runner.ts schemas/aws-native-metadata.json',
+});
+const packageMacos = project.addTask('package:macos:arm', {
+  exec: 'bun build --compile --minify --sourcemap --target bun-macos-arm64 --outfile dist/bin/macos-arm64/cdk2pulumi src/cli/cli-runner.ts schemas/aws-native-metadata.json',
+});
+project.packageTask.spawn(packageLinuxArm);
+project.packageTask.spawn(packageMacos);
+
 project.gitignore.include('AGENTS.md');
 project.gitignore.exclude('primary-identifiers.json');
 project.synth();

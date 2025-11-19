@@ -9,6 +9,8 @@
     "eslint": "npx projen eslint",
     "extract-identifiers": "npx projen extract-identifiers",
     "package": "npx projen package",
+    "package:linux:arm": "npx projen package:linux:arm",
+    "package:macos:arm": "npx projen package:macos:arm",
     "post-compile": "npx projen post-compile",
     "post-upgrade": "npx projen post-upgrade",
     "pre-compile": "npx projen pre-compile",

@@ -1,6 +1,7 @@
 import { StackManifest } from '../assembly';
 import { Metadata } from '../metadata';
 import { PulumiProvider } from '../providers';
+import { AssetLookup, AssetDetails } from './assets';
 import {
   ResourcePrimaryIdentifierSummary,
   ResourceInstanceSummary,
@@ -20,6 +21,7 @@ interface MutableResourceTypeEntry {
  */
 export function summarizeResourceInventory(
   stacks: StackManifest[],
+  assetLookup: AssetLookup,
 ): ResourceInventorySummary {
   const metadata = new Metadata(PulumiProvider.AWS_NATIVE);
   const aggregates = new Map<string, MutableResourceTypeEntry>();
@@ -32,11 +34,15 @@ export function summarizeResourceInventory(
       )) {
         total += 1;
         const type = resource.Type ?? 'Unknown';
-        const usesAsset = resourceUsesAsset(resource.Metadata);
         const path = deriveResourcePath(
           stackPath,
           logicalId,
           resource.Metadata,
+        );
+
+        const assetDetails = extractAssetDetails(
+          resource.Metadata,
+          assetLookup,
         );
 
         const aggregate = getOrCreateAggregate(aggregates, type, metadata);
@@ -45,7 +51,7 @@ export function summarizeResourceInventory(
           stackId: stack.id,
           logicalId,
           path,
-          usesAsset: usesAsset || undefined,
+          asset: assetDetails,
         });
       }
     }
@@ -141,4 +147,29 @@ function lookupPrimaryIdentifierSummary(
     parts,
     format: parts.join('|'),
   };
+}
+
+function extractAssetDetails(
+  metadata: Record<string, unknown> | undefined,
+  lookup: AssetLookup,
+): AssetDetails | undefined {
+  if (!metadata) {
+    return undefined;
+  }
+
+  const assetPath = metadata['aws:asset:path'];
+  if (typeof assetPath === 'string') {
+    const details = lookup(assetPath);
+    if (details) {
+      return details;
+    }
+    // If we can't find it in the manifest, we still know it's an asset
+    return {
+      id: assetPath, // Use the path/hash as the ID even if lookup fails
+      sourcePath: 'unknown',
+      packaging: 'unknown',
+      destinations: {},
+    };
+  }
+  return undefined;
 }

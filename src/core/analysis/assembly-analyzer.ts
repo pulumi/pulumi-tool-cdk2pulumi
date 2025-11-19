@@ -1,3 +1,4 @@
+import * as path from 'path';
 import {
   ArtifactManifest,
   ArtifactType,
@@ -7,8 +8,11 @@ import {
   ConstructTree,
   StackManifest,
 } from '../assembly';
+import { AssetLookup, loadAssetManifest } from './assets';
 import { summarizeConstructUsage } from './construct-tree';
+import { analyzeCustomResources } from './custom-resources';
 import { parseEnvironmentTarget, summarizeEnvironments } from './environment';
+import { analyzeLambdaFunctions } from './lambdas';
 import {
   resourceUsesAsset,
   summarizeResourceInventory,
@@ -17,7 +21,9 @@ import {
   ANALYSIS_REPORT_VERSION,
   AnalysisReport,
   AnalysisReportMetadata,
-  AssetUsageSummary,
+  AnalyzeAssemblyOptions,
+  AssetSummary,
+  AssetType,
   StageSummary,
   StageUsageSummary,
   StackSummary,
@@ -26,11 +32,6 @@ import {
 export interface AssemblyAnalyzerInitOptions {
   readonly now?: () => Date;
   readonly analyzerVersion?: string;
-}
-
-export interface AnalyzeAssemblyOptions {
-  readonly assemblyDirectory: string;
-  readonly stage?: string;
 }
 
 /**
@@ -46,13 +47,82 @@ export class AssemblyAnalyzer {
     const targetReader = options.stage
       ? rootReader.loadNestedAssembly(options.stage)
       : rootReader;
-    const manifest = targetReader.assemblyManifest;
     const stacks = targetReader.stackManifests;
+    const assetLookup = this.loadAssets(options.assemblyDirectory);
+
     const stackSummaries = stacks.map((stack) =>
       this.buildStackSummary(stack, targetReader),
     );
     const stageSummaries = this.buildStageSummaries(targetReader);
     const stageUsage = this.buildStageUsage(stageSummaries, stackSummaries);
+    const customResources = analyzeCustomResources(stacks, assetLookup);
+    const lambdaFunctions = analyzeLambdaFunctions(stacks);
+
+    // Aggregate unique assets from all sources
+    const uniqueAssets = new Map<string, AssetSummary>();
+
+    // Helper to add asset
+    const addAsset = (
+      id: string,
+      type: AssetType,
+      stackId: string,
+      logicalId?: string,
+      path?: string,
+    ) => {
+      if (!uniqueAssets.has(id)) {
+        const details = assetLookup(id);
+        uniqueAssets.set(id, {
+          id,
+          stackId,
+          type,
+          logicalId,
+          path,
+          packaging: details?.packaging,
+        });
+      }
+    };
+
+    // 1. From Resource Inventory
+    const inventory = summarizeResourceInventory(stacks, assetLookup);
+    for (const typeSummary of inventory.byType) {
+      for (const resource of typeSummary.resources) {
+        if (resource.asset) {
+          addAsset(
+            resource.asset.id,
+            resource.asset.packaging === 'container' ? 'docker' : 'file',
+            resource.stackId,
+            resource.logicalId,
+            resource.path,
+          );
+        }
+      }
+    }
+
+    // 2. From Custom Resources
+    for (const cr of customResources) {
+      if (cr.assetPath) {
+        const details = assetLookup(cr.assetPath);
+        addAsset(
+          cr.assetPath,
+          details?.packaging === 'container' ? 'docker' : 'file',
+          cr.stackId,
+          cr.logicalId,
+        );
+      }
+    }
+
+    // 3. From Lambda Functions
+    for (const lambda of lambdaFunctions) {
+      if (lambda.assetPath) {
+        const details = assetLookup(lambda.assetPath);
+        addAsset(
+          lambda.assetPath,
+          details?.packaging === 'container' ? 'docker' : 'file',
+          lambda.stackId,
+          lambda.logicalId,
+        );
+      }
+    }
 
     return {
       metadata: this.buildMetadata(options, targetReader.directory),
@@ -68,9 +138,34 @@ export class AssemblyAnalyzer {
           tree: stack.constructTree,
         })),
       ),
-      resources: summarizeResourceInventory(stacks),
-      assets: this.createEmptyAssetSummary(),
+      resources: inventory,
+      assets: {
+        total: uniqueAssets.size,
+        customResources,
+        lambdaFunctions,
+        assets: Array.from(uniqueAssets.values()),
+      },
     };
+  }
+
+  private loadAssets(assemblyDirectory: string): AssetLookup {
+    // Try to load asset manifest from the directory
+    // In a real implementation we might look for specific artifact types
+    // For now, assume standard location
+    // Let's iterate artifacts to find type 'cdk:asset-manifest'
+    const manifestReader =
+      AssemblyManifestReader.fromDirectory(assemblyDirectory);
+    for (const artifact of Object.values(manifestReader.artifacts)) {
+      if (artifact.type === 'cdk:asset-manifest') {
+        const props = artifact.properties as any;
+        const file = props?.file;
+        if (file) {
+          return loadAssetManifest(path.join(assemblyDirectory, file));
+        }
+      }
+    }
+
+    return () => undefined;
   }
 
   private buildMetadata(
@@ -150,15 +245,6 @@ export class AssemblyAnalyzer {
       constructCount: countConstructNodes(stack.constructTree),
       dependencies: stack.dependencies,
       usesAssets,
-    };
-  }
-
-  private createEmptyAssetSummary(): AssetUsageSummary {
-    return {
-      total: 0,
-      customResources: [],
-      lambdaFunctions: [],
-      assets: [],
     };
   }
 }

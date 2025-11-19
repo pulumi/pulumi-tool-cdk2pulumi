@@ -1,7 +1,6 @@
 import {
   ProgramIR,
   ResourceIR,
-  ResourceIROptions,
   StackIR,
   StackAddress,
   PropertyMap,
@@ -77,7 +76,7 @@ function rewriteResources(
     }
 
     if (resource.cfnType === 'AWS::IAM::Policy') {
-      const converted = convertIamPolicy(resource, stack.stackPath);
+      const converted = convertIamPolicy(resource);
       recordConversionArtifacts(collector, stack, resource, converted);
       rewritten.push(...converted);
       continue;
@@ -192,118 +191,36 @@ function convertServiceDiscoveryPrivateDnsNamespace(
   };
 }
 
-function convertIamPolicy(
-  resource: ResourceIR,
-  stackPath: string,
-): ResourceIR[] {
+function convertIamPolicy(resource: ResourceIR): ResourceIR[] {
   const props = resource.cfnProperties;
-  const base: ResourceIR = {
-    ...resource,
-    typeToken: 'aws:iam/policy:Policy',
-    props: buildIamPolicyProps(props),
-  };
+  const rolePolicies: ResourceIR[] = [];
 
-  const attachments: ResourceIR[] = [];
-  const address: StackAddress = { stackPath, id: resource.logicalId };
-  const arnReference: ResourceAttributeReference = {
-    kind: 'resourceAttribute',
-    resource: address,
-    attributeName: 'Arn',
-    propertyName: 'arn',
-  };
+  // Create a RolePolicy for each role
+  if (Array.isArray(props.Roles) && props.Roles.length > 0) {
+    const roles = props.Roles;
+    roles.forEach((role: PropertyValue, index: number) => {
+      // Preserve the original logical ID when there's only one role to maintain dependsOn references
+      const logicalId =
+        roles.length === 1
+          ? resource.logicalId
+          : `${resource.logicalId}-role-${index}`;
 
-  attachments.push(
-    ...createAttachmentResources(
-      props.Groups,
-      'group',
-      resource,
-      stackPath,
-      arnReference,
-      'aws:iam/groupPolicyAttachment:GroupPolicyAttachment',
-    ),
-  );
-  attachments.push(
-    ...createAttachmentResources(
-      props.Roles,
-      'role',
-      resource,
-      stackPath,
-      arnReference,
-      'aws:iam/rolePolicyAttachment:RolePolicyAttachment',
-    ),
-  );
-  attachments.push(
-    ...createAttachmentResources(
-      props.Users,
-      'user',
-      resource,
-      stackPath,
-      arnReference,
-      'aws:iam/userPolicyAttachment:UserPolicyAttachment',
-    ),
-  );
-
-  return [base, ...attachments];
-}
-
-function createAttachmentResources(
-  values: PropertyValue | undefined,
-  suffix: string,
-  source: ResourceIR,
-  stackPath: string,
-  policyArn: ResourceAttributeReference,
-  typeToken: string,
-): ResourceIR[] {
-  if (!Array.isArray(values) || values.length === 0) {
-    return [];
+      rolePolicies.push({
+        logicalId,
+        cfnType: resource.cfnType,
+        cfnProperties: resource.cfnProperties,
+        typeToken: 'aws:iam/rolePolicy:RolePolicy',
+        props: removeUndefined({
+          name: props.PolicyName,
+          policy: props.PolicyDocument,
+          role: role,
+        }),
+        options: resource.options,
+      });
+    });
   }
-  const deps = buildAttachmentOptions(
-    source.options,
-    stackPath,
-    source.logicalId,
-  );
-  return values.map((value, index) => ({
-    logicalId: `${source.logicalId}-${suffix}-${index}`,
-    cfnType: `${source.cfnType}::Attachment`,
-    cfnProperties: {},
-    typeToken,
-    props: buildAttachmentProps(suffix, value, policyArn),
-    options: deps,
-  }));
-}
 
-function buildAttachmentProps(
-  suffix: string,
-  target: PropertyValue,
-  policyArn: ResourceAttributeReference,
-): PropertyMap {
-  switch (suffix) {
-    case 'group':
-      return { group: target, policyArn };
-    case 'role':
-      return { role: target, policyArn };
-    case 'user':
-      return { user: target, policyArn };
-    default:
-      return { policyArn };
-  }
-}
-
-function buildAttachmentOptions(
-  options: ResourceIROptions | undefined,
-  stackPath: string,
-  logicalId: string,
-) {
-  const dependsOn = new Map<string, StackAddress>();
-  for (const dep of options?.dependsOn ?? []) {
-    dependsOn.set(`${dep.stackPath}::${dep.id}`, dep);
-  }
-  dependsOn.set(`${stackPath}::${logicalId}`, { stackPath, id: logicalId });
-  const merged: ResourceIROptions = {
-    ...options,
-    dependsOn: Array.from(dependsOn.values()),
-  };
-  return merged;
+  return rolePolicies;
 }
 
 function convertCustomResource(
@@ -372,15 +289,6 @@ function convertTags(tags: PropertyValue | undefined): PropertyMap | undefined {
     result[key] = value as PropertyValue;
   }
   return Object.keys(result).length > 0 ? result : undefined;
-}
-
-function buildIamPolicyProps(props: PropertyMap): PropertyMap {
-  return removeUndefined({
-    description: props.Description,
-    name: props.PolicyName,
-    path: props.Path,
-    policy: props.PolicyDocument,
-  });
 }
 
 function convertServiceDiscoveryDnsConfig(

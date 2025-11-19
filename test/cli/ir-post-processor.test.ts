@@ -159,7 +159,7 @@ describe('postProcessProgramIr', () => {
     });
   });
 
-  test('expands IAM policies into attachments', () => {
+  test('maps IAM policies to RolePolicy resources', () => {
     const program: ProgramIR = {
       stacks: [
         {
@@ -170,8 +170,10 @@ describe('postProcessProgramIr', () => {
               logicalId: 'Policy',
               cfnType: 'AWS::IAM::Policy',
               cfnProperties: {
+                PolicyName: 'MyPolicy',
                 PolicyDocument: {
                   Version: '2012-10-17',
+                  Statement: [],
                 },
                 Roles: ['role-arn'],
               },
@@ -183,20 +185,71 @@ describe('postProcessProgramIr', () => {
 
     const processed = postProcessProgramIr(program);
     const stackResources = processed.stacks[0].resources;
-    expect(stackResources).toHaveLength(2);
-    expect(stackResources[0]).toMatchObject({
+
+    // Should produce 1 RolePolicy resource
+    expect(stackResources).toHaveLength(1);
+
+    const rolePolicy = stackResources[0];
+    expect(rolePolicy).toMatchObject({
       logicalId: 'Policy',
-      typeToken: 'aws:iam/policy:Policy',
-    });
-    expect(stackResources[1]).toMatchObject({
-      logicalId: 'Policy-role-0',
-      typeToken: 'aws:iam/rolePolicyAttachment:RolePolicyAttachment',
-      props: expect.objectContaining({
-        policyArn: expect.objectContaining({
-          attributeName: 'Arn',
-        }),
+      typeToken: 'aws:iam/rolePolicy:RolePolicy',
+      props: {
+        name: 'MyPolicy',
+        policy: {
+          Version: '2012-10-17',
+          Statement: [],
+        },
         role: 'role-arn',
-      }),
+      },
+    });
+  });
+
+  test('maps IAM policies with multiple roles to separate RolePolicy resources', () => {
+    const program: ProgramIR = {
+      stacks: [
+        {
+          stackId: 'AppStack',
+          stackPath: 'App/Stack',
+          resources: [
+            makeResource({
+              logicalId: 'Policy',
+              cfnType: 'AWS::IAM::Policy',
+              cfnProperties: {
+                PolicyName: 'MyPolicy',
+                PolicyDocument: {
+                  Version: '2012-10-17',
+                  Statement: [],
+                },
+                Roles: ['role-arn-1', 'role-arn-2'],
+              },
+            }),
+          ],
+        },
+      ],
+    } as any;
+
+    const processed = postProcessProgramIr(program);
+    const stackResources = processed.stacks[0].resources;
+
+    // Should produce 2 RolePolicy resources
+    expect(stackResources).toHaveLength(2);
+
+    expect(stackResources[0]).toMatchObject({
+      logicalId: 'Policy-role-0',
+      typeToken: 'aws:iam/rolePolicy:RolePolicy',
+      props: {
+        name: 'MyPolicy',
+        role: 'role-arn-1',
+      },
+    });
+
+    expect(stackResources[1]).toMatchObject({
+      logicalId: 'Policy-role-1',
+      typeToken: 'aws:iam/rolePolicy:RolePolicy',
+      props: {
+        name: 'MyPolicy',
+        role: 'role-arn-2',
+      },
     });
   });
 
