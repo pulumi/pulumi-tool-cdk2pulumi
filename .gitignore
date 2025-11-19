@@ -47,4 +47,5 @@ junit.xml
 /lib
 /dist/
 !/.eslintrc.json
+!AGENTS.md
 !/.projenrc.ts

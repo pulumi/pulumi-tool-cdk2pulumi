@@ -24,4 +24,6 @@ const project = new TypeScriptProject({
   // description: undefined,  /* The description is just a string that helps people understand the purpose of the package. */
   // packageName: undefined,  /* The "name" in package.json. */
 });
+
+project.gitignore.include('AGENTS.md');
 project.synth();
