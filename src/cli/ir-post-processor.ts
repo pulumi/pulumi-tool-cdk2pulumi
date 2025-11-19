@@ -48,6 +48,68 @@ function rewriteResources(
 ): ResourceIR[] {
   const collector = options.reportCollector;
   const rewritten: ResourceIR[] = [];
+
+  // First pass: collect all IAM policies indexed by role reference
+  // Also track which policy logical IDs map to which role logical IDs
+  const policiesByRole = new Map<
+    string,
+    Array<{ name: string; document: PropertyValue }>
+  >();
+  const policyToRoleMapping = new Map<string, string>(); // policyLogicalId -> roleLogicalId
+
+  for (const resource of stack.resources) {
+    if (resource.cfnType === 'AWS::IAM::Policy') {
+      const props = resource.cfnProperties;
+      if (Array.isArray(props.Roles) && props.Roles.length > 0) {
+        // Extract role logical ID from the first role reference
+        // (policies with multiple roles would need more complex handling)
+        const firstRoleRef = props.Roles[0];
+        let roleLogicalId: string | undefined;
+
+        // Handle different types of role references
+        if (typeof firstRoleRef === 'object' && firstRoleRef !== null) {
+          // Check for ResourceAttributeReference structure
+          if ('resource' in firstRoleRef && firstRoleRef.resource) {
+            roleLogicalId = (firstRoleRef.resource as any).id;
+          }
+          // Check for direct Ref structure
+          else if ('Ref' in firstRoleRef) {
+            roleLogicalId = (firstRoleRef as any).Ref;
+          }
+        } else if (typeof firstRoleRef === 'string') {
+          // Direct string reference (role name) - we'll need to find the role by name
+          // For now, skip this case as it's less common
+        }
+
+        if (roleLogicalId) {
+          policyToRoleMapping.set(resource.logicalId, roleLogicalId);
+        } else {
+          // No debug logging needed here, just skip if roleLogicalId isn't found
+        }
+
+        // Store policies for merging into roles
+        for (const roleRef of props.Roles) {
+          const roleKey = JSON.stringify(roleRef);
+          if (!policiesByRole.has(roleKey)) {
+            policiesByRole.set(roleKey, []);
+          }
+          const policyName =
+            typeof props.PolicyName === 'string'
+              ? props.PolicyName
+              : resource.logicalId;
+          policiesByRole.get(roleKey)!.push({
+            name: policyName,
+            document: props.PolicyDocument,
+          });
+        }
+      }
+      // Skip this resource - we'll merge it into the role
+      collector?.resourceSkipped(stack, resource, 'mergedIntoRole' as any);
+      continue;
+    }
+  }
+
+  // Second pass: process all resources and merge policies into roles
   for (const resource of stack.resources) {
     if (resource.cfnType === 'AWS::CDK::Metadata') {
       collector?.resourceSkipped(stack, resource, 'cdkMetadata');
@@ -57,28 +119,49 @@ function rewriteResources(
     if (resource.cfnType === 'AWS::ApiGatewayV2::Stage') {
       const converted = convertApiGatewayV2Stage(resource);
       recordConversionArtifacts(collector, stack, resource, [converted]);
-      rewritten.push(converted);
+      const rewrittenConverted = rewriteDependsOn(
+        converted,
+        policyToRoleMapping,
+      );
+      rewritten.push(rewrittenConverted);
       continue;
     }
 
     if (resource.cfnType === 'AWS::ServiceDiscovery::Service') {
       const converted = convertServiceDiscoveryService(resource);
       recordConversionArtifacts(collector, stack, resource, [converted]);
-      rewritten.push(converted);
+      const rewrittenConverted = rewriteDependsOn(
+        converted,
+        policyToRoleMapping,
+      );
+      rewritten.push(rewrittenConverted);
       continue;
     }
 
     if (resource.cfnType === 'AWS::ServiceDiscovery::PrivateDnsNamespace') {
       const converted = convertServiceDiscoveryPrivateDnsNamespace(resource);
       recordConversionArtifacts(collector, stack, resource, [converted]);
-      rewritten.push(converted);
+      const rewrittenConverted = rewriteDependsOn(
+        converted,
+        policyToRoleMapping,
+      );
+      rewritten.push(rewrittenConverted);
       continue;
     }
 
     if (resource.cfnType === 'AWS::IAM::Policy') {
-      const converted = convertIamPolicy(resource);
-      recordConversionArtifacts(collector, stack, resource, converted);
-      rewritten.push(...converted);
+      // Already handled in first pass
+      continue;
+    }
+
+    // Check if this is a Role resource that needs inline policies merged
+    if (resource.cfnType === 'AWS::IAM::Role') {
+      const converted = mergeInlinePoliciesIntoRole(resource, policiesByRole);
+      const rewrittenConverted = rewriteDependsOn(
+        converted,
+        policyToRoleMapping,
+      );
+      rewritten.push(rewrittenConverted);
       continue;
     }
 
@@ -96,7 +179,9 @@ function rewriteResources(
       continue;
     }
 
-    rewritten.push(resource);
+    // Rewrite dependsOn references from policies to roles
+    const rewrittenResource = rewriteDependsOn(resource, policyToRoleMapping);
+    rewritten.push(rewrittenResource);
   }
 
   return rewritten;
@@ -191,36 +276,75 @@ function convertServiceDiscoveryPrivateDnsNamespace(
   };
 }
 
-function convertIamPolicy(resource: ResourceIR): ResourceIR[] {
-  const props = resource.cfnProperties;
-  const rolePolicies: ResourceIR[] = [];
-
-  // Create a RolePolicy for each role
-  if (Array.isArray(props.Roles) && props.Roles.length > 0) {
-    const roles = props.Roles;
-    roles.forEach((role: PropertyValue, index: number) => {
-      // Preserve the original logical ID when there's only one role to maintain dependsOn references
-      const logicalId =
-        roles.length === 1
-          ? resource.logicalId
-          : `${resource.logicalId}-role-${index}`;
-
-      rolePolicies.push({
-        logicalId,
-        cfnType: resource.cfnType,
-        cfnProperties: resource.cfnProperties,
-        typeToken: 'aws:iam/rolePolicy:RolePolicy',
-        props: removeUndefined({
-          name: props.PolicyName,
-          policy: props.PolicyDocument,
-          role: role,
-        }),
-        options: resource.options,
-      });
-    });
+function rewriteDependsOn(
+  resource: ResourceIR,
+  policyToRoleMapping: Map<string, string>,
+): ResourceIR {
+  // If this resource has no dependsOn, return as-is
+  if (!resource.options?.dependsOn || resource.options.dependsOn.length === 0) {
+    return resource;
   }
 
-  return rolePolicies;
+  // Rewrite any dependsOn references from policies to their corresponding roles
+  const rewrittenDependsOn = resource.options.dependsOn.map((dep) => {
+    // Check if this dependency is on a policy that was merged into a role
+    const roleLogicalId = policyToRoleMapping.get(dep.id);
+    if (roleLogicalId) {
+      // Replace the policy reference with the role reference
+      return {
+        ...dep,
+        id: roleLogicalId,
+      };
+    }
+    return dep;
+  });
+
+  return {
+    ...resource,
+    options: {
+      ...resource.options,
+      dependsOn: rewrittenDependsOn,
+    },
+  };
+}
+
+function mergeInlinePoliciesIntoRole(
+  resource: ResourceIR,
+  policiesByRole: Map<string, Array<{ name: string; document: PropertyValue }>>,
+): ResourceIR {
+  // Collect all policies that reference this role
+  const policiesToMerge: Array<{ name: string; document: PropertyValue }> = [];
+
+  for (const [key, policies] of policiesByRole.entries()) {
+    // The key is a JSON-stringified version of the role reference
+    // Check if it references this role's logical ID
+    if (key.includes(`"${resource.logicalId}"`)) {
+      policiesToMerge.push(...policies);
+    }
+  }
+
+  if (policiesToMerge.length === 0) {
+    // No policies to merge, return as-is
+    return resource;
+  }
+
+  // Merge the inline policies into the role's props
+  const existingInlinePolicies = resource.props?.inlinePolicies || [];
+  const newInlinePolicies = [
+    ...(Array.isArray(existingInlinePolicies) ? existingInlinePolicies : []),
+    ...policiesToMerge.map((p) => ({
+      name: p.name,
+      policy: p.document,
+    })),
+  ];
+
+  return {
+    ...resource,
+    props: {
+      ...resource.props,
+      inlinePolicies: newInlinePolicies,
+    },
+  };
 }
 
 function convertCustomResource(

@@ -159,7 +159,7 @@ describe('postProcessProgramIr', () => {
     });
   });
 
-  test('maps IAM policies to RolePolicy resources', () => {
+  test('merges IAM policies into Role resources as inline policies', () => {
     const program: ProgramIR = {
       stacks: [
         {
@@ -167,15 +167,34 @@ describe('postProcessProgramIr', () => {
           stackPath: 'App/Stack',
           resources: [
             makeResource({
-              logicalId: 'Policy',
-              cfnType: 'AWS::IAM::Policy',
+              logicalId: 'MyRole',
+              cfnType: 'AWS::IAM::Role',
               cfnProperties: {
-                PolicyName: 'MyPolicy',
-                PolicyDocument: {
+                AssumeRolePolicyDocument: {
                   Version: '2012-10-17',
                   Statement: [],
                 },
-                Roles: ['role-arn'],
+              },
+            }),
+            makeResource({
+              logicalId: 'MyPolicy',
+              cfnType: 'AWS::IAM::Policy',
+              cfnProperties: {
+                PolicyName: 'MyInlinePolicy',
+                PolicyDocument: {
+                  Version: '2012-10-17',
+                  Statement: [
+                    { Effect: 'Allow', Action: 's3:GetObject', Resource: '*' },
+                  ],
+                },
+                Roles: [
+                  {
+                    kind: 'resourceAttribute',
+                    resource: { id: 'MyRole', stackPath: 'App/Stack' },
+                    attributeName: 'Ref',
+                    propertyName: 'Ref',
+                  },
+                ],
               },
             }),
           ],
@@ -186,69 +205,22 @@ describe('postProcessProgramIr', () => {
     const processed = postProcessProgramIr(program);
     const stackResources = processed.stacks[0].resources;
 
-    // Should produce 1 RolePolicy resource
+    // Should only have the Role resource (Policy is merged into it)
     expect(stackResources).toHaveLength(1);
 
-    const rolePolicy = stackResources[0];
-    expect(rolePolicy).toMatchObject({
-      logicalId: 'Policy',
-      typeToken: 'aws:iam/rolePolicy:RolePolicy',
-      props: {
-        name: 'MyPolicy',
-        policy: {
-          Version: '2012-10-17',
-          Statement: [],
-        },
-        role: 'role-arn',
-      },
-    });
-  });
+    const role = stackResources[0];
+    expect(role.logicalId).toBe('MyRole');
+    expect(role.cfnType).toBe('AWS::IAM::Role');
 
-  test('maps IAM policies with multiple roles to separate RolePolicy resources', () => {
-    const program: ProgramIR = {
-      stacks: [
-        {
-          stackId: 'AppStack',
-          stackPath: 'App/Stack',
-          resources: [
-            makeResource({
-              logicalId: 'Policy',
-              cfnType: 'AWS::IAM::Policy',
-              cfnProperties: {
-                PolicyName: 'MyPolicy',
-                PolicyDocument: {
-                  Version: '2012-10-17',
-                  Statement: [],
-                },
-                Roles: ['role-arn-1', 'role-arn-2'],
-              },
-            }),
-          ],
-        },
-      ],
-    } as any;
-
-    const processed = postProcessProgramIr(program);
-    const stackResources = processed.stacks[0].resources;
-
-    // Should produce 2 RolePolicy resources
-    expect(stackResources).toHaveLength(2);
-
-    expect(stackResources[0]).toMatchObject({
-      logicalId: 'Policy-role-0',
-      typeToken: 'aws:iam/rolePolicy:RolePolicy',
-      props: {
-        name: 'MyPolicy',
-        role: 'role-arn-1',
-      },
-    });
-
-    expect(stackResources[1]).toMatchObject({
-      logicalId: 'Policy-role-1',
-      typeToken: 'aws:iam/rolePolicy:RolePolicy',
-      props: {
-        name: 'MyPolicy',
-        role: 'role-arn-2',
+    // Check that the inline policy was merged
+    expect(role.props?.inlinePolicies).toBeDefined();
+    expect(Array.isArray(role.props.inlinePolicies)).toBe(true);
+    expect(role.props.inlinePolicies).toHaveLength(1);
+    expect(role.props.inlinePolicies[0]).toMatchObject({
+      name: 'MyInlinePolicy',
+      policy: {
+        Version: '2012-10-17',
+        Statement: [{ Effect: 'Allow', Action: 's3:GetObject', Resource: '*' }],
       },
     });
   });
