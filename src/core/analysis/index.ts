@@ -1,6 +1,5 @@
 export * from './assembly-analyzer';
 export * from './types';
-export * from './language';
 export * from './environment';
 export * from './constructs';
 export * from './construct-tree';

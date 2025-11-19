@@ -56,9 +56,6 @@ export interface AnalysisReportMetadata {
  * Application level overview.
  */
 export interface AppSummary {
-  /** Result of the language detection heuristics */
-  readonly language: LanguageDetectionResult;
-
   /** Whether the assembly leverages stages */
   readonly stageUsage: StageUsageSummary;
 
@@ -129,33 +126,6 @@ export interface EnvironmentTarget {
   readonly isUnknown?: boolean;
   readonly notes?: string[];
 }
-
-export interface LanguageDetectionResult {
-  readonly language: AnalysisLanguage;
-  readonly confidence: DetectionConfidence;
-  readonly signals: LanguageDetectionSignal[];
-  readonly notes?: string[];
-}
-
-export type AnalysisLanguage =
-  | 'typescript'
-  | 'javascript'
-  | 'python'
-  | 'java'
-  | 'csharp'
-  | 'unknown';
-export type DetectionConfidence = 'low' | 'medium' | 'high';
-
-export interface LanguageDetectionSignal {
-  readonly source: LanguageDetectionSource;
-  readonly detail: string;
-}
-
-export type LanguageDetectionSource =
-  | 'manifestRuntime'
-  | 'library'
-  | 'assetMetadata'
-  | 'fallback';
 
 export interface ConstructUsageSummary {
   readonly totals: ConstructTotals;

@@ -1,4 +1,3 @@
-import * as path from 'path';
 import {
   ArtifactManifest,
   ArtifactType,
@@ -10,7 +9,6 @@ import {
 } from '../assembly';
 import { summarizeConstructUsage } from './construct-tree';
 import { parseEnvironmentTarget, summarizeEnvironments } from './environment';
-import { detectLanguage } from './language';
 import {
   resourceUsesAsset,
   summarizeResourceInventory,
@@ -56,15 +54,9 @@ export class AssemblyAnalyzer {
     const stageSummaries = this.buildStageSummaries(targetReader);
     const stageUsage = this.buildStageUsage(stageSummaries, stackSummaries);
 
-    const assetExtensions = this.collectAssetExtensions(stacks);
-
     return {
       metadata: this.buildMetadata(options, targetReader.directory),
       app: {
-        language: detectLanguage({
-          manifest,
-          assetFileExtensions: assetExtensions,
-        }),
         stageUsage,
         stages: stageSummaries,
         stacks: stackSummaries,
@@ -159,27 +151,6 @@ export class AssemblyAnalyzer {
       dependencies: stack.dependencies,
       usesAssets,
     };
-  }
-
-  private collectAssetExtensions(stacks: StackManifest[]): string[] {
-    const extensions = new Set<string>();
-    for (const stack of stacks) {
-      for (const template of Object.values(stack.stacks)) {
-        for (const resource of Object.values(template.Resources ?? {})) {
-          const metadata = resource.Metadata ?? {};
-          const assetPath = metadata['aws:asset:path'];
-          if (typeof assetPath !== 'string') {
-            continue;
-          }
-          const ext = path.extname(assetPath);
-          if (!ext) {
-            continue;
-          }
-          extensions.add(ext.toLowerCase());
-        }
-      }
-    }
-    return Array.from(extensions);
   }
 
   private createEmptyAssetSummary(): AssetUsageSummary {

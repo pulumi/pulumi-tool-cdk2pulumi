@@ -381,7 +381,6 @@ function createMockAnalysisReport() {
       assemblyDirectory: '/tmp/cdk.out',
     },
     app: {
-      language: { language: 'unknown', confidence: 'low', signals: [] },
       stageUsage: { usesStages: false, stageCount: 0, stackCount: 0 },
       stages: [],
       stacks: [],
