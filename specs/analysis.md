@@ -19,11 +19,10 @@ Introduce a new CLI command that inspects an AWS CDK Cloud Assembly (the same `c
   - L1 resources: `fqn` starting with `aws-cdk-lib.aws_xyz.Cfn*` and/or attributes containing `aws:cdk:cloudformation:type`.
   - Custom resources: `aws-cdk-lib.CustomResource`, `aws-cdk-lib.CfnResource` with `Type` starting `Custom::`, or metadata `aws:cdk:is-custom-resource-handler-customResourceProvider`.
   - Assets: look at template resource Metadata `aws:asset:path` / asset manifests.
-- Determine language from manifest `runtime.libraries` heuristics (e.g., `typescript` dependency presence). If unavailable, fall back to extension inference using asset metadata or CLI flag? Document limitations.
+
 
 ## Desired Report Sections
 1. **App Summary**
-   - Detected language + heuristics/uncertainty.
    - Whether stages are used (presence of `cdk:cloud-assembly` artifacts, Stage constructs in tree).
    - Stages list with contained stacks.
    - Stacks existing without stages.
@@ -68,22 +67,19 @@ Introduce a new CLI command that inspects an AWS CDK Cloud Assembly (the same `c
   - Utility functions for language detection, construct classification, environment parsing.
 - [x] Define JSON schema / TypeScript interfaces for the report and document them.
 
-### 2. Language Detection Heuristics
-- [x] Inspect `manifest.runtime?.libraries` for `typescript`, `ts-node`, `jsii`, `aws-cdk-lib` dependencies to infer language.
-- [x] Fallback: scan asset entries/metadata for `.ts`, `.py`, `.cs` patterns.
-- [x] Surface `confidence` or `notes` describing detection reliability.
 
-### 3. Stage & Stack Enumeration
+
+### 2. Stage & Stack Enumeration
 - [x] Use `AssemblyManifestReader` to list stacks and nested assemblies.
 - [x] For each nested assembly, load corresponding manifest by reusing `loadNestedAssembly`.
 - [x] Build hierarchical summary: `stage -> stacks -> nested stacks`.
 - [x] Flag apps without stages (single root assembly) vs multi-stage.
 
-### 4. Environment Extraction
+### 3. Environment Extraction
 - [x] Parse `artifact.environment` (`aws://ACCOUNT/REGION`) for each stack; normalize missing account/region.
 - [x] Provide summary table of all unique environments.
 
-### 5. Construct Tree Analysis
+### 4. Construct Tree Analysis
 - [x] Traverse `tree.json` starting at the relevant stage root.
 - [x] For `aws-cdk-lib` nodes: record once and skip traversing children unless flagged (e.g., assets/custom resource handling).
 - [x] For `constructs.Construct` nodes: capture child nodes (one level) to represent custom constructs.
@@ -96,36 +92,36 @@ Introduce a new CLI command that inspects an AWS CDK Cloud Assembly (the same `c
     - `thirdParty`.
 - [x] Detect CDK Pipelines by scanning for `aws-cdk-lib.pipelines.*` FQNs or stage artifacts with pipeline stacks; record pipeline stage names, synth/deploy stacks, etc.
 
-### 6. Resource Inventory
+### 5. Resource Inventory
 - [x] Iterate stack templates (including nested stacks) to gather `Type`, `LogicalId`, and stack path.
 - [x] Track counts and map of `AWS::Service::Resource` → list of occurrences.
 - [ ] Determine which resources rely on assets by checking metadata `aws:asset:*` or references to asset manifest entries (metadata coverage implemented; asset manifest correlation pending).
 
-### 7. Custom Resource Details
+### 6. Custom Resource Details
 - [ ] Identify resources where `Type` starts with `Custom::` or `AWS::CloudFormation::CustomResource`.
 - [ ] Record service token sources (logical IDs, references).
 - [ ] Trace back to Lambda handlers (via `Fn::GetAtt` target) to capture runtime, handler, code location, and associated assets (`assetPath` metadata).
 - [ ] Group resources by custom resource type.
 
-### 8. Asset Usage
+### 7. Asset Usage
 - [ ] Use asset manifest data plus template metadata to list file/docker assets.
 - [ ] Highlight stacks/constructs referencing assets.
 - [ ] Flag Lambda functions or custom resources packaged as assets (so migration can plan asset handling).
 
-### 9. CLI Integration
+### 8. CLI Integration
 - [x] Extend `src/cli/cli-runner.ts` to support an `analyze` subcommand (or new entry file if cleaner).
 - [x] Wire CLI options and ensure compatibility with existing `npm bin`.
 - [x] Choose output format (default JSON) and pretty-print.
 
-### 10. Testing
-- [ ] Unit tests for analyzer helpers (language detection, construct classification, pipeline detection).
+### 9. Testing
+- [ ] Unit tests for analyzer helpers (construct classification, pipeline detection).
 - [ ] Golden snapshot tests using fixtures (`cdk.out/`, `cdk-with-stages.out/`) verifying report contents.
 - [ ] CLI integration tests invoking `cdk-to-pulumi analyze` to ensure output generation.
 
-### 11. Documentation & Spec Updates
+### 10. Documentation & Spec Updates
 - [ ] Update `spec.md` + `AGENTS.md` to reference the analyzer work and cross-link with this spec.
 - [ ] Document CLI usage in `README.md`.
-- [ ] Note limitations (language detection uncertainty, unsupported macros, etc.).
+- [ ] Note limitations (unsupported macros, etc.).
 
 ## Open Questions / Follow-Ups
 1. Should the analyzer produce both high-level summary and raw details (maybe two sections) to keep LLM prompts smaller?
