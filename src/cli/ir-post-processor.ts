@@ -329,12 +329,13 @@ function mergeInlinePoliciesIntoRole(
   }
 
   // Merge the inline policies into the role's props
-  const existingPolicies = resource.props?.Policies || [];
+  // Note: CloudFormation uses PascalCase (Policies), but Pulumi uses camelCase (policies)
+  const existingPolicies = resource.props?.policies || [];
   const newPolicies = [
     ...(Array.isArray(existingPolicies) ? existingPolicies : []),
     ...policiesToMerge.map((p) => ({
-      PolicyName: p.name,
-      PolicyDocument: p.document,
+      policyName: p.name,
+      policyDocument: p.document,
     })),
   ];
 
@@ -342,7 +343,7 @@ function mergeInlinePoliciesIntoRole(
     ...resource,
     props: {
       ...resource.props,
-      Policies: newPolicies,
+      policies: newPolicies,
     },
   };
 }

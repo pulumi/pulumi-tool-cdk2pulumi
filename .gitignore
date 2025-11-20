@@ -49,4 +49,6 @@ junit.xml
 !/.eslintrc.json
 !AGENTS.md
 primary-identifiers.json
+Pulumi.yaml
+Pulumi.yaml.report.json
 !/.projenrc.ts
