@@ -1,0 +1,478 @@
+{
+  "AWS::ApiGatewayV2::Stage": {
+    "importDoc": "to import `aws_apigatewayv2_stage` using the API identifier and stage name.//{  to = aws_apigatewayv2_stage.example  id = \"aabbccddee/example-stage\"}",
+    "awsType": "aws:apigatewayv2/stage:Stage"
+  },
+  "AWS::AppMesh::GatewayRoute": {
+    "importDoc": "to import App Mesh gateway routes using `mesh_name` and `virtual_gateway_name` together with the gateway route's `name`.//{  to = aws_appmesh_gateway_route.example  id = \"mesh/gw1/example-gateway-route\"}",
+    "awsType": "aws:appmesh/gatewayRoute:GatewayRoute"
+  },
+  "AWS::AppMesh::Mesh": {
+    "importDoc": "to import App Mesh service meshes using the `mesh_name`.//{  to = aws_appmesh_mesh.simple  id = \"simpleapp\"}",
+    "awsType": "aws:appmesh/mesh:Mesh"
+  },
+  "AWS::AppMesh::Route": {
+    "importDoc": "to import App Mesh virtual routes using `mesh_name` and `virtual_router_name` together with the route's `name`.//{  to = aws_appmesh_route.serviceb  id = \"simpleapp/serviceB/serviceB-route\"}",
+    "awsType": "aws:appmesh/route:Route"
+  },
+  "AWS::AppMesh::VirtualGateway": {
+    "importDoc": "to import App Mesh virtual gateway using `mesh_name` together with the virtual gateway's `name`.//{  to = aws_appmesh_virtual_gateway.example  id = \"mesh/gw1\"}",
+    "awsType": "aws:appmesh/virtualGateway:VirtualGateway"
+  },
+  "AWS::AppMesh::VirtualNode": {
+    "importDoc": "to import App Mesh virtual nodes using `mesh_name` together with the virtual node's `name`.//{  to = aws_appmesh_virtual_node.serviceb1  id = \"simpleapp/serviceBv1\"}",
+    "awsType": "aws:appmesh/virtualNode:VirtualNode"
+  },
+  "AWS::AppMesh::VirtualRouter": {
+    "importDoc": "to import App Mesh virtual routers using `mesh_name` together with the virtual router's `name`.//{  to = aws_appmesh_virtual_router.serviceb  id = \"simpleapp/serviceB\"}",
+    "awsType": "aws:appmesh/virtualRouter:VirtualRouter"
+  },
+  "AWS::AppMesh::VirtualService": {
+    "importDoc": "to import App Mesh virtual services using `mesh_name` together with the virtual service's `name`.//{  to = aws_appmesh_virtual_service.servicea  id = \"simpleapp/servicea.simpleapp.local\"}",
+    "awsType": "aws:appmesh/virtualService:VirtualService"
+  },
+  "AWS::AppStream::Fleet": {
+    "importDoc": "to import `aws_appstream_fleet` using the id.//{  to = aws_appstream_fleet.example  id = \"fleetNameExample\"}",
+    "awsType": "aws:appstream/fleet:Fleet"
+  },
+  "AWS::AppStream::Stack": {
+    "importDoc": "to import `aws_appstream_stack` using the id.//{  to = aws_appstream_stack.example  id = \"stackID\"}",
+    "awsType": "aws:appstream/stack:Stack"
+  },
+  "AWS::AppStream::User": {
+    "importDoc": "to import `aws_appstream_user` using the `user_name` and `authentication_type` separated by a slash (`/`).//{  to = aws_appstream_user.example  id = \"UserName/AuthenticationType\"}",
+    "awsType": "aws:appstream/user:User"
+  },
+  "AWS::AppSync::ApiCache": {
+    "importDoc": "to import `aws_appsync_api_cache` using the AppSync API ID.//{  to = aws_appsync_api_cache.example  id = \"xxxxx\"}",
+    "awsType": "aws:appsync/apiCache:ApiCache"
+  },
+  "AWS::AppSync::ApiKey": {
+    "importDoc": "to import `aws_appsync_api_key` using the AppSync API ID and key separated by `:`.//{  to = aws_appsync_api_key.example  id = \"xxxxx:yyyyy\"}",
+    "awsType": "aws:appsync/apiKey:ApiKey"
+  },
+  "AWS::AutoScalingPlans::ScalingPlan": {
+    "importDoc": "to import Auto Scaling scaling plans using the `name`.//{  to = aws_autoscalingplans_scaling_plan.example  id = \"MyScale1\"}",
+    "awsType": "aws:autoscalingplans/scalingPlan:ScalingPlan"
+  },
+  "AWS::BCMDataExports::Export": {
+    "importDoc": "to import BCM Data Exports Export using the export ARN.//{  to = aws_bcmdataexports_export.example  id = \"arn:aws:bcm-data-exports:us-east-1:123456789012:export/CostUsageReport-9f1c75f3-f982-4d9a-b936-1e7ecab814b7\"}",
+    "awsType": "aws:bcmdataexports/export:Export"
+  },
+  "AWS::Budgets::Budget": {
+    "importDoc": "to import budgets using `AccountID:BudgetName`.//{  to = aws_budgets_budget.myBudget  id = \"123456789012:myBudget\"}",
+    "awsType": "aws:budgets/budget:Budget"
+  },
+  "AWS::CUR::ReportDefinition": {
+    "importDoc": "to import Report Definitions using the `report_name`.//{  to = aws_cur_report_definition.example_cur_report_definition  id = \"example-cur-report-definition\"}",
+    "awsType": "aws:cur/reportDefinition:ReportDefinition"
+  },
+  "AWS::CodeBuild::Project": {
+    "importDoc": "toimport CodeBuild Project using the `name`.//{  to = aws_codebuild_project.name  id = \"project-name\"}",
+    "awsType": "aws:codebuild/project:Project"
+  },
+  "AWS::CodeBuild::ReportGroup": {
+    "importDoc": "to import CodeBuild Report Group using the CodeBuild Report Group arn.//{  to = aws_codebuild_report_group.example  id = \"arn:aws:codebuild:us-west-2:123456789:report-group/report-group-name\"}",
+    "awsType": "aws:codebuild/reportGroup:ReportGroup"
+  },
+  "AWS::CodeBuild::SourceCredential": {
+    "importDoc": "toimport CodeBuild Source Credential using the CodeBuild Source Credential arn.//{  to = aws_codebuild_source_credential.example  id = \"arn:aws:codebuild:us-west-2:123456789:token:github\"}",
+    "awsType": "aws:codebuild/sourceCredential:SourceCredential"
+  },
+  "AWS::CodeCommit::Repository": {
+    "importDoc": "to import CodeCommit repository using repository name.//{  to = aws_codecommit_repository.imported  id = \"ExistingRepo\"}",
+    "awsType": "aws:codecommit/repository:Repository"
+  },
+  "AWS::CodeDeploy::DeploymentGroup": {
+    "importDoc": "to import CodeDeploy Deployment Groups using `app_name`, a colon, and `deployment_group_name`.//{  to = aws_codedeploy_deployment_group.example  id = \"my-application:my-deployment-group\"}",
+    "awsType": "aws:codedeploy/deploymentGroup:DeploymentGroup"
+  },
+  "AWS::Config::ConfigurationRecorder": {
+    "importDoc": "to import Configuration Recorder using the name.//{  to = aws_config_configuration_recorder.foo  id = \"example\"}",
+    "awsType": "aws:config/configurationRecorder:ConfigurationRecorder"
+  },
+  "AWS::Config::DeliveryChannel": {
+    "importDoc": "to import Delivery Channel using the name.//{  to = aws_config_delivery_channel.foo  id = \"example\"}",
+    "awsType": "aws:config/deliveryChannel:DeliveryChannel"
+  },
+  "AWS::Config::RemediationConfiguration": {
+    "importDoc": "to import Remediation Configurations using the name config_rule_name.//{  to = aws_config_remediation_configuration.this  id = \"example\"}",
+    "awsType": "aws:config/remediationConfiguration:RemediationConfiguration"
+  },
+  "AWS::DAX::Cluster": {
+    "importDoc": "to import DAX Clusters using the `cluster_name`.//{  to = aws_dax_cluster.my_cluster  id = \"my_cluster\"}",
+    "awsType": "aws:dax/cluster:Cluster"
+  },
+  "AWS::DAX::ParameterGroup": {
+    "importDoc": "to import DAX Parameter Group using the `name`.//{  to = aws_dax_parameter_group.example  id = \"my_dax_pg\"}",
+    "awsType": "aws:dax/parameterGroup:ParameterGroup"
+  },
+  "AWS::DAX::SubnetGroup": {
+    "importDoc": "to import DAX Subnet Group using the `name`.//{  to = aws_dax_subnet_group.example  id = \"my_dax_sg\"}",
+    "awsType": "aws:dax/subnetGroup:SubnetGroup"
+  },
+  "AWS::DLM::LifecyclePolicy": {
+    "importDoc": "to import DLM lifecycle policies using their policy ID.//{  to = aws_dlm_lifecycle_policy.example  id = \"policy-abcdef12345678901\"}",
+    "awsType": "aws:dlm/lifecyclePolicy:LifecyclePolicy"
+  },
+  "AWS::DMS::Certificate": {
+    "importDoc": "to import certificates using the `certificate_id`.//{  to = aws_dms_certificate.test  id = \"test-dms-certificate-tf\"}",
+    "awsType": "aws:dms/certificate:Certificate"
+  },
+  "AWS::DMS::Endpoint": {
+    "importDoc": "to import endpoints using the `endpoint_id`.//{  to = aws_dms_endpoint.test  id = \"test-dms-endpoint-tf\"}",
+    "awsType": "aws:dms/endpoint:Endpoint"
+  },
+  "AWS::DMS::EventSubscription": {
+    "importDoc": "to import event subscriptions using the `name`.//{  to = aws_dms_event_subscription.test  id = \"my-awesome-event-subscription\"}",
+    "awsType": "aws:dms/eventSubscription:EventSubscription"
+  },
+  "AWS::DMS::ReplicationInstance": {
+    "importDoc": "to import replication instances using the `replication_instance_id`.//{  to = aws_dms_replication_instance.test  id = \"test-dms-replication-instance-tf\"}",
+    "awsType": "aws:dms/replicationInstance:ReplicationInstance"
+  },
+  "AWS::DMS::ReplicationSubnetGroup": {
+    "importDoc": "to import replication subnet groups using the `replication_subnet_group_id`.//{  to = aws_dms_replication_subnet_group.test  id = \"test-dms-replication-subnet-group-tf\"}",
+    "awsType": "aws:dms/replicationSubnetGroup:ReplicationSubnetGroup"
+  },
+  "AWS::DMS::ReplicationTask": {
+    "importDoc": "to import replication tasks using the `replication_task_id`.//{  to = aws_dms_replication_task.test  id = \"test-dms-replication-task-tf\"}",
+    "awsType": "aws:dms/replicationTask:ReplicationTask"
+  },
+  "AWS::DocDB::EventSubscription": {
+    "importDoc": "to import DocumentDB Event Subscriptions using the `name`.//{  to = aws_docdb_event_subscription.example  id = \"event-sub\"}",
+    "awsType": "aws:docdb/eventSubscription:EventSubscription"
+  },
+  "AWS::EC2::ClientVpnAuthorizationRule": {
+    "importDoc": "to import AWS Client VPN authorization rules using the endpoint ID and target network CIDR. If there is a specific group name, include that also. All values are separated by a `,`.Using the endpoint ID and target network CIDR://{  to = aws_ec2_client_vpn_authorization_rule.example  id = \"cvpn-endpoint-0ac3a1abbccddd666,10.1.0.0/24\"}",
+    "awsType": "aws:ec2/clientVpnAuthorizationRule:ClientVpnAuthorizationRule"
+  },
+  "AWS::EC2::ClientVpnEndpoint": {
+    "importDoc": "to import AWS Client VPN endpoints using the `id` value found via `aws ec2 describe-client-vpn-endpoints`.//{  to = aws_ec2_client_vpn_endpoint.example  id = \"cvpn-endpoint-0ac3a1abbccddd666\"}",
+    "awsType": "aws:ec2/clientVpnEndpoint:ClientVpnEndpoint"
+  },
+  "AWS::EC2::ClientVpnRoute": {
+    "importDoc": "to import AWS Client VPN routes using the endpoint ID, target subnet ID, and destination CIDR block. All values are separated by a `,`.//{  to = aws_ec2_client_vpn_route.example  id = \"cvpn-endpoint-1234567890abcdef,subnet-9876543210fedcba,10.1.0.0/24\"}",
+    "awsType": "aws:ec2/clientVpnRoute:ClientVpnRoute"
+  },
+  "AWS::EMR::Cluster": {
+    "importDoc": "to import EMR clusters using the `id`.//{  to = aws_emr_cluster.cluster  id = \"j-123456ABCDEF\"}",
+    "awsType": "aws:emr/cluster:Cluster"
+  },
+  "AWS::ElastiCache::ReplicationGroup": {
+    "importDoc": "to import ElastiCache Replication Groups using the `replication_group_id`.//{  to = aws_elasticache_replication_group.my_replication_group  id = \"replication-group-1\"}",
+    "awsType": "aws:elasticache/replicationGroup:ReplicationGroup"
+  },
+  "AWS::Elasticsearch::Domain": {
+    "importDoc": "to import Elasticsearch domains using the `domain_name`.//{  to = aws_elasticsearch_domain.example  id = \"domain_name\"}",
+    "awsType": "aws:elasticsearch/domain:Domain"
+  },
+  "AWS::Glue::Classifier": {
+    "importDoc": "to import Glue Classifiers using their name.//{  to = aws_glue_classifier.MyClassifier  id = \"MyClassifier\"}",
+    "awsType": "aws:glue/classifier:Classifier"
+  },
+  "AWS::Glue::Connection": {
+    "importDoc": "to import Glue Connections using the `CATALOG-ID` (AWS account ID if not custom) and `NAME`.//{  to = aws_glue_connection.MyConnection  id = \"123456789012:MyConnection\"}",
+    "awsType": "aws:glue/connection:Connection"
+  },
+  "AWS::Glue::DataCatalogEncryptionSettings": {
+    "importDoc": "to import Glue Data Catalog Encryption Settings using `CATALOG-ID` (AWS account ID if not custom).//{  to = aws_glue_data_catalog_encryption_settings.example  id = \"123456789012\"}",
+    "awsType": "aws:glue/dataCatalogEncryptionSettings:DataCatalogEncryptionSettings"
+  },
+  "AWS::Glue::DataQualityRuleset": {
+    "importDoc": "to import Glue Data Quality Ruleset using the `name`.//{  to = aws_glue_data_quality_ruleset.example  id = \"exampleName\"}",
+    "awsType": "aws:glue/dataQualityRuleset:DataQualityRuleset"
+  },
+  "AWS::Glue::DevEndpoint": {
+    "importDoc": "to import a Glue Development Endpoint using the `name`.//{  to = aws_glue_dev_endpoint.example  id = \"foo\"}",
+    "awsType": "aws:glue/devEndpoint:DevEndpoint"
+  },
+  "AWS::Glue::MLTransform": {
+    "importDoc": "to import Glue ML Transforms using `id`.//{  to = aws_glue_ml_transform.example  id = \"tfm-c2cafbe83b1c575f49eaca9939220e2fcd58e2d5\"}",
+    "awsType": "aws:glue/mlTransform:MlTransform"
+  },
+  "AWS::Glue::Partition": {
+    "importDoc": "to import Glue Partitions using the catalog ID (usually AWS account ID), database name, table name and partition values.//{  to = aws_glue_partition.part  id = \"123456789012:MyDatabase:MyTable:val1#val2\"}",
+    "awsType": "aws:glue/partition:Partition"
+  },
+  "AWS::Glue::SecurityConfiguration": {
+    "importDoc": "to import Glue Security Configurations using `name`.//{  to = aws_glue_security_configuration.example  id = \"example\"}",
+    "awsType": "aws:glue/securityConfiguration:SecurityConfiguration"
+  },
+  "AWS::Glue::Workflow": {
+    "importDoc": "to import Glue Workflows using `name`.//{  to = aws_glue_workflow.MyWorkflow  id = \"MyWorkflow\"}",
+    "awsType": "aws:glue/workflow:Workflow"
+  },
+  "AWS::IAM::AccessKey": {
+    "importDoc": "to import IAM Access Keys using the identifier.//{  to = aws_iam_access_key.example  id = \"AKIA1234567890\"}",
+    "awsType": "aws:iam/accessKey:AccessKey"
+  },
+  "AWS::IAM::Policy": {
+    "importDoc": "to import IAM Policies using the `arn`.//{  to = aws_iam_policy.administrator  id = \"arn:aws:iam::123456789012:policy/UsersManageOwnCredentials\"}",
+    "awsType": "aws:iam/policy:Policy"
+  },
+  "AWS::Lightsail::Distribution": {
+    "importDoc": "to import Lightsail Distribution using the `id`.//{  to = aws_lightsail_distribution.example  id = \"rft-8012925589\"}",
+    "awsType": "aws:lightsail/distribution:Distribution"
+  },
+  "AWS::MediaLive::Channel": {
+    "importDoc": "to import MediaLive Channel using the `channel_id`.//{  to = aws_medialive_channel.example  id = \"1234567\"}",
+    "awsType": "aws:medialive/channel:Channel"
+  },
+  "AWS::MediaLive::Input": {
+    "importDoc": "to import MediaLive Input using the `id`.//{  to = aws_medialive_input.example  id = \"12345678\"}",
+    "awsType": "aws:medialive/input:Input"
+  },
+  "AWS::MediaLive::InputSecurityGroup": {
+    "importDoc": "to import MediaLive InputSecurityGroup using the `id`.//{  to = aws_medialive_input_security_group.example  id = \"123456\"}",
+    "awsType": "aws:medialive/inputSecurityGroup:InputSecurityGroup"
+  },
+  "AWS::Pinpoint::ADMChannel": {
+    "importDoc": "to import Pinpoint ADM Channel using the `application-id`.//{  to = aws_pinpoint_adm_channel.channel  id = \"application-id\"}",
+    "awsType": "aws:pinpoint/admChannel:AdmChannel"
+  },
+  "AWS::Pinpoint::APNSChannel": {
+    "importDoc": "to import Pinpoint APNs Channel using the `application-id`.//{  to = aws_pinpoint_apns_channel.apns  id = \"application-id\"}",
+    "awsType": "aws:pinpoint/apnsChannel:ApnsChannel"
+  },
+  "AWS::Pinpoint::APNSSandboxChannel": {
+    "importDoc": "to import Pinpoint APNs Sandbox Channel using the `application-id`.//{  to = aws_pinpoint_apns_sandbox_channel.apns_sandbox  id = \"application-id\"}",
+    "awsType": "aws:pinpoint/apnsSandboxChannel:ApnsSandboxChannel"
+  },
+  "AWS::Pinpoint::APNSVoipChannel": {
+    "importDoc": "to import Pinpoint APNs VoIP Channel using the `application-id`.//{  to = aws_pinpoint_apns_voip_channel.apns_voip  id = \"application-id\"}",
+    "awsType": "aws:pinpoint/apnsVoipChannel:ApnsVoipChannel"
+  },
+  "AWS::Pinpoint::APNSVoipSandboxChannel": {
+    "importDoc": "to import Pinpoint APNs VoIP Sandbox Channel using the `application-id`.//{  to = aws_pinpoint_apns_voip_sandbox_channel.apns_voip_sandbox  id = \"application-id\"}",
+    "awsType": "aws:pinpoint/apnsVoipSandboxChannel:ApnsVoipSandboxChannel"
+  },
+  "AWS::Pinpoint::App": {
+    "importDoc": "to import Pinpoint App using the `application-id`.//{  to = aws_pinpoint_app.name  id = \"application-id\"}",
+    "awsType": "aws:pinpoint/app:App"
+  },
+  "AWS::Pinpoint::BaiduChannel": {
+    "importDoc": "to import Pinpoint Baidu Channel using the `application-id`.//{  to = aws_pinpoint_baidu_channel.channel  id = \"application-id\"}",
+    "awsType": "aws:pinpoint/baiduChannel:BaiduChannel"
+  },
+  "AWS::Pinpoint::EmailChannel": {
+    "importDoc": "to import Pinpoint Email Channel using the `application-id`.//{  to = aws_pinpoint_email_channel.email  id = \"application-id\"}",
+    "awsType": "aws:pinpoint/emailChannel:EmailChannel"
+  },
+  "AWS::Pinpoint::EventStream": {
+    "importDoc": "to import Pinpoint Event Stream using the `application-id`.//{  to = aws_pinpoint_event_stream.stream  id = \"application-id\"}",
+    "awsType": "aws:pinpoint/eventStream:EventStream"
+  },
+  "AWS::Pinpoint::GCMChannel": {
+    "importDoc": "to import Pinpoint GCM Channel using the `application-id`.//{  to = aws_pinpoint_gcm_channel.gcm  id = \"application-id\"}",
+    "awsType": "aws:pinpoint/gcmChannel:GcmChannel"
+  },
+  "AWS::Pinpoint::SMSChannel": {
+    "importDoc": "to import the Pinpoint SMS Channel using the `application_id`.//{  to = aws_pinpoint_sms_channel.sms  id = \"application-id\"}",
+    "awsType": "aws:pinpoint/smsChannel:SmsChannel"
+  },
+  "AWS::QLDB::Ledger": {
+    "importDoc": "to import QLDB Ledgers using the `name`.//{  to = aws_qldb_ledger.sample-ledger  id = \"sample-ledger\"}",
+    "awsType": "aws:qldb/ledger:Ledger"
+  },
+  "AWS::SES::ReceiptFilter": {
+    "importDoc": "to import SES Receipt Filter using their `name`.//{  to = aws_ses_receipt_filter.test  id = \"some-filter\"}",
+    "awsType": "aws:ses/receiptFilter:ReceiptFilter"
+  },
+  "AWS::SES::ReceiptRule": {
+    "importDoc": "to import SES receipt rules using the ruleset name and rule name separated by `:`.//{  to = aws_ses_receipt_rule.my_rule  id = \"my_rule_set:my_rule\"}",
+    "awsType": "aws:ses/receiptRule:ReceiptRule"
+  },
+  "AWS::SES::ReceiptRuleSet": {
+    "importDoc": "to import SES receipt rule sets using the rule set name.//{  to = aws_ses_receipt_rule_set.my_rule_set  id = \"my_rule_set_name\"}",
+    "awsType": "aws:ses/receiptRuleSet:ReceiptRuleSet"
+  },
+  "AWS::SQS::QueuePolicy": {
+    "importDoc": "to import SQS Queue Policies using the queue URL.//{  to = aws_sqs_queue_policy.test  id = \"https://queue.amazonaws.com/123456789012/myqueue\"}",
+    "awsType": "aws:sqs/queuePolicy:QueuePolicy"
+  },
+  "AWS::SSM::MaintenanceWindow": {
+    "importDoc": "to import SSM  Maintenance Windows using the maintenance window `id`.//{  to = aws_ssm_maintenance_window.imported-window  id = \"mw-0123456789\"}",
+    "awsType": "aws:ssm/maintenanceWindow:MaintenanceWindow"
+  },
+  "AWS::SSM::MaintenanceWindowTarget": {
+    "importDoc": "to import SSM Maintenance Window targets using `WINDOW_ID/WINDOW_TARGET_ID`.//{  to = aws_ssm_maintenance_window_target.example  id = \"mw-0c50858d01EXAMPLE/23639a0b-ddbc-4bca-9e72-78d96EXAMPLE\"}",
+    "awsType": "aws:ssm/maintenanceWindowTarget:MaintenanceWindowTarget"
+  },
+  "AWS::SSM::MaintenanceWindowTask": {
+    "importDoc": "to import AWS Maintenance Window Task using the `window_id` and `window_task_id` separated by `/`.//{  to = aws_ssm_maintenance_window_task.task  id = \"<window_id>/<window_task_id>\"}",
+    "awsType": "aws:ssm/maintenanceWindowTask:MaintenanceWindowTask"
+  },
+  "AWS::SageMaker::CodeRepository": {
+    "importDoc": "to import SageMaker AI Code Repositories using the `name`.//{  to = aws_sagemaker_code_repository.test_code_repository  id = \"my-code-repo\"}",
+    "awsType": "aws:sagemaker/codeRepository:CodeRepository"
+  },
+  "AWS::SageMaker::Model": {
+    "importDoc": "to import models using the `name`.//{  to = aws_sagemaker_model.test_model  id = \"model-foo\"}",
+    "awsType": "aws:sagemaker/model:Model"
+  },
+  "AWS::SageMaker::NotebookInstance": {
+    "importDoc": "to import SageMaker AI Notebook Instances using the `name`.//{  to = aws_sagemaker_notebook_instance.test_notebook_instance  id = \"my-notebook-instance\"}",
+    "awsType": "aws:sagemaker/notebookInstance:NotebookInstance"
+  },
+  "AWS::SageMaker::Workteam": {
+    "importDoc": "to import SageMaker AI Workteams using the `workteam_name`.//{  to = aws_sagemaker_workteam.example  id = \"example\"}",
+    "awsType": "aws:sagemaker/workteam:Workteam"
+  },
+  "AWS::ServiceCatalog::Portfolio": {
+    "importDoc": "to import Service Catalog Portfolios using the Service Catalog Portfolio `id`.//{  to = aws_servicecatalog_portfolio.testfolio  id = \"port-12344321\"}",
+    "awsType": "aws:servicecatalog/portfolio:Portfolio"
+  },
+  "AWS::WAF::ByteMatchSet": {
+    "importDoc": "to import WAF Byte Match Set using the id.//{  to = aws_waf_byte_match_set.byte_set  id = \"a1b2c3d4-d5f6-7777-8888-9999aaaabbbbcccc\"}",
+    "awsType": "aws:waf/byteMatchSet:ByteMatchSet"
+  },
+  "AWS::WAF::Rule": {
+    "importDoc": "to import WAF rules using the id.//{  to = aws_waf_rule.example  id = \"a1b2c3d4-d5f6-7777-8888-9999aaaabbbbcccc\"}",
+    "awsType": "aws:waf/rule:Rule"
+  },
+  "AWS::WAF::SizeConstraintSet": {
+    "importDoc": "to import AWS WAF Size Constraint Set using their ID.//{  to = aws_waf_size_constraint_set.example  id = \"a1b2c3d4-d5f6-7777-8888-9999aaaabbbbcccc\"}",
+    "awsType": "aws:waf/sizeConstraintSet:SizeConstraintSet"
+  },
+  "AWS::WAF::SqlInjectionMatchSet": {
+    "importDoc": "to import AWS WAF SQL Injection Match Set using their ID.//{  to = aws_waf_sql_injection_match_set.example  id = \"a1b2c3d4-d5f6-7777-8888-9999aaaabbbbcccc\"}",
+    "awsType": "aws:waf/sqlInjectionMatchSet:SqlInjectionMatchSet"
+  },
+  "AWS::WAF::WebACL": {
+    "importDoc": "to import WAF Web ACL using the `id`.//{  to = aws_waf_web_acl.main  id = \"0c8e583e-18f3-4c13-9e2a-67c4805d2f94\"}",
+    "awsType": "aws:waf/webAcl:WebAcl"
+  },
+  "AWS::WAF::XssMatchSet": {
+    "importDoc": "to import WAF XSS Match Set using their ID.//{  to = aws_waf_xss_match_set.example  id = \"a1b2c3d4-d5f6-7777-8888-9999aaaabbbbcccc\"}",
+    "awsType": "aws:waf/xssMatchSet:XssMatchSet"
+  },
+  "AWS::WAFRegional::ByteMatchSet": {
+    "importDoc": "to import WAF Regional Byte Match Set using the id.//{  to = aws_wafregional_byte_match_set.byte_set  id = \"a1b2c3d4-d5f6-7777-8888-9999aaaabbbbcccc\"}",
+    "awsType": "aws:wafregional/byteMatchSet:ByteMatchSet"
+  },
+  "AWS::WAFRegional::GeoMatchSet": {
+    "importDoc": "to import WAF Regional Geo Match Set using the id.//{  to = aws_wafregional_geo_match_set.geo_match_set  id = \"a1b2c3d4-d5f6-7777-8888-9999aaaabbbbcccc\"}",
+    "awsType": "aws:wafregional/geoMatchSet:GeoMatchSet"
+  },
+  "AWS::WAFRegional::RateBasedRule": {
+    "importDoc": "to import WAF Regional Rate Based Rule using the id.//{  to = aws_wafregional_rate_based_rule.wafrule  id = \"a1b2c3d4-d5f6-7777-8888-9999aaaabbbbcccc\"}",
+    "awsType": "aws:wafregional/rateBasedRule:RateBasedRule"
+  },
+  "AWS::WAFRegional::RegexPatternSet": {
+    "importDoc": "to import WAF Regional Regex Pattern Set using the id.//{  to = aws_wafregional_regex_pattern_set.example  id = \"a1b2c3d4-d5f6-7777-8888-9999aaaabbbbcccc\"}",
+    "awsType": "aws:wafregional/regexPatternSet:RegexPatternSet"
+  },
+  "AWS::WAFRegional::Rule": {
+    "importDoc": "to import WAF Regional Rule using the id.//{  to = aws_wafregional_rule.wafrule  id = \"a1b2c3d4-d5f6-7777-8888-9999aaaabbbbcccc\"}",
+    "awsType": "aws:wafregional/rule:Rule"
+  },
+  "AWS::WAFRegional::SizeConstraintSet": {
+    "importDoc": "to import WAF Size Constraint Set using the id.//{  to = aws_wafregional_size_constraint_set.size_constraint_set  id = \"a1b2c3d4-d5f6-7777-8888-9999aaaabbbbcccc\"}",
+    "awsType": "aws:wafregional/sizeConstraintSet:SizeConstraintSet"
+  },
+  "AWS::WAFRegional::SqlInjectionMatchSet": {
+    "importDoc": "to import WAF Regional Sql Injection Match Set using the id.//{  to = aws_wafregional_sql_injection_match_set.sql_injection_match_set  id = \"a1b2c3d4-d5f6-7777-8888-9999aaaabbbbcccc\"}",
+    "awsType": "aws:wafregional/sqlInjectionMatchSet:SqlInjectionMatchSet"
+  },
+  "AWS::WAFRegional::WebACL": {
+    "importDoc": "to import WAF Regional Web ACL using the id.//{  to = aws_wafregional_web_acl.wafacl  id = \"a1b2c3d4-d5f6-7777-8888-9999aaaabbbbcccc\"}",
+    "awsType": "aws:wafregional/webAcl:WebAcl"
+  },
+  "AWS::WAFRegional::WebACLAssociation": {
+    "importDoc": "to import WAF Regional Web ACL Association using their `web_acl_id:resource_arn`.//{  to = aws_wafregional_web_acl_association.foo  id = \"web_acl_id:resource_arn\"}",
+    "awsType": "aws:wafregional/webAclAssociation:WebAclAssociation"
+  },
+  "AWS::WAFRegional::XssMatchSet": {
+    "importDoc": "to import AWS WAF Regional XSS Match using the `id`.//{  to = aws_wafregional_xss_match_set.example  id = \"12345abcde\"}",
+    "awsType": "aws:wafregional/xssMatchSet:XssMatchSet"
+  },
+  "AWS::WorkSpaces::Workspace": {
+    "importDoc": "to import Workspaces using their ID.//{  to = aws_workspaces_workspace.example  id = \"ws-9z9zmbkhv\"}",
+    "awsType": "aws:workspaces/workspace:Workspace"
+  },
+  "AWS::AppStream::StackFleetAssociation": {
+    "importDoc": "## Import\n\nIn Terraform v1.5.0 and later, use an `import` block to import AppStream Stack Fleet Association using the `fleet_name` and `stack_name` separated by a slash (`/`). For example:\n\n```terraform\nimport {\n  to = aws_appstream_fleet_stack_association.example\n  id = \"fleetName/stackName\"\n}\n```\n\nUsing `terraform import`, import AppStream Stack Fleet Association using the `fleet_name` and `stack_name` separated by a slash (`/`). For example:\n\n```console\n% terraform import aws_appstream_fleet_stack_association.example fleetName/stackName\n```",
+    "awsType": "aws:appstream/fleetStackAssociation:FleetStackAssociation"
+  },
+  "AWS::AppStream::StackUserAssociation": {
+    "importDoc": "## Import\n\nIn Terraform v1.5.0 and later, use an `import` block to import AppStream User Stack Association using the `user_name`, `authentication_type`, and `stack_name`, separated by a slash (`/`). For example:\n\n```terraform\nimport {\n  to = aws_appstream_user_stack_association.example\n  id = \"userName/auhtenticationType/stackName\"\n}\n```\n\nUsing `terraform import`, import AppStream User Stack Association using the `user_name`, `authentication_type`, and `stack_name`, separated by a slash (`/`). For example:\n\n```console\n% terraform import aws_appstream_user_stack_association.example userName/auhtenticationType/stackName\n```",
+    "awsType": "aws:appstream/userStackAssociation:UserStackAssociation"
+  },
+  "AWS::CertificateManager::Certificate": {
+    "importDoc": "## Import\n\nIn Terraform v1.12.0 and later, the `import` block can be used with the `identity` attribute. For example:\n\n```terraform\nimport {\n  to = aws_acm_certificate.example\n  identity = {\n    \"arn\" = \"arn:aws:acm:eu-central-1:123456789012:certificate/7e7a28d2-163f-4b8f-b9cd-822f96c08d6a\"\n  }\n}\n\nresource \"aws_acm_certificate\" \"example\" {\n  ### Configuration omitted for brevity ###\n}\n```\n\n### Identity Schema\n\n#### Required\n\n- `arn` (String) ARN of the certificate.\n\nIn Terraform v1.5.0 and later, use an `import` block to import certificates using their ARN. For example:\n\n```terraform\nimport {\n  to = aws_acm_certificate.example\n  id = \"arn:aws:acm:eu-central-1:123456789012:certificate/7e7a28d2-163f-4b8f-b9cd-822f96c08d6a\"\n}\n```\n\nUsing `terraform import`, import certificates using their ARN. For example:\n\n```console\n% terraform import aws_acm_certificate.example arn:aws:acm:eu-central-1:123456789012:certificate/7e7a28d2-163f-4b8f-b9cd-822f96c08d6a\n```",
+    "awsType": "aws:acm/certificate:Certificate"
+  },
+  "AWS::DocDB::DBCluster": {
+    "importDoc": "## Import\n\nIn Terraform v1.5.0 and later, use an `import` block to import DocumentDB Clusters using the `cluster_identifier`. For example:\n\n```terraform\nimport {\n  to = aws_docdb_cluster.docdb_cluster\n  id = \"docdb-prod-cluster\"\n}\n```\n\nUsing `terraform import`, import DocumentDB Clusters using the `cluster_identifier`. For example:\n\n```console\n% terraform import aws_docdb_cluster.docdb_cluster docdb-prod-cluster\n```",
+    "awsType": "aws:docdb/cluster:Cluster"
+  },
+  "AWS::DocDB::DBClusterParameterGroup": {
+    "importDoc": "## Import\n\nIn Terraform v1.5.0 and later, use an `import` block to import DocumentDB Cluster Parameter Groups using the `name`. For example:\n\n```terraform\nimport {\n  to = aws_docdb_cluster_parameter_group.cluster_pg\n  id = \"production-pg-1\"\n}\n```\n\nUsing `terraform import`, import DocumentDB Cluster Parameter Groups using the `name`. For example:\n\n```console\n% terraform import aws_docdb_cluster_parameter_group.cluster_pg production-pg-1\n```",
+    "awsType": "aws:docdb/clusterParameterGroup:ClusterParameterGroup"
+  },
+  "AWS::DocDB::DBInstance": {
+    "importDoc": "## Import\n\nIn Terraform v1.5.0 and later, use an `import` block to import DocumentDB Cluster Instances using the `identifier`. For example:\n\n```terraform\nimport {\n  to = aws_docdb_cluster_instance.prod_instance_1\n  id = \"aurora-cluster-instance-1\"\n}\n```\n\nUsing `terraform import`, import DocumentDB Cluster Instances using the `identifier`. For example:\n\n```console\n% terraform import aws_docdb_cluster_instance.prod_instance_1 aurora-cluster-instance-1\n```",
+    "awsType": "aws:docdb/clusterInstance:ClusterInstance"
+  },
+  "AWS::DocDB::DBSubnetGroup": {
+    "importDoc": "## Import\n\nIn Terraform v1.5.0 and later, use an `import` block to import DocumentDB Subnet groups using the `name`. For example:\n\n```terraform\nimport {\n  to = aws_docdb_subnet_group.default\n  id = \"production-subnet-group\"\n}\n```\n\nUsing `terraform import`, import DocumentDB Subnet groups using the `name`. For example:\n\n```console\n% terraform import aws_docdb_subnet_group.default production-subnet-group\n```",
+    "awsType": "aws:docdb/subnetGroup:SubnetGroup"
+  },
+  "AWS::ECR::PublicRepository": {
+    "importDoc": "## Import\n\nIn Terraform v1.5.0 and later, use an `import` block to import ECR Public Repositories using the `repository_name`. For example:\n\n```terraform\nimport {\n  to = aws_ecrpublic_repository.example\n  id = \"example\"\n}\n```\n\nUsing `terraform import`, import ECR Public Repositories using the `repository_name`. For example:\n\n```console\n% terraform import aws_ecrpublic_repository.example example\n```",
+    "awsType": "aws:ecrpublic/repository:Repository"
+  },
+  "AWS::EMR::InstanceFleetConfig": {
+    "importDoc": "## Import\n\nIn Terraform v1.5.0 and later, use an `import` block to import EMR Instance Fleet using the EMR Cluster identifier and Instance Fleet identifier separated by a forward slash (`/`). For example:\n\n```terraform\nimport {\n  to = aws_emr_instance_fleet.example\n  id = \"j-123456ABCDEF/if-15EK4O09RZLNR\"\n}\n```\n\nUsing `terraform import`, import EMR Instance Fleet using the EMR Cluster identifier and Instance Fleet identifier separated by a forward slash (`/`). For example:\n\n```console\n% terraform import aws_emr_instance_fleet.example j-123456ABCDEF/if-15EK4O09RZLNR\n```",
+    "awsType": "aws:emr/instanceFleet:InstanceFleet"
+  },
+  "AWS::EMR::InstanceGroupConfig": {
+    "importDoc": "## Import\n\nIn Terraform v1.5.0 and later, use an `import` block to import EMR task instance group using their EMR Cluster id and Instance Group id separated by a forward-slash `/`. For example:\n\n```terraform\nimport {\n  to = aws_emr_instance_group.task_group\n  id = \"j-123456ABCDEF/ig-15EK4O09RZLNR\"\n}\n```\n\nUsing `terraform import`, import EMR task instance group using their EMR Cluster id and Instance Group id separated by a forward-slash `/`. For example:\n\n```console\n% terraform import aws_emr_instance_group.task_group j-123456ABCDEF/ig-15EK4O09RZLNR\n```",
+    "awsType": "aws:emr/instanceGroup:InstanceGroup"
+  },
+  "AWS::ElastiCache::CacheCluster": {
+    "importDoc": "## Import\n\nIn Terraform v1.5.0 and later, use an `import` block to import ElastiCache Clusters using the `cluster_id`. For example:\n\n```terraform\nimport {\n  to = aws_elasticache_cluster.my_cluster\n  id = \"my_cluster\"\n}\n```\n\nUsing `terraform import`, import ElastiCache Clusters using the `cluster_id`. For example:\n\n```console\n% terraform import aws_elasticache_cluster.my_cluster my_cluster\n```",
+    "awsType": "aws:elasticache/cluster:Cluster"
+  },
+  "AWS::FSx::StorageVirtualMachine": {
+    "importDoc": "## Import\n\nIn Terraform v1.5.0 and later, use an `import` block to import FSx Storage Virtual Machine using the `id`. For example:\n\n```terraform\nimport {\n  to = aws_fsx_ontap_storage_virtual_machine.example\n  id = \"svm-12345678abcdef123\"\n}\n```\n\nUsing `terraform import`, import FSx Storage Virtual Machine using the `id`. For example:\n\n```console\n% terraform import aws_fsx_ontap_storage_virtual_machine.example svm-12345678abcdef123\n```\n\nCertain resource arguments, like `svm_admin_password` and the `self_managed_active_directory` configuation block `password`, do not have a FSx API method for reading the information after creation. If these arguments are set in the Terraform configuration on an imported resource, Terraform will always show a difference. To workaround this behavior, either omit the argument from the Terraform configuration or use `ignore_changes` to hide the difference. For example:\n\n```terraform\nresource \"aws_fsx_ontap_storage_virtual_machine\" \"example\" {\n  # ... other configuration ...\n\n  svm_admin_password = \"avoid-plaintext-passwords\"\n\n  # There is no FSx API for reading svm_admin_password\n  lifecycle {\n    ignore_changes = [svm_admin_password]\n  }\n}\n```",
+    "awsType": "aws:fsx/ontapStorageVirtualMachine:OntapStorageVirtualMachine"
+  },
+  "AWS::Glue::Table": {
+    "importDoc": "## Import\n\nIn Terraform v1.5.0 and later, use an `import` block to import Glue Tables using the catalog ID (usually AWS account ID), database name, and table name. For example:\n\n```terraform\nimport {\n  to = aws_glue_catalog_table.MyTable\n  id = \"123456789012:MyDatabase:MyTable\"\n}\n```\n\nUsing `terraform import`, import Glue Tables using the catalog ID (usually AWS account ID), database name, and table name. For example:\n\n```console\n% terraform import aws_glue_catalog_table.MyTable 123456789012:MyDatabase:MyTable\n```",
+    "awsType": "aws:glue/catalogTable:CatalogTable"
+  },
+  "AWS::Glue::TableOptimizer": {
+    "importDoc": "## Import\n\nIn Terraform v1.5.0 and later, use an `import` block to import Glue Catalog Table Optimizer using the `catalog_id,database_name,table_name,type`. For example:\n\n```terraform\nimport {\n  to = aws_glue_catalog_table_optimizer.example\n  id = \"123456789012,example_database,example_table,compaction\"\n}\n```\n\nUsing `terraform import`, import Glue Catalog Table Optimizer using the `catalog_id,database_name,table_name,type`. For example:\n\n```console\n% terraform import aws_glue_catalog_table_optimizer.example 123456789012,example_database,example_table,compaction\n```",
+    "awsType": "aws:glue/catalogTableOptimizer:CatalogTableOptimizer"
+  },
+  "AWS::Route53::RecordSet": {
+    "importDoc": "## Import\n\nIn Terraform v1.12.0 and later, the `import` block can be used with the `identity` attribute. For example:\n\n```terraform\nimport {\n  to = aws_route53_record.example\n  identity = {\n    zone_id = \"Z4KAPRWWNC7JR\"\n    name    = \"dev.example.com\"\n    type    = \"NS\"\n  }\n}\n\nresource \"aws_route53_record\" \"example\" {\n  ### Configuration omitted for brevity ###\n}\n```\n\n### Identity Schema\n\n#### Required\n\n* `zone_id` (String) Hosted zone ID for the record.\n* `name` (String) Name of the record.\n* `type` (String) Record type.\n\n#### Optional\n\n* `account_id` (String) AWS Account where this resource is managed.\n* `set_identifier` (String) Set identifier for the record.\n\nIn Terraform v1.5.0 and later, use an `import` block to import Route53 Records using the ID of the record, record name, record type, and set identifier. For example:\n\nUsing the ID of the record, which is the zone identifier, record name, and record type, separated by underscores (`_`):\n\n```terraform\nimport {\n  to = aws_route53_record.example\n  id = \"Z4KAPRWWNC7JR_dev.example.com_NS\"\n}\n```\n\nIf the record also contains a set identifier, append it:\n\n```terraform\nimport {\n  to = aws_route53_record.example\n  id = \"Z4KAPRWWNC7JR_dev.example.com_NS_dev\"\n}\n```\n\nIf the record name is the empty string, it can be omitted:\n\n```terraform\nimport {\n  to = aws_route53_record.example\n  id = \"Z4KAPRWWNC7JR__NS\"\n}\n```\n\n**Using `terraform import` to import** Route53 Records using the ID of the record, record name, record type, and set identifier. For example:\n\nUsing the ID of the record, which is the zone identifier, record name, and record type, separated by underscores (`_`):\n\n```console\n% terraform import aws_route53_record.example Z4KAPRWWNC7JR_dev_NS\n```\n\nIf the record also contains a set identifier, append it:\n\n```console\n% terraform import aws_route53_record.example Z4KAPRWWNC7JR_dev_NS_dev\n```",
+    "awsType": "aws:route53/record:Record"
+  },
+  "AWS::Route53::RecordSetGroup": {
+    "importDoc": "## Import\n\nIn Terraform v1.12.0 and later, the `import` block can be used with the `identity` attribute. For example:\n\n```terraform\nimport {\n  to = aws_route53_record.example\n  identity = {\n    zone_id = \"Z4KAPRWWNC7JR\"\n    name    = \"dev.example.com\"\n    type    = \"NS\"\n  }\n}\n\nresource \"aws_route53_record\" \"example\" {\n  ### Configuration omitted for brevity ###\n}\n```\n\n### Identity Schema\n\n#### Required\n\n* `zone_id` (String) Hosted zone ID for the record.\n* `name` (String) Name of the record.\n* `type` (String) Record type.\n\n#### Optional\n\n* `account_id` (String) AWS Account where this resource is managed.\n* `set_identifier` (String) Set identifier for the record.\n\nIn Terraform v1.5.0 and later, use an `import` block to import Route53 Records using the ID of the record, record name, record type, and set identifier. For example:\n\nUsing the ID of the record, which is the zone identifier, record name, and record type, separated by underscores (`_`):\n\n```terraform\nimport {\n  to = aws_route53_record.example\n  id = \"Z4KAPRWWNC7JR_dev.example.com_NS\"\n}\n```\n\nIf the record also contains a set identifier, append it:\n\n```terraform\nimport {\n  to = aws_route53_record.example\n  id = \"Z4KAPRWWNC7JR_dev.example.com_NS_dev\"\n}\n```\n\nIf the record name is the empty string, it can be omitted:\n\n```terraform\nimport {\n  to = aws_route53_record.example\n  id = \"Z4KAPRWWNC7JR__NS\"\n}\n```\n\n**Using `terraform import` to import** Route53 Records using the ID of the record, record name, record type, and set identifier. For example:\n\nUsing the ID of the record, which is the zone identifier, record name, and record type, separated by underscores (`_`):\n\n```console\n% terraform import aws_route53_record.example Z4KAPRWWNC7JR_dev_NS\n```\n\nIf the record also contains a set identifier, append it:\n\n```console\n% terraform import aws_route53_record.example Z4KAPRWWNC7JR_dev_NS_dev\n```",
+    "awsType": "aws:route53/record:Record"
+  },
+  "AWS::SageMaker::EndpointConfig": {
+    "importDoc": "## Import\n\nIn Terraform v1.5.0 and later, use an `import` block to import endpoint configurations using the `name`. For example:\n\n```terraform\nimport {\n  to = aws_sagemaker_endpoint_configuration.test_endpoint_config\n  id = \"endpoint-config-foo\"\n}\n```\n\nUsing `terraform import`, import endpoint configurations using the `name`. For example:\n\n```console\n% terraform import aws_sagemaker_endpoint_configuration.test_endpoint_config endpoint-config-foo\n```",
+    "awsType": "aws:sagemaker/endpointConfiguration:EndpointConfiguration"
+  },
+  "AWS::SageMaker::NotebookInstanceLifecycleConfig": {
+    "importDoc": "## Import\n\nIn Terraform v1.5.0 and later, use an `import` block to import models using the `name`. For example:\n\n```terraform\nimport {\n  to = aws_sagemaker_notebook_instance_lifecycle_configuration.lc\n  id = \"foo\"\n}\n```\n\nUsing `terraform import`, import models using the `name`. For example:\n\n```console\n% terraform import aws_sagemaker_notebook_instance_lifecycle_configuration.lc foo\n```",
+    "awsType": "aws:sagemaker/notebookInstanceLifecycleConfiguration:NotebookInstanceLifecycleConfiguration"
+  },
+  "AWS::ServiceCatalog::AcceptedPortfolioShare": {
+    "importDoc": "## Import\n\nIn Terraform v1.5.0 and later, use an `import` block to import `aws_servicecatalog_portfolio_share` using the portfolio share ID. For example:\n\n```terraform\nimport {\n  to = aws_servicecatalog_portfolio_share.example\n  id = \"port-12344321:ACCOUNT:123456789012\"\n}\n```\n\nUsing `terraform import`, import `aws_servicecatalog_portfolio_share` using the portfolio share ID. For example:\n\n```console\n% terraform import aws_servicecatalog_portfolio_share.example port-12344321:ACCOUNT:123456789012\n```",
+    "awsType": "aws:servicecatalog/portfolioShare:PortfolioShare"
+  },
+  "AWS::ServiceCatalog::LaunchRoleConstraint": {
+    "importDoc": "## Import\n\nIn Terraform v1.5.0 and later, use an `import` block to import `aws_servicecatalog_constraint` using the constraint ID. For example:\n\n```terraform\nimport {\n  to = aws_servicecatalog_constraint.example\n  id = \"cons-nmdkb6cgxfcrs\"\n}\n```\n\nUsing `terraform import`, import `aws_servicecatalog_constraint` using the constraint ID. For example:\n\n```console\n% terraform import aws_servicecatalog_constraint.example cons-nmdkb6cgxfcrs\n```",
+    "awsType": "aws:servicecatalog/constraint:Constraint"
+  },
+  "AWS::ServiceCatalog::StackSetConstraint": {
+    "importDoc": "## Import\n\nIn Terraform v1.5.0 and later, use an `import` block to import `aws_servicecatalog_constraint` using the constraint ID. For example:\n\n```terraform\nimport {\n  to = aws_servicecatalog_constraint.example\n  id = \"cons-nmdkb6cgxfcrs\"\n}\n```\n\nUsing `terraform import`, import `aws_servicecatalog_constraint` using the constraint ID. For example:\n\n```console\n% terraform import aws_servicecatalog_constraint.example cons-nmdkb6cgxfcrs\n```",
+    "awsType": "aws:servicecatalog/constraint:Constraint"
+  }
+}

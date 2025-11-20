@@ -1,0 +1,1296 @@
+{
+  "AWS::ApiGatewayV2::Stage": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "apiId",
+        "name"
+      ],
+      "format": "apiId/name"
+    },
+    "awsType": "aws:apigatewayv2/stage:Stage"
+  },
+  "AWS::AppMesh::GatewayRoute": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "meshName",
+        "virtualGatewayName",
+        "name"
+      ],
+      "format": "meshName/virtualGatewayName/name"
+    },
+    "awsType": "aws:appmesh/gatewayRoute:GatewayRoute"
+  },
+  "AWS::AppMesh::Mesh": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "name"
+      ],
+      "format": "name"
+    },
+    "awsType": "aws:appmesh/mesh:Mesh"
+  },
+  "AWS::AppMesh::Route": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "meshName",
+        "virtualRouterName",
+        "name"
+      ],
+      "format": "meshName/virtualRouterName/name"
+    },
+    "awsType": "aws:appmesh/route:Route"
+  },
+  "AWS::AppMesh::VirtualGateway": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "meshName",
+        "name"
+      ],
+      "format": "meshName/name"
+    },
+    "awsType": "aws:appmesh/virtualGateway:VirtualGateway"
+  },
+  "AWS::AppMesh::VirtualNode": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "meshName",
+        "name"
+      ],
+      "format": "meshName/name"
+    },
+    "awsType": "aws:appmesh/virtualNode:VirtualNode"
+  },
+  "AWS::AppMesh::VirtualRouter": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "meshName",
+        "name"
+      ],
+      "format": "meshName/name"
+    },
+    "awsType": "aws:appmesh/virtualRouter:VirtualRouter"
+  },
+  "AWS::AppMesh::VirtualService": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "meshName",
+        "name"
+      ],
+      "format": "meshName/name"
+    },
+    "awsType": "aws:appmesh/virtualService:VirtualService"
+  },
+  "AWS::AppStream::Fleet": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "name"
+      ],
+      "format": "name"
+    },
+    "awsType": "aws:appstream/fleet:Fleet"
+  },
+  "AWS::AppStream::Stack": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "name"
+      ],
+      "format": "name"
+    },
+    "awsType": "aws:appstream/stack:Stack"
+  },
+  "AWS::AppStream::User": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "userName",
+        "authenticationType"
+      ],
+      "format": "userName/authenticationType"
+    },
+    "awsType": "aws:appstream/user:User"
+  },
+  "AWS::AppSync::ApiKey": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "apiId",
+        "key"
+      ],
+      "format": "apiId:key"
+    },
+    "awsType": "aws:appsync/apiKey:ApiKey"
+  },
+  "AWS::AutoScalingPlans::ScalingPlan": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "name"
+      ],
+      "format": "name"
+    },
+    "awsType": "aws:autoscalingplans/scalingPlan:ScalingPlan"
+  },
+  "AWS::Budgets::Budget": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "accountId",
+        "budgetName"
+      ],
+      "format": "accountId:budgetName"
+    },
+    "awsType": "aws:budgets/budget:Budget"
+  },
+  "AWS::CUR::ReportDefinition": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "reportName"
+      ],
+      "format": "reportName"
+    },
+    "awsType": "aws:cur/reportDefinition:ReportDefinition"
+  },
+  "AWS::CodeBuild::Project": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "name"
+      ],
+      "format": "name"
+    },
+    "awsType": "aws:codebuild/project:Project"
+  },
+  "AWS::CodeBuild::SourceCredential": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "arn"
+      ],
+      "format": "arn"
+    },
+    "awsType": "aws:codebuild/sourceCredential:SourceCredential"
+  },
+  "AWS::CodeBuild::ReportGroup": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "arn"
+      ],
+      "format": "arn"
+    },
+    "awsType": "aws:codebuild/reportGroup:ReportGroup"
+  },
+  "AWS::CodeCommit::Repository": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "repositoryName"
+      ],
+      "format": "repositoryName"
+    },
+    "awsType": "aws:codecommit/repository:Repository"
+  },
+  "AWS::CodeDeploy::DeploymentGroup": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "appName",
+        "deploymentGroupName"
+      ],
+      "format": "appName/deploymentGroupName"
+    },
+    "awsType": "aws:codedeploy/deploymentGroup:DeploymentGroup"
+  },
+  "AWS::Config::ConfigurationRecorder": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "name"
+      ],
+      "format": "name"
+    },
+    "awsType": "aws:config/configurationRecorder:ConfigurationRecorder"
+  },
+  "AWS::Config::DeliveryChannel": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "name"
+      ],
+      "format": "name"
+    },
+    "awsType": "aws:config/deliveryChannel:DeliveryChannel"
+  },
+  "AWS::Config::RemediationConfiguration": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "configRuleName"
+      ],
+      "format": "configRuleName"
+    },
+    "awsType": "aws:config/remediationConfiguration:RemediationConfiguration"
+  },
+  "AWS::DAX::Cluster": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "clusterName"
+      ],
+      "format": "clusterName"
+    },
+    "awsType": "aws:dax/cluster:Cluster"
+  },
+  "AWS::DAX::ParameterGroup": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "name"
+      ],
+      "format": "name"
+    },
+    "awsType": "aws:dax/parameterGroup:ParameterGroup"
+  },
+  "AWS::DAX::SubnetGroup": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "name"
+      ],
+      "format": "name"
+    },
+    "awsType": "aws:dax/subnetGroup:SubnetGroup"
+  },
+  "AWS::DMS::Certificate": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "certificateId"
+      ],
+      "format": "certificateId"
+    },
+    "awsType": "aws:dms/certificate:Certificate"
+  },
+  "AWS::DMS::EventSubscription": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "name"
+      ],
+      "format": "name"
+    },
+    "awsType": "aws:dms/eventSubscription:EventSubscription"
+  },
+  "AWS::DocDB::EventSubscription": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "name"
+      ],
+      "format": "name"
+    },
+    "awsType": "aws:docdb/eventSubscription:EventSubscription"
+  },
+  "AWS::EC2::ClientVpnAuthorizationRule": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "targetNetworkCidr"
+      ],
+      "format": "targetNetworkCidr"
+    },
+    "awsType": "aws:ec2/clientVpnAuthorizationRule:ClientVpnAuthorizationRule"
+  },
+  "AWS::EC2::ClientVpnRoute": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "destinationCidrBlock"
+      ],
+      "format": "destinationCidrBlock"
+    },
+    "awsType": "aws:ec2/clientVpnRoute:ClientVpnRoute"
+  },
+  "AWS::EMR::Cluster": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "id"
+      ],
+      "format": "id"
+    },
+    "awsType": "aws:emr/cluster:Cluster"
+  },
+  "AWS::ElastiCache::ReplicationGroup": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "replicationGroupId"
+      ],
+      "format": "replicationGroupId"
+    },
+    "awsType": "aws:elasticache/replicationGroup:ReplicationGroup"
+  },
+  "AWS::Elasticsearch::Domain": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "domainName"
+      ],
+      "format": "domainName"
+    },
+    "awsType": "aws:elasticsearch/domain:Domain"
+  },
+  "AWS::Glue::Classifier": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "name"
+      ],
+      "format": "name"
+    },
+    "awsType": "aws:glue/classifier:Classifier"
+  },
+  "AWS::Glue::Connection": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "catalogId",
+        "name"
+      ],
+      "format": "catalogId:name"
+    },
+    "awsType": "aws:glue/connection:Connection"
+  },
+  "AWS::Glue::DataCatalogEncryptionSettings": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "catalogId"
+      ],
+      "format": "catalogId"
+    },
+    "awsType": "aws:glue/dataCatalogEncryptionSettings:DataCatalogEncryptionSettings"
+  },
+  "AWS::Glue::DataQualityRuleset": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "name"
+      ],
+      "format": "name"
+    },
+    "awsType": "aws:glue/dataQualityRuleset:DataQualityRuleset"
+  },
+  "AWS::Glue::DevEndpoint": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "name"
+      ],
+      "format": "name"
+    },
+    "awsType": "aws:glue/devEndpoint:DevEndpoint"
+  },
+  "AWS::Glue::MLTransform": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "id"
+      ],
+      "format": "id"
+    },
+    "awsType": "aws:glue/mlTransform:MlTransform"
+  },
+  "AWS::Glue::Partition": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "catalogId",
+        "databaseName",
+        "tableName",
+        "partitionValues"
+      ],
+      "format": "catalogId/databaseName/tableName/partitionValues"
+    },
+    "awsType": "aws:glue/partition:Partition"
+  },
+  "AWS::Glue::SecurityConfiguration": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "name"
+      ],
+      "format": "name"
+    },
+    "awsType": "aws:glue/securityConfiguration:SecurityConfiguration"
+  },
+  "AWS::Glue::Workflow": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "name"
+      ],
+      "format": "name"
+    },
+    "awsType": "aws:glue/workflow:Workflow"
+  },
+  "AWS::IAM::AccessKey": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "accessKeyId"
+      ],
+      "format": "accessKeyId"
+    },
+    "awsType": "aws:iam/accessKey:AccessKey"
+  },
+  "AWS::IAM::Policy": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "arn"
+      ],
+      "format": "arn"
+    },
+    "awsType": "aws:iam/policy:Policy"
+  },
+  "AWS::Lightsail::Distribution": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "name"
+      ],
+      "format": "name"
+    },
+    "awsType": "aws:lightsail/distribution:Distribution"
+  },
+  "AWS::MediaLive::Channel": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "channelId"
+      ],
+      "format": "channelId"
+    },
+    "awsType": "aws:medialive/channel:Channel"
+  },
+  "AWS::MediaLive::Input": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "id"
+      ],
+      "format": "id"
+    },
+    "awsType": "aws:medialive/input:Input"
+  },
+  "AWS::MediaLive::InputSecurityGroup": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "id"
+      ],
+      "format": "id"
+    },
+    "awsType": "aws:medialive/inputSecurityGroup:InputSecurityGroup"
+  },
+  "AWS::Pinpoint::APNSChannel": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "applicationId"
+      ],
+      "format": "applicationId"
+    },
+    "awsType": "aws:pinpoint/apnsChannel:ApnsChannel"
+  },
+  "AWS::Pinpoint::APNSSandboxChannel": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "applicationId"
+      ],
+      "format": "applicationId"
+    },
+    "awsType": "aws:pinpoint/apnsSandboxChannel:ApnsSandboxChannel"
+  },
+  "AWS::Pinpoint::APNSVoipChannel": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "applicationId"
+      ],
+      "format": "applicationId"
+    },
+    "awsType": "aws:pinpoint/apnsVoipChannel:ApnsVoipChannel"
+  },
+  "AWS::Pinpoint::APNSVoipSandboxChannel": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "applicationId"
+      ],
+      "format": "applicationId"
+    },
+    "awsType": "aws:pinpoint/apnsVoipSandboxChannel:ApnsVoipSandboxChannel"
+  },
+  "AWS::Pinpoint::App": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "applicationId"
+      ],
+      "format": "applicationId"
+    },
+    "awsType": "aws:pinpoint/app:App"
+  },
+  "AWS::Pinpoint::GCMChannel": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "applicationId"
+      ],
+      "format": "applicationId"
+    },
+    "awsType": "aws:pinpoint/gcmChannel:GcmChannel"
+  },
+  "AWS::Pinpoint::SMSChannel": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "applicationId"
+      ],
+      "format": "applicationId"
+    },
+    "awsType": "aws:pinpoint/smsChannel:SmsChannel"
+  },
+  "AWS::QLDB::Ledger": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "name"
+      ],
+      "format": "name"
+    },
+    "awsType": "aws:qldb/ledger:Ledger"
+  },
+  "AWS::SES::ReceiptFilter": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "name"
+      ],
+      "format": "name"
+    },
+    "awsType": "aws:ses/receiptFilter:ReceiptFilter"
+  },
+  "AWS::SES::ReceiptRule": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "ruleSetName",
+        "ruleName"
+      ],
+      "format": "ruleSetName:ruleName"
+    },
+    "awsType": "aws:ses/receiptRule:ReceiptRule"
+  },
+  "AWS::SES::ReceiptRuleSet": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "ruleSetName"
+      ],
+      "format": "ruleSetName"
+    },
+    "awsType": "aws:ses/receiptRuleSet:ReceiptRuleSet"
+  },
+  "AWS::SSM::MaintenanceWindow": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "id"
+      ],
+      "format": "id"
+    },
+    "awsType": "aws:ssm/maintenanceWindow:MaintenanceWindow"
+  },
+  "AWS::SSM::MaintenanceWindowTarget": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "windowId",
+        "id"
+      ],
+      "format": "windowId:id"
+    },
+    "awsType": "aws:ssm/maintenanceWindowTarget:MaintenanceWindowTarget"
+  },
+  "AWS::SSM::MaintenanceWindowTask": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "windowId",
+        "id"
+      ],
+      "format": "windowId:id"
+    },
+    "awsType": "aws:ssm/maintenanceWindowTask:MaintenanceWindowTask"
+  },
+  "AWS::SageMaker::CodeRepository": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "codeRepositoryName"
+      ],
+      "format": "codeRepositoryName"
+    },
+    "awsType": "aws:sagemaker/codeRepository:CodeRepository"
+  },
+  "AWS::SageMaker::Model": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "name"
+      ],
+      "format": "name"
+    },
+    "awsType": "aws:sagemaker/model:Model"
+  },
+  "AWS::SageMaker::NotebookInstance": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "name"
+      ],
+      "format": "name"
+    },
+    "awsType": "aws:sagemaker/notebookInstance:NotebookInstance"
+  },
+  "AWS::SageMaker::Workteam": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "workteamName"
+      ],
+      "format": "workteamName"
+    },
+    "awsType": "aws:sagemaker/workteam:Workteam"
+  },
+  "AWS::ServiceDiscovery::HttpNamespace": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "id"
+      ],
+      "format": "id"
+    },
+    "awsType": "aws:servicediscovery/httpNamespace:HttpNamespace"
+  },
+  "AWS::ServiceDiscovery::Instance": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "id"
+      ],
+      "format": "id"
+    },
+    "awsType": "aws:servicediscovery/instance:Instance"
+  },
+  "AWS::ServiceDiscovery::PrivateDnsNamespace": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "id"
+      ],
+      "format": "id"
+    },
+    "awsType": "aws:servicediscovery/privateDnsNamespace:PrivateDnsNamespace"
+  },
+  "AWS::ServiceDiscovery::PublicDnsNamespace": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "id"
+      ],
+      "format": "id"
+    },
+    "awsType": "aws:servicediscovery/publicDnsNamespace:PublicDnsNamespace"
+  },
+  "AWS::ServiceDiscovery::Service": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "id"
+      ],
+      "format": "id"
+    },
+    "awsType": "aws:servicediscovery/service:Service"
+  },
+  "AWS::ServiceCatalog::Portfolio": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "id"
+      ],
+      "format": "id"
+    },
+    "awsType": "aws:servicecatalog/portfolio:Portfolio"
+  },
+  "AWS::WAF::ByteMatchSet": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "id"
+      ],
+      "format": "id"
+    },
+    "awsType": "aws:waf/byteMatchSet:ByteMatchSet"
+  },
+  "AWS::WAF::Rule": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "id"
+      ],
+      "format": "id"
+    },
+    "awsType": "aws:waf/rule:Rule"
+  },
+  "AWS::WAF::SizeConstraintSet": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "id"
+      ],
+      "format": "id"
+    },
+    "awsType": "aws:waf/sizeConstraintSet:SizeConstraintSet"
+  },
+  "AWS::WAF::SqlInjectionMatchSet": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "id"
+      ],
+      "format": "id"
+    },
+    "awsType": "aws:waf/sqlInjectionMatchSet:SqlInjectionMatchSet"
+  },
+  "AWS::WAF::WebACL": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "id"
+      ],
+      "format": "id"
+    },
+    "awsType": "aws:waf/webAcl:WebAcl"
+  },
+  "AWS::WAFRegional::ByteMatchSet": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "id"
+      ],
+      "format": "id"
+    },
+    "awsType": "aws:wafregional/byteMatchSet:ByteMatchSet"
+  },
+  "AWS::WAFRegional::GeoMatchSet": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "id"
+      ],
+      "format": "id"
+    },
+    "awsType": "aws:wafregional/geoMatchSet:GeoMatchSet"
+  },
+  "AWS::WAFRegional::RateBasedRule": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "id"
+      ],
+      "format": "id"
+    },
+    "awsType": "aws:wafregional/rateBasedRule:RateBasedRule"
+  },
+  "AWS::WAFRegional::RegexPatternSet": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "id"
+      ],
+      "format": "id"
+    },
+    "awsType": "aws:wafregional/regexPatternSet:RegexPatternSet"
+  },
+  "AWS::WAFRegional::Rule": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "id"
+      ],
+      "format": "id"
+    },
+    "awsType": "aws:wafregional/rule:Rule"
+  },
+  "AWS::WAFRegional::SizeConstraintSet": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "id"
+      ],
+      "format": "id"
+    },
+    "awsType": "aws:wafregional/sizeConstraintSet:SizeConstraintSet"
+  },
+  "AWS::WAFRegional::SqlInjectionMatchSet": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "id"
+      ],
+      "format": "id"
+    },
+    "awsType": "aws:wafregional/sqlInjectionMatchSet:SqlInjectionMatchSet"
+  },
+  "AWS::WAFRegional::WebACL": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "id"
+      ],
+      "format": "id"
+    },
+    "awsType": "aws:wafregional/webAcl:WebAcl"
+  },
+  "AWS::WAFRegional::WebACLAssociation": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "webAclId",
+        "resourceArn"
+      ],
+      "format": "webAclId/resourceArn"
+    },
+    "awsType": "aws:wafregional/webAclAssociation:WebAclAssociation"
+  },
+  "AWS::AppSync::ApiCache": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "apiId"
+      ],
+      "format": "apiId"
+    },
+    "awsType": "aws:appsync/apiCache:ApiCache"
+  },
+  "AWS::DMS::Endpoint": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "endpointId"
+      ],
+      "format": "endpointId"
+    },
+    "awsType": "aws:dms/endpoint:Endpoint"
+  },
+  "AWS::DMS::ReplicationInstance": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "replicationInstanceId"
+      ],
+      "format": "replicationInstanceId"
+    },
+    "awsType": "aws:dms/replicationInstance:ReplicationInstance"
+  },
+  "AWS::DMS::ReplicationSubnetGroup": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "replicationSubnetGroupId"
+      ],
+      "format": "replicationSubnetGroupId"
+    },
+    "awsType": "aws:dms/replicationSubnetGroup:ReplicationSubnetGroup"
+  },
+  "AWS::DMS::ReplicationTask": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "replicationTaskId"
+      ],
+      "format": "replicationTaskId"
+    },
+    "awsType": "aws:dms/replicationTask:ReplicationTask"
+  },
+  "AWS::Pinpoint::ADMChannel": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "applicationId"
+      ],
+      "format": "applicationId"
+    },
+    "awsType": "aws:pinpoint/admChannel:AdmChannel"
+  },
+  "AWS::Pinpoint::BaiduChannel": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "applicationId"
+      ],
+      "format": "applicationId"
+    },
+    "awsType": "aws:pinpoint/baiduChannel:BaiduChannel"
+  },
+  "AWS::Pinpoint::EmailChannel": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "applicationId"
+      ],
+      "format": "applicationId"
+    },
+    "awsType": "aws:pinpoint/emailChannel:EmailChannel"
+  },
+  "AWS::Pinpoint::EventStream": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "applicationId"
+      ],
+      "format": "applicationId"
+    },
+    "awsType": "aws:pinpoint/eventStream:EventStream"
+  },
+  "AWS::SQS::QueuePolicy": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "queueUrl"
+      ],
+      "format": "queueUrl"
+    },
+    "awsType": "aws:sqs/queuePolicy:QueuePolicy"
+  },
+  "AWS::WAF::XssMatchSet": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "id"
+      ],
+      "format": "id"
+    },
+    "awsType": "aws:waf/xssMatchSet:XssMatchSet"
+  },
+  "AWS::WAFRegional::XssMatchSet": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "id"
+      ],
+      "format": "id"
+    },
+    "awsType": "aws:wafregional/xssMatchSet:XssMatchSet"
+  },
+  "AWS::WorkSpaces::Workspace": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "workspaceId"
+      ],
+      "format": "workspaceId"
+    },
+    "awsType": "aws:workspaces/workspace:Workspace"
+  },
+  "AWS::AppStream::StackFleetAssociation": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "fleetName",
+        "stackName"
+      ],
+      "format": "fleetName/stackName"
+    },
+    "awsType": "aws:appstream/fleetStackAssociation:FleetStackAssociation"
+  },
+  "AWS::AppStream::StackUserAssociation": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "userName",
+        "authenticationType",
+        "stackName"
+      ],
+      "format": "userName/authenticationType/stackName"
+    },
+    "awsType": "aws:appstream/userStackAssociation:UserStackAssociation"
+  },
+  "AWS::DocDB::DBCluster": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "dbClusterIdentifier"
+      ],
+      "format": "dbClusterIdentifier"
+    },
+    "awsType": "aws:docdb/cluster:Cluster"
+  },
+  "AWS::DocDB::DBClusterParameterGroup": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "name"
+      ],
+      "format": "name"
+    },
+    "awsType": "aws:docdb/clusterParameterGroup:ClusterParameterGroup"
+  },
+  "AWS::DocDB::DBInstance": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "dbInstanceIdentifier"
+      ],
+      "format": "dbInstanceIdentifier"
+    },
+    "awsType": "aws:docdb/clusterInstance:ClusterInstance"
+  },
+  "AWS::DocDB::DBSubnetGroup": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "dbSubnetGroupName"
+      ],
+      "format": "dbSubnetGroupName"
+    },
+    "awsType": "aws:docdb/subnetGroup:SubnetGroup"
+  },
+  "AWS::EC2::ClientVpnEndpoint": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "clientVpnEndpointId"
+      ],
+      "format": "clientVpnEndpointId"
+    },
+    "awsType": "aws:ec2/clientVpnEndpoint:ClientVpnEndpoint"
+  },
+  "AWS::ECR::PublicRepository": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "repositoryName"
+      ],
+      "format": "repositoryName"
+    },
+    "awsType": "aws:ecrpublic/repository:Repository"
+  },
+  "AWS::EMR::InstanceFleetConfig": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "clusterId",
+        "instanceFleetId"
+      ],
+      "format": "clusterId/instanceFleetId"
+    },
+    "awsType": "aws:emr/instanceFleet:InstanceFleet"
+  },
+  "AWS::EMR::InstanceGroupConfig": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "clusterId",
+        "instanceGroupId"
+      ],
+      "format": "clusterId/instanceGroupId"
+    },
+    "awsType": "aws:emr/instanceGroup:InstanceGroup"
+  },
+  "AWS::ElastiCache::CacheCluster": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "cacheClusterId"
+      ],
+      "format": "cacheClusterId"
+    },
+    "awsType": "aws:elasticache/cluster:Cluster"
+  },
+  "AWS::FSx::StorageVirtualMachine": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "storageVirtualMachineId"
+      ],
+      "format": "storageVirtualMachineId"
+    },
+    "awsType": "aws:fsx/ontapStorageVirtualMachine:OntapStorageVirtualMachine"
+  },
+  "AWS::Glue::Table": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "catalogId",
+        "databaseName",
+        "tableName"
+      ],
+      "format": "catalogId:databaseName:tableName"
+    },
+    "awsType": "aws:glue/catalogTable:CatalogTable"
+  },
+  "AWS::Route53::RecordSetGroup": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "hostedZoneId"
+      ],
+      "format": "hostedZoneId"
+    },
+    "awsType": "aws:route53/record:Record"
+  },
+  "AWS::SageMaker::EndpointConfig": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "endpointConfigName"
+      ],
+      "format": "endpointConfigName"
+    },
+    "awsType": "aws:sagemaker/endpointConfiguration:EndpointConfiguration"
+  },
+  "AWS::SageMaker::NotebookInstanceLifecycleConfig": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "notebookInstanceLifecycleConfigName"
+      ],
+      "format": "notebookInstanceLifecycleConfigName"
+    },
+    "awsType": "aws:sagemaker/notebookInstanceLifecycleConfiguration:NotebookInstanceLifecycleConfiguration"
+  },
+  "AWS::ServiceCatalog::LaunchRoleConstraint": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "constraintId"
+      ],
+      "format": "constraintId"
+    },
+    "awsType": "aws:servicecatalog/constraint:Constraint"
+  },
+  "AWS::ServiceCatalog::StackSetConstraint": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "constraintId"
+      ],
+      "format": "constraintId"
+    },
+    "awsType": "aws:servicecatalog/constraint:Constraint"
+  },
+  "AWS::ServiceCatalog::AcceptedPortfolioShare": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "accountId"
+      ],
+      "format": "accountId"
+    },
+    "awsType": "aws:servicecatalog/portfolioShare:PortfolioShare"
+  },
+  "AWS::EC2::ClientVpnTargetNetworkAssociation": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "clientVpnEndpointId",
+        "associationId"
+      ],
+      "format": "clientVpnEndpointId,associationId"
+    },
+    "awsType": "aws:ec2clientvpn/networkAssociation:NetworkAssociation"
+  },
+  "AWS::EC2::NetworkAclEntry": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "networkAclId",
+        "ruleNumber",
+        "protocol",
+        "egress"
+      ],
+      "format": "networkAclId:ruleNumber:protocol:egress"
+    },
+    "awsType": "aws:ec2/networkAclRule:NetworkAclRule"
+  },
+  "AWS::EC2::NetworkInterfacePermission": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "networkInterfacePermissionId"
+      ],
+      "format": "networkInterfacePermissionId"
+    },
+    "awsType": "aws:ec2/networkInterfacePermission:NetworkInterfacePermission"
+  },
+  "AWS::ElasticLoadBalancing::LoadBalancer": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "name"
+      ],
+      "format": "name"
+    },
+    "awsType": "aws:elb/loadBalancer:LoadBalancer"
+  },
+  "AWS::IAM::UserToGroupAddition": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "userName",
+        "groupNames"
+      ],
+      "format": "userName/groupNames"
+    },
+    "awsType": "aws:iam/userGroupMembership:UserGroupMembership"
+  },
+  "AWS::ElasticLoadBalancingV2::ListenerCertificate": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "listenerArn",
+        "certificateArn"
+      ],
+      "format": "listenerArn_certificateArn"
+    },
+    "awsType": "aws:lb/listenerCertificate:ListenerCertificate"
+  },
+  "AWS::KinesisAnalytics::Application": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "arn"
+      ],
+      "format": "arn"
+    },
+    "awsType": "aws:kinesis/analyticsApplication:AnalyticsApplication"
+  }
+}
