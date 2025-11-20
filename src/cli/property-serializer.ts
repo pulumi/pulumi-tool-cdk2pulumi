@@ -128,6 +128,15 @@ function serializeConcatValue(
   value: ConcatValue,
   ctx: PropertySerializationContext,
 ) {
+  if (value.delimiter === '') {
+    const serializedParts = value.values.map((item) =>
+      serializePropertyValue(item, ctx),
+    );
+    if (serializedParts.every((part) => typeof part === 'string')) {
+      return serializedParts.join('');
+    }
+  }
+
   return {
     'fn::join': [
       value.delimiter,
