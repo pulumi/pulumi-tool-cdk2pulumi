@@ -329,12 +329,12 @@ function mergeInlinePoliciesIntoRole(
   }
 
   // Merge the inline policies into the role's props
-  const existingInlinePolicies = resource.props?.inlinePolicies || [];
-  const newInlinePolicies = [
-    ...(Array.isArray(existingInlinePolicies) ? existingInlinePolicies : []),
+  const existingPolicies = resource.props?.Policies || [];
+  const newPolicies = [
+    ...(Array.isArray(existingPolicies) ? existingPolicies : []),
     ...policiesToMerge.map((p) => ({
-      name: p.name,
-      policy: p.document,
+      PolicyName: p.name,
+      PolicyDocument: p.document,
     })),
   ];
 
@@ -342,7 +342,7 @@ function mergeInlinePoliciesIntoRole(
     ...resource,
     props: {
       ...resource.props,
-      inlinePolicies: newInlinePolicies,
+      Policies: newPolicies,
     },
   };
 }

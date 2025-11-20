@@ -213,12 +213,12 @@ describe('postProcessProgramIr', () => {
     expect(role.cfnType).toBe('AWS::IAM::Role');
 
     // Check that the inline policy was merged
-    expect(role.props?.inlinePolicies).toBeDefined();
-    expect(Array.isArray(role.props.inlinePolicies)).toBe(true);
-    expect(role.props.inlinePolicies).toHaveLength(1);
-    expect(role.props.inlinePolicies[0]).toMatchObject({
-      name: 'MyInlinePolicy',
-      policy: {
+    expect(role.props?.Policies).toBeDefined();
+    expect(Array.isArray(role.props.Policies)).toBe(true);
+    expect(role.props.Policies).toHaveLength(1);
+    expect(role.props.Policies[0]).toMatchObject({
+      PolicyName: 'MyInlinePolicy',
+      PolicyDocument: {
         Version: '2012-10-17',
         Statement: [{ Effect: 'Allow', Action: 's3:GetObject', Resource: '*' }],
       },
