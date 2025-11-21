@@ -3,6 +3,8 @@ import { PulumiProvider } from './providers';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
 const pulumiMetadata = require('../../schemas/aws-native-metadata.json');
+// eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
+const primaryIdentifiers = require('../../schemas/primary-identifiers.json');
 
 export class UnknownCfnType extends Error {
   constructor(cfnType: string) {
@@ -12,11 +14,14 @@ export class UnknownCfnType extends Error {
 
 export class Metadata {
   private readonly pulumiMetadata: PulumiMetadata;
+  private readonly primaryIdentifiers: Record<string, any>;
+
   constructor(provider: PulumiProvider) {
     if (provider !== PulumiProvider.AWS_NATIVE) {
       throw new Error('AWS_NATIVE is the only supported pulumi provider');
     }
     this.pulumiMetadata = pulumiMetadata as PulumiMetadata;
+    this.primaryIdentifiers = primaryIdentifiers;
   }
 
   public findResource(cfnType: string): PulumiResource {
@@ -40,7 +45,7 @@ export class Metadata {
   }
 
   public primaryIdentifier(cfnType: string): string[] | undefined {
-    return this.tryFindResource(cfnType)?.primaryIdentifier;
+    return this.primaryIdentifiers[cfnType]?.primaryIdentifier?.parts;
   }
 }
 
@@ -96,19 +101,19 @@ export function processMetadataProperty(
   switch (true) {
     case property.type === 'object' &&
       property.additionalProperties !== undefined: {
-      const props = processMetadataProperty(
-        property.additionalProperties,
-        types,
-        pulumiProvider,
-      );
-      return {
-        meta: props.meta,
-        nativeType:
-          props.nativeType === NativeType.JSON
-            ? props.nativeType
-            : NativeType.ADDITIONAL_PROPERTIES,
-      };
-    }
+        const props = processMetadataProperty(
+          property.additionalProperties,
+          types,
+          pulumiProvider,
+        );
+        return {
+          meta: props.meta,
+          nativeType:
+            props.nativeType === NativeType.JSON
+              ? props.nativeType
+              : NativeType.ADDITIONAL_PROPERTIES,
+        };
+      }
     case property.type !== undefined &&
       property.$ref === undefined &&
       property.properties === undefined &&
