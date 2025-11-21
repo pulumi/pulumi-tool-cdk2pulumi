@@ -15,9 +15,9 @@ The project involves:
 
 ## Current Status
 
-- **Core Package**: `packages/cdk-convert-core` has been created. Much of the logic (assembly, graph, cfn, sub, stack-map) has been moved here.
-- **CLI**: `bin/cdk-to-pulumi` exists and can convert assemblies to Pulumi YAML.
-- **Analyzer**: Scaffolding exists for `cdk-to-pulumi analyze`.
+- **Core Package**: `src/core` contains the reusable logic (assembly, graph, cfn, sub, stack-map).
+- **CLI**: `src/cli/cli-runner.ts` is the CLI entrypoint.
+- **Analyzer**: Scaffolding exists for `cdk-to-pulumi analyze` within `src/cli`.
 
 ## Key Documents
 
@@ -33,7 +33,7 @@ Always check `spec.md` and `spec-cdk-analyze.md` before starting work. Update th
 ### Running Tests
 
 - **Unit Tests**: Run `npm test` to execute unit tests.
-- **Integration Tests**: Check `tests/cli/` for CLI integration tests.
+- **Integration Tests**: Check `test/cli/` for CLI integration tests.
 
 ## Todo List (High Level)
 
@@ -48,7 +48,8 @@ Always check `spec.md` and `spec-cdk-analyze.md` before starting work. Update th
 
 ## Developer Notes
 
-- **Bun Builds**: We use Bun for standalone binary builds (`npm run build:bun-cli`). Keep using Node for local dev.
+- **Execution**: Use `bun src/cli/cli-runner.ts` to run the CLI locally.
+- **Bun Builds**: We use Bun for standalone binary builds (`npm run package`). Keep using Node for local dev.
 - **Asset Handling**: Currently, asset uploads might be skipped or stubbed in the CLI prototype.
 - **Intrinsics**: We are moving towards a shared IR intrinsic resolver.
 

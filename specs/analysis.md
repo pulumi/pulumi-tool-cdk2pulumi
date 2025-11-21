@@ -4,8 +4,8 @@
 Introduce a new CLI command that inspects an AWS CDK Cloud Assembly (the same `cdk.out` directory that the converter consumes) and emits a structured report highlighting details that will help an LLM plan a CDK → Pulumi migration. The report must summarize application structure, environments, construct usage, resource inventory, and other metadata outlined below.
 
 ## Background & Constraints
-- The `cdk-to-pulumi` CLI and `packages/cdk-convert-core` library are now established in this repository.
-- Existing `packages/cdk-convert-core` already knows how to parse the manifest, tree, and templates for conversion. The analyzer should reuse those readers whenever possible (e.g., `AssemblyManifestReader`, `StackManifest`).
+- The `cdk-to-pulumi` CLI and `src/core` library are now established in this repository.
+- Existing `src/core` already knows how to parse the manifest, tree, and templates for conversion. The analyzer should reuse those readers whenever possible (e.g., `AssemblyManifestReader`, `StackManifest`).
 - Inputs:
   - `manifest.json` → artifacts (stacks, nested assemblies, asset manifests), stack environments, stage metadata.
   - `tree.json` → construct hierarchy, `constructInfo.fqn`, metadata/attributes (e.g., `aws:cdk:cloudformation:type` for L1 resources).
@@ -45,7 +45,7 @@ Introduce a new CLI command that inspects an AWS CDK Cloud Assembly (the same `c
    - Provide breakdown in report.
 
 ## Proposed CLI Shape
-- Extend existing binary with a new subcommand `cdk-to-pulumi analyze` (or similar). Options:
+- Extend existing binary with a new subcommand `analyze` (or similar). Options:
   - `--assembly <path>` (required).
   - `--stage <name>` to scope to nested assembly.
   - `--format json|yaml` default json.
@@ -61,7 +61,7 @@ Introduce a new CLI command that inspects an AWS CDK Cloud Assembly (the same `c
 - Current status: Core analysis module scaffolding (orchestrator, report schema, initial helpers) is in place. Next focus is building out construct/resource/asset population logic.
 
 ### 1. Analysis Data Model
-- [x] Introduce a new `packages/@pulumi/cdk-convert-core/src/analysis` module with:
+- [x] Introduce a new `src/core/analysis` module with:
   - `AssemblyAnalyzer` orchestrator.
   - Types: `AnalysisReport`, `StageSummary`, `StackSummary`, `ConstructSummary`, `ResourceSummary`, etc.
   - Utility functions for language detection, construct classification, environment parsing.

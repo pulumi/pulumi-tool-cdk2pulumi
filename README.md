@@ -16,11 +16,11 @@ A CLI tool that takes an existing AWS CDK application (specifically its Cloud As
 
 ```bash
 # Convert a CDK Cloud Assembly to Pulumi YAML
-cdk-to-pulumi --assembly path/to/cdk.out
+bun src/cli/cli-runner.ts --assembly path/to/cdk.out
 ```
 
 **Key Features:**
-- Extracts reusable conversion logic into `packages/cdk-convert-core`.
+- Extracts reusable conversion logic into `src/core`.
 - Supports `StackConverter` adaptation for both real Pulumi resources and IR.
 - Serializes `ProgramIR` to Pulumi YAML.
 - Supports stage selection via `--stage`.
@@ -35,7 +35,7 @@ A CLI command that inspects an AWS CDK Cloud Assembly and emits a structured rep
 
 ```bash
 # Analyze a CDK Cloud Assembly
-cdk-to-pulumi analyze --assembly path/to/cdk.out --format json
+bun src/cli/cli-runner.ts analyze --assembly path/to/cdk.out --format json
 ```
 
 **Key Features:**
@@ -53,18 +53,18 @@ cdk-to-pulumi analyze --assembly path/to/cdk.out --format json
 # Install dependencies
 npm install
 
-# Build the CLI (Node.js)
+# Build the project
 npm run build
 
 # Build standalone binary with Bun
-npm run build:bun-cli
+npm run package:linux:arm
 ```
 
 ### Architecture
 
-- **`packages/cdk-convert-core`**: Core logic for conversion, assembly reading, graph building, and IR generation.
-- **`bin/cdk-to-pulumi`**: CLI entrypoint.
-- **`src/`**: Existing source code, gradually being refactored to use the core package.
+- **`src/core`**: Core logic for conversion, assembly reading, graph building, and IR generation.
+- **`src/cli`**: CLI entrypoint and runners.
+- **`src/`**: Source code.
 
 ## Documentation
 

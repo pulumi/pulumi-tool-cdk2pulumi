@@ -5,24 +5,24 @@ Develop a reusable conversion pipeline that takes an existing AWS CDK applicatio
 
 ## Current State Summary
 - **Extracted Repo**: The conversion logic has been extracted from `pulumi-cdk` into this repository.
-- `packages/cdk-convert-core` contains the reusable logic (assembly, graph, cfn, sub, stack-map).
-- `bin/cdk-to-pulumi` is the CLI entrypoint.
+- `src/core` contains the reusable logic (assembly, graph, cfn, sub, stack-map).
+- `src/cli/cli-runner.ts` is the CLI entrypoint.
 - `src/` contains the legacy/integration code that is being refactored to use the core package.
 
 ## Approach
-1.  **Maintain Separation**: Continue developing `packages/cdk-convert-core` as a neutral library that operates on Cloud Assembly artifacts.
-2.  **CLI First**: Focus on `bin/cdk-to-pulumi` as the primary driver for conversion and analysis.
+1.  **Maintain Separation**: Continue developing `src/core` as a neutral library that operates on Cloud Assembly artifacts.
+2.  **CLI First**: Focus on `src/cli` as the primary driver for conversion and analysis.
 3.  **Reintegration Ready**: Keep the API surface clean and documented to facilitate future reintegration into `pulumi-cdk`.
 
 ## Bun Executable Builds
-- Install [Bun](https://bun.sh) locally and run `npm run build:bun-cli` to emit a standalone binary at `dist/bin/cdk-to-pulumi` (the script enables `--minify` and `--sourcemap` by default).
-- Pass additional Bun flags via `npm run build:bun-cli -- --target=bun-linux-x64` to cross-compile; run the script multiple times to produce binaries for each platform you care about.
+- Install [Bun](https://bun.sh) locally and run `npm run package:linux:arm` or `npm run package:macos:arm` to emit standalone binaries at `dist/bin/linux-arm64/cdk2pulumi` and `dist/bin/macos-arm64/cdk2pulumi` respectively (the script enables `--minify` and `--sourcemap` by default).
+- Run `npm run package` to build both platform binaries.
 - These binaries embed the Bun runtime; keep using the Node-based workflow for local development/tests and reserve Bun builds for packaging/distribution experiments.
 
 ## Detailed TODOs
 
 ### Package Extraction (Completed)
-- [x] Create `packages/cdk-convert-core` with its own `package.json`, tsconfig, and build outputs.
+- [x] Create `src/core` with its own `package.json`, tsconfig, and build outputs.
 - [x] Move/rewire modules that do not depend on Pulumi runtime (`assembly`, `graph`, `cfn*`, `sub`, `stack-map`, converters minus Pulumi-specific bits) into the package.
 - [x] Introduce an explicit interface (e.g., `ResourceEmitter`) that `StackConverter` uses to emit resources.
 - [x] Ensure existing code under `src/` re-exports the package where necessary.
@@ -37,7 +37,7 @@ Develop a reusable conversion pipeline that takes an existing AWS CDK applicatio
   - Outputs and parameter defaults now flow through the resolver, so joins/splits/conditionals/dynamic references are normalized before landing in `StackIR`.
 
 ### CLI Prototype
-- [x] Add a new executable under `bin/` (wired via `package.json#bin`) named `cdk-to-pulumi`.
+- [x] Add a new executable under `src/cli` named `cli-runner.ts`.
 - [x] Expose a helper that loads a Cloud Assembly via `AssemblyManifestReader`, feeds each stack through `convertStackToIr`, and returns a combined `ProgramIR` so both the CLI and runtime can share it.
 - [x] CLI responsibilities (initial prototype):
   - [x] Accept `--assembly <path>` that points at an already-synthesized `cdk.out`. Defer `--cdk-app`/`cdk synth` orchestration until later.
@@ -83,7 +83,7 @@ Develop a reusable conversion pipeline that takes an existing AWS CDK applicatio
   - [x] Extend `collectStackOutputs` / `resolveStackOutputReferences` so that imports are de-referenced just like direct `Ref`-to-output mappings.
   - [x] If the importer references a stack that was filtered out via `--stacks`, decide whether to emit a warning or error (failing fast is preferable).
 - [ ] Add tests:
-  - [x] Unit tests in `packages/@pulumi/cdk-convert-core` covering the intrinsic resolver’s import handling (happy path + missing export).
+  - [x] Unit tests in `src/core` covering the intrinsic resolver’s import handling (happy path + missing export).
   - [ ] CLI serializer tests proving cross-stack imports get flattened to the underlying resource properties.
   - [ ] Update the stage integration test to run without `--stacks` once imports are supported (i.e., convert the entire Dev stage). _(Currently blocked by the unresolved `Fn::GetAZs` intrinsic; see `tests/cli/stage.integration.test.ts` for the regression test that captures the failure case.)_
 
