@@ -40,7 +40,6 @@ project.packageTask.spawn(packageLinuxArm);
 project.packageTask.spawn(packageMacos);
 
 project.gitignore.include('AGENTS.md');
-project.gitignore.exclude('primary-identifiers.json');
 project.gitignore.exclude('Pulumi.yaml');
 project.gitignore.exclude('Pulumi.yaml.report.json');
 project.synth();

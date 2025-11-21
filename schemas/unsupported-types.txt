@@ -91,9 +91,6 @@ AWS::LakeFormation::Permissions
 AWS::LakeFormation::Resource
 AWS::Lightsail::Distribution
 AWS::Lightsail::Domain
-AWS::ManagedBlockchain::Accessor
-AWS::ManagedBlockchain::Member
-AWS::ManagedBlockchain::Node
 AWS::MediaConvert::JobTemplate
 AWS::MediaConvert::Preset
 AWS::MediaConvert::Queue

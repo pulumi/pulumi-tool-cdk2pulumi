@@ -1,0 +1,155 @@
+# CloudFormation Resources Filtered Out
+## Deprecated - Service Discontinued
+// AWS CloudFront RTMP (Deprecated December 31, 2020)
+AWS::CloudFront::StreamingDistribution
+// AWS CodeStar (Service Discontinued July 31, 2024)
+AWS::CodeStar::GitHubRepository
+// AWS Cloud9 (Being Phased Out - No new customers since July 25, 2024)
+AWS::Cloud9::EnvironmentEC2
+// AWS IoT Things Graph (Service Discontinued November 2022)
+AWS::IoTThingsGraph::FlowTemplate
+// AWS MediaStore (End of Life November 13, 2025)
+AWS::MediaStore::Container
+// AWS OpsWorks (All variants - End of Life May 26, 2024)
+AWS::OpsWorks::App
+AWS::OpsWorks::ElasticLoadBalancerAttachment
+AWS::OpsWorks::Instance
+AWS::OpsWorks::Layer
+AWS::OpsWorks::Stack
+AWS::OpsWorks::UserProfile
+AWS::OpsWorks::Volume
+// AWS SimpleDB (Deprecated - No new customers since June/July 2024)
+AWS::SDB::Domain
+// AWS QLDB (End of Life July 31, 2025)
+AWS::QLDB::Ledger
+## Deprecated - Greengrass V1 (End of Life October 1, 2026)
+AWS::Greengrass::ConnectorDefinition
+AWS::Greengrass::ConnectorDefinitionVersion
+AWS::Greengrass::CoreDefinition
+AWS::Greengrass::CoreDefinitionVersion
+AWS::Greengrass::DeviceDefinition
+AWS::Greengrass::DeviceDefinitionVersion
+AWS::Greengrass::FunctionDefinition
+AWS::Greengrass::FunctionDefinitionVersion
+AWS::Greengrass::Group
+AWS::Greengrass::GroupVersion
+AWS::Greengrass::LoggerDefinition
+AWS::Greengrass::LoggerDefinitionVersion
+AWS::Greengrass::ResourceDefinition
+AWS::Greengrass::ResourceDefinitionVersion
+AWS::Greengrass::SubscriptionDefinition
+AWS::Greengrass::SubscriptionDefinitionVersion
+## Deprecated - Amazon Pinpoint (End of Life October 30, 2026)
+AWS::Pinpoint::ADMChannel
+AWS::Pinpoint::APNSChannel
+AWS::Pinpoint::APNSSandboxChannel
+AWS::Pinpoint::APNSVoipChannel
+AWS::Pinpoint::APNSVoipSandboxChannel
+AWS::Pinpoint::App
+AWS::Pinpoint::ApplicationSettings
+AWS::Pinpoint::BaiduChannel
+AWS::Pinpoint::Campaign
+AWS::Pinpoint::EmailChannel
+AWS::Pinpoint::EmailTemplate
+AWS::Pinpoint::EventStream
+AWS::Pinpoint::GCMChannel
+AWS::Pinpoint::PushTemplate
+AWS::Pinpoint::SMSChannel
+AWS::Pinpoint::Segment
+AWS::Pinpoint::SmsTemplate
+AWS::Pinpoint::VoiceChannel
+// Amazon Pinpoint Email API (Part of Pinpoint deprecation)
+AWS::PinpointEmail::ConfigurationSet
+AWS::PinpointEmail::ConfigurationSetEventDestination
+AWS::PinpointEmail::DedicatedIpPool
+AWS::PinpointEmail::Identity
+## Deprecated - Kinesis Analytics V1 (End of Life January 27, 2026)
+AWS::KinesisAnalytics::Application
+AWS::KinesisAnalytics::ApplicationOutput
+AWS::KinesisAnalytics::ApplicationReferenceDataSource
+## Deprecated - EC2-Classic (Deprecated August 15, 2023)
+AWS::ElastiCache::SecurityGroup
+AWS::ElastiCache::SecurityGroupIngress
+AWS::RDS::DBSecurityGroup
+AWS::RDS::DBSecurityGroupIngress
+AWS::Redshift::ClusterSecurityGroup
+AWS::Redshift::ClusterSecurityGroupIngress
+## Deprecated - WAF Classic (End of Life September 30, 2025)
+AWS::WAF::ByteMatchSet
+AWS::WAF::IPSet
+AWS::WAF::Rule
+AWS::WAF::SizeConstraintSet
+AWS::WAF::SqlInjectionMatchSet
+AWS::WAF::WebACL
+AWS::WAF::XssMatchSet
+AWS::WAFRegional::ByteMatchSet
+AWS::WAFRegional::GeoMatchSet
+AWS::WAFRegional::IPSet
+AWS::WAFRegional::RateBasedRule
+AWS::WAFRegional::RegexPatternSet
+AWS::WAFRegional::Rule
+AWS::WAFRegional::SizeConstraintSet
+AWS::WAFRegional::SqlInjectionMatchSet
+AWS::WAFRegional::WebACL
+AWS::WAFRegional::WebACLAssociation
+AWS::WAFRegional::XssMatchSet
+## No Direct Terraform AWS Provider Support
+// CloudFormation-specific resources (N/A for Terraform)
+AWS::CloudFormation::CustomResource
+AWS::CloudFormation::Macro
+AWS::CloudFormation::WaitCondition
+AWS::CloudFormation::WaitConditionHandle
+// Very new service - No Terraform support yet
+AWS::AppTest::TestCase
+// Feature request exists but not yet implemented
+AWS::CloudFront::AnycastIpList
+// Not found in Terraform AWS provider
+AWS::Glue::CustomEntityType
+AWS::Glue::TableOptimizer
+// IoT FleetWise - Not in main AWS provider (may be in awscc)
+AWS::IoTFleetWise::Campaign
+AWS::IoTFleetWise::DecoderManifest
+AWS::IoTFleetWise::Fleet
+AWS::IoTFleetWise::ModelManifest
+AWS::IoTFleetWise::SignalCatalog
+AWS::IoTFleetWise::StateTemplate
+AWS::IoTFleetWise::Vehicle
+// IoT SiteWise - Not in main AWS provider (may be in awscc)
+AWS::IoTSiteWise::ComputationModel
+// IoT Wireless - Not found
+AWS::IoTWireless::PartnerAccount
+AWS::IoTWireless::WirelessDeviceImportTask
+// LookoutEquipment - Limited/no support
+AWS::LookoutEquipment::InferenceScheduler
+// MPA (Multi-Party Authorization) - Not found (newer service)
+AWS::MPA::ApprovalTeam
+AWS::MPA::IdentitySource
+// ManagedBlockchain - GitHub issue closed as "not planned" (March 2024)
+AWS::ManagedBlockchain::Accessor
+AWS::ManagedBlockchain::Member
+AWS::ManagedBlockchain::Node
+## Only Available in awscc Provider (AWS Cloud Control API)
+// Billing Conductor resources
+AWS::BillingConductor::BillingGroup
+AWS::BillingConductor::CustomLineItem
+AWS::BillingConductor::PricingPlan
+AWS::BillingConductor::PricingRule
+// AWS Notifications resources
+AWS::Notifications::ChannelAssociation
+AWS::Notifications::EventRule
+AWS::Notifications::ManagedNotificationAccountContactAssociation
+AWS::Notifications::ManagedNotificationAdditionalChannelAssociation
+AWS::Notifications::NotificationConfiguration
+AWS::Notifications::NotificationHub
+AWS::Notifications::OrganizationalUnitAssociation
+AWS::NotificationsContacts::EmailContact
+## Non-AWS Resources
+// Alexa Skills - Not an AWS resource (community provider exists)
+Alexa::ASK::Skill
+## Summary
+Total filtered out: 111 resources
+- Deprecated/Discontinued: 71 resources
+- No Terraform support: 27 resources
+- awscc provider only: 12 resources
+- Non-AWS: 1 resource
+Remaining supported: 129 resources (from original 240)

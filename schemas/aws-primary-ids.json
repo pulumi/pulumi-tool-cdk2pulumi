@@ -8,7 +8,9 @@
       ],
       "format": "apiId/name"
     },
-    "awsType": "aws:apigatewayv2/stage:Stage"
+    "awsTypes": [
+      "aws:apigatewayv2/stage:Stage"
+    ]
   },
   "AWS::AppMesh::GatewayRoute": {
     "provider": "aws",
@@ -20,7 +22,9 @@
       ],
       "format": "meshName/virtualGatewayName/name"
     },
-    "awsType": "aws:appmesh/gatewayRoute:GatewayRoute"
+    "awsTypes": [
+      "aws:appmesh/gatewayRoute:GatewayRoute"
+    ]
   },
   "AWS::AppMesh::Mesh": {
     "provider": "aws",
@@ -30,7 +34,9 @@
       ],
       "format": "name"
     },
-    "awsType": "aws:appmesh/mesh:Mesh"
+    "awsTypes": [
+      "aws:appmesh/mesh:Mesh"
+    ]
   },
   "AWS::AppMesh::Route": {
     "provider": "aws",
@@ -42,7 +48,9 @@
       ],
       "format": "meshName/virtualRouterName/name"
     },
-    "awsType": "aws:appmesh/route:Route"
+    "awsTypes": [
+      "aws:appmesh/route:Route"
+    ]
   },
   "AWS::AppMesh::VirtualGateway": {
     "provider": "aws",
@@ -53,7 +61,9 @@
       ],
       "format": "meshName/name"
     },
-    "awsType": "aws:appmesh/virtualGateway:VirtualGateway"
+    "awsTypes": [
+      "aws:appmesh/virtualGateway:VirtualGateway"
+    ]
   },
   "AWS::AppMesh::VirtualNode": {
     "provider": "aws",
@@ -64,7 +74,9 @@
       ],
       "format": "meshName/name"
     },
-    "awsType": "aws:appmesh/virtualNode:VirtualNode"
+    "awsTypes": [
+      "aws:appmesh/virtualNode:VirtualNode"
+    ]
   },
   "AWS::AppMesh::VirtualRouter": {
     "provider": "aws",
@@ -75,7 +87,9 @@
       ],
       "format": "meshName/name"
     },
-    "awsType": "aws:appmesh/virtualRouter:VirtualRouter"
+    "awsTypes": [
+      "aws:appmesh/virtualRouter:VirtualRouter"
+    ]
   },
   "AWS::AppMesh::VirtualService": {
     "provider": "aws",
@@ -86,7 +100,9 @@
       ],
       "format": "meshName/name"
     },
-    "awsType": "aws:appmesh/virtualService:VirtualService"
+    "awsTypes": [
+      "aws:appmesh/virtualService:VirtualService"
+    ]
   },
   "AWS::AppStream::Fleet": {
     "provider": "aws",
@@ -96,7 +112,9 @@
       ],
       "format": "name"
     },
-    "awsType": "aws:appstream/fleet:Fleet"
+    "awsTypes": [
+      "aws:appstream/fleet:Fleet"
+    ]
   },
   "AWS::AppStream::Stack": {
     "provider": "aws",
@@ -106,7 +124,9 @@
       ],
       "format": "name"
     },
-    "awsType": "aws:appstream/stack:Stack"
+    "awsTypes": [
+      "aws:appstream/stack:Stack"
+    ]
   },
   "AWS::AppStream::User": {
     "provider": "aws",
@@ -117,7 +137,9 @@
       ],
       "format": "userName/authenticationType"
     },
-    "awsType": "aws:appstream/user:User"
+    "awsTypes": [
+      "aws:appstream/user:User"
+    ]
   },
   "AWS::AppSync::ApiKey": {
     "provider": "aws",
@@ -128,7 +150,9 @@
       ],
       "format": "apiId:key"
     },
-    "awsType": "aws:appsync/apiKey:ApiKey"
+    "awsTypes": [
+      "aws:appsync/apiKey:ApiKey"
+    ]
   },
   "AWS::AutoScalingPlans::ScalingPlan": {
     "provider": "aws",
@@ -138,7 +162,9 @@
       ],
       "format": "name"
     },
-    "awsType": "aws:autoscalingplans/scalingPlan:ScalingPlan"
+    "awsTypes": [
+      "aws:autoscalingplans/scalingPlan:ScalingPlan"
+    ]
   },
   "AWS::Budgets::Budget": {
     "provider": "aws",
@@ -149,7 +175,9 @@
       ],
       "format": "accountId:budgetName"
     },
-    "awsType": "aws:budgets/budget:Budget"
+    "awsTypes": [
+      "aws:budgets/budget:Budget"
+    ]
   },
   "AWS::CUR::ReportDefinition": {
     "provider": "aws",
@@ -159,7 +187,9 @@
       ],
       "format": "reportName"
     },
-    "awsType": "aws:cur/reportDefinition:ReportDefinition"
+    "awsTypes": [
+      "aws:cur/reportDefinition:ReportDefinition"
+    ]
   },
   "AWS::CodeBuild::Project": {
     "provider": "aws",
@@ -169,7 +199,9 @@
       ],
       "format": "name"
     },
-    "awsType": "aws:codebuild/project:Project"
+    "awsTypes": [
+      "aws:codebuild/project:Project"
+    ]
   },
   "AWS::CodeBuild::SourceCredential": {
     "provider": "aws",
@@ -179,7 +211,9 @@
       ],
       "format": "arn"
     },
-    "awsType": "aws:codebuild/sourceCredential:SourceCredential"
+    "awsTypes": [
+      "aws:codebuild/sourceCredential:SourceCredential"
+    ]
   },
   "AWS::CodeBuild::ReportGroup": {
     "provider": "aws",
@@ -189,7 +223,9 @@
       ],
       "format": "arn"
     },
-    "awsType": "aws:codebuild/reportGroup:ReportGroup"
+    "awsTypes": [
+      "aws:codebuild/reportGroup:ReportGroup"
+    ]
   },
   "AWS::CodeCommit::Repository": {
     "provider": "aws",
@@ -199,7 +235,9 @@
       ],
       "format": "repositoryName"
     },
-    "awsType": "aws:codecommit/repository:Repository"
+    "awsTypes": [
+      "aws:codecommit/repository:Repository"
+    ]
   },
   "AWS::CodeDeploy::DeploymentGroup": {
     "provider": "aws",
@@ -210,7 +248,9 @@
       ],
       "format": "appName/deploymentGroupName"
     },
-    "awsType": "aws:codedeploy/deploymentGroup:DeploymentGroup"
+    "awsTypes": [
+      "aws:codedeploy/deploymentGroup:DeploymentGroup"
+    ]
   },
   "AWS::Config::ConfigurationRecorder": {
     "provider": "aws",
@@ -220,7 +260,9 @@
       ],
       "format": "name"
     },
-    "awsType": "aws:config/configurationRecorder:ConfigurationRecorder"
+    "awsTypes": [
+      "aws:cfg/recorder:Recorder"
+    ]
   },
   "AWS::Config::DeliveryChannel": {
     "provider": "aws",
@@ -230,7 +272,9 @@
       ],
       "format": "name"
     },
-    "awsType": "aws:config/deliveryChannel:DeliveryChannel"
+    "awsTypes": [
+      "aws:cfg/deliveryChannel:DeliveryChannel"
+    ]
   },
   "AWS::Config::RemediationConfiguration": {
     "provider": "aws",
@@ -240,7 +284,9 @@
       ],
       "format": "configRuleName"
     },
-    "awsType": "aws:config/remediationConfiguration:RemediationConfiguration"
+    "awsTypes": [
+      "aws:cfg/remediationConfiguration:RemediationConfiguration"
+    ]
   },
   "AWS::DAX::Cluster": {
     "provider": "aws",
@@ -250,7 +296,9 @@
       ],
       "format": "clusterName"
     },
-    "awsType": "aws:dax/cluster:Cluster"
+    "awsTypes": [
+      "aws:dax/cluster:Cluster"
+    ]
   },
   "AWS::DAX::ParameterGroup": {
     "provider": "aws",
@@ -260,7 +308,9 @@
       ],
       "format": "name"
     },
-    "awsType": "aws:dax/parameterGroup:ParameterGroup"
+    "awsTypes": [
+      "aws:dax/parameterGroup:ParameterGroup"
+    ]
   },
   "AWS::DAX::SubnetGroup": {
     "provider": "aws",
@@ -270,7 +320,9 @@
       ],
       "format": "name"
     },
-    "awsType": "aws:dax/subnetGroup:SubnetGroup"
+    "awsTypes": [
+      "aws:dax/subnetGroup:SubnetGroup"
+    ]
   },
   "AWS::DMS::Certificate": {
     "provider": "aws",
@@ -280,7 +332,9 @@
       ],
       "format": "certificateId"
     },
-    "awsType": "aws:dms/certificate:Certificate"
+    "awsTypes": [
+      "aws:dms/certificate:Certificate"
+    ]
   },
   "AWS::DMS::EventSubscription": {
     "provider": "aws",
@@ -290,7 +344,9 @@
       ],
       "format": "name"
     },
-    "awsType": "aws:dms/eventSubscription:EventSubscription"
+    "awsTypes": [
+      "aws:dms/eventSubscription:EventSubscription"
+    ]
   },
   "AWS::DocDB::EventSubscription": {
     "provider": "aws",
@@ -300,7 +356,9 @@
       ],
       "format": "name"
     },
-    "awsType": "aws:docdb/eventSubscription:EventSubscription"
+    "awsTypes": [
+      "aws:docdb/eventSubscription:EventSubscription"
+    ]
   },
   "AWS::EC2::ClientVpnAuthorizationRule": {
     "provider": "aws",
@@ -310,7 +368,9 @@
       ],
       "format": "targetNetworkCidr"
     },
-    "awsType": "aws:ec2/clientVpnAuthorizationRule:ClientVpnAuthorizationRule"
+    "awsTypes": [
+      "aws:ec2clientvpn/authorizationRule:AuthorizationRule"
+    ]
   },
   "AWS::EC2::ClientVpnRoute": {
     "provider": "aws",
@@ -320,7 +380,9 @@
       ],
       "format": "destinationCidrBlock"
     },
-    "awsType": "aws:ec2/clientVpnRoute:ClientVpnRoute"
+    "awsTypes": [
+      "aws:ec2clientvpn/route:Route"
+    ]
   },
   "AWS::EMR::Cluster": {
     "provider": "aws",
@@ -330,7 +392,9 @@
       ],
       "format": "id"
     },
-    "awsType": "aws:emr/cluster:Cluster"
+    "awsTypes": [
+      "aws:emr/cluster:Cluster"
+    ]
   },
   "AWS::ElastiCache::ReplicationGroup": {
     "provider": "aws",
@@ -340,7 +404,9 @@
       ],
       "format": "replicationGroupId"
     },
-    "awsType": "aws:elasticache/replicationGroup:ReplicationGroup"
+    "awsTypes": [
+      "aws:elasticache/replicationGroup:ReplicationGroup"
+    ]
   },
   "AWS::Elasticsearch::Domain": {
     "provider": "aws",
@@ -350,7 +416,9 @@
       ],
       "format": "domainName"
     },
-    "awsType": "aws:elasticsearch/domain:Domain"
+    "awsTypes": [
+      "aws:elasticsearch/domain:Domain"
+    ]
   },
   "AWS::Glue::Classifier": {
     "provider": "aws",
@@ -360,7 +428,9 @@
       ],
       "format": "name"
     },
-    "awsType": "aws:glue/classifier:Classifier"
+    "awsTypes": [
+      "aws:glue/classifier:Classifier"
+    ]
   },
   "AWS::Glue::Connection": {
     "provider": "aws",
@@ -371,7 +441,9 @@
       ],
       "format": "catalogId:name"
     },
-    "awsType": "aws:glue/connection:Connection"
+    "awsTypes": [
+      "aws:glue/connection:Connection"
+    ]
   },
   "AWS::Glue::DataCatalogEncryptionSettings": {
     "provider": "aws",
@@ -381,7 +453,9 @@
       ],
       "format": "catalogId"
     },
-    "awsType": "aws:glue/dataCatalogEncryptionSettings:DataCatalogEncryptionSettings"
+    "awsTypes": [
+      "aws:glue/dataCatalogEncryptionSettings:DataCatalogEncryptionSettings"
+    ]
   },
   "AWS::Glue::DataQualityRuleset": {
     "provider": "aws",
@@ -391,7 +465,9 @@
       ],
       "format": "name"
     },
-    "awsType": "aws:glue/dataQualityRuleset:DataQualityRuleset"
+    "awsTypes": [
+      "aws:glue/dataQualityRuleset:DataQualityRuleset"
+    ]
   },
   "AWS::Glue::DevEndpoint": {
     "provider": "aws",
@@ -401,7 +477,9 @@
       ],
       "format": "name"
     },
-    "awsType": "aws:glue/devEndpoint:DevEndpoint"
+    "awsTypes": [
+      "aws:glue/devEndpoint:DevEndpoint"
+    ]
   },
   "AWS::Glue::MLTransform": {
     "provider": "aws",
@@ -411,7 +489,9 @@
       ],
       "format": "id"
     },
-    "awsType": "aws:glue/mlTransform:MlTransform"
+    "awsTypes": [
+      "aws:glue/mLTransform:MLTransform"
+    ]
   },
   "AWS::Glue::Partition": {
     "provider": "aws",
@@ -424,7 +504,9 @@
       ],
       "format": "catalogId/databaseName/tableName/partitionValues"
     },
-    "awsType": "aws:glue/partition:Partition"
+    "awsTypes": [
+      "aws:glue/partition:Partition"
+    ]
   },
   "AWS::Glue::SecurityConfiguration": {
     "provider": "aws",
@@ -434,7 +516,9 @@
       ],
       "format": "name"
     },
-    "awsType": "aws:glue/securityConfiguration:SecurityConfiguration"
+    "awsTypes": [
+      "aws:glue/securityConfiguration:SecurityConfiguration"
+    ]
   },
   "AWS::Glue::Workflow": {
     "provider": "aws",
@@ -444,7 +528,9 @@
       ],
       "format": "name"
     },
-    "awsType": "aws:glue/workflow:Workflow"
+    "awsTypes": [
+      "aws:glue/workflow:Workflow"
+    ]
   },
   "AWS::IAM::AccessKey": {
     "provider": "aws",
@@ -454,7 +540,9 @@
       ],
       "format": "accessKeyId"
     },
-    "awsType": "aws:iam/accessKey:AccessKey"
+    "awsTypes": [
+      "aws:iam/accessKey:AccessKey"
+    ]
   },
   "AWS::IAM::Policy": {
     "provider": "aws",
@@ -464,7 +552,9 @@
       ],
       "format": "arn"
     },
-    "awsType": "aws:iam/policy:Policy"
+    "awsTypes": [
+      "aws:iam/policy:Policy"
+    ]
   },
   "AWS::Lightsail::Distribution": {
     "provider": "aws",
@@ -474,7 +564,9 @@
       ],
       "format": "name"
     },
-    "awsType": "aws:lightsail/distribution:Distribution"
+    "awsTypes": [
+      "aws:lightsail/distribution:Distribution"
+    ]
   },
   "AWS::MediaLive::Channel": {
     "provider": "aws",
@@ -484,7 +576,9 @@
       ],
       "format": "channelId"
     },
-    "awsType": "aws:medialive/channel:Channel"
+    "awsTypes": [
+      "aws:medialive/channel:Channel"
+    ]
   },
   "AWS::MediaLive::Input": {
     "provider": "aws",
@@ -494,7 +588,9 @@
       ],
       "format": "id"
     },
-    "awsType": "aws:medialive/input:Input"
+    "awsTypes": [
+      "aws:medialive/input:Input"
+    ]
   },
   "AWS::MediaLive::InputSecurityGroup": {
     "provider": "aws",
@@ -504,7 +600,9 @@
       ],
       "format": "id"
     },
-    "awsType": "aws:medialive/inputSecurityGroup:InputSecurityGroup"
+    "awsTypes": [
+      "aws:medialive/inputSecurityGroup:InputSecurityGroup"
+    ]
   },
   "AWS::SES::ReceiptFilter": {
     "provider": "aws",
@@ -514,7 +612,9 @@
       ],
       "format": "name"
     },
-    "awsType": "aws:ses/receiptFilter:ReceiptFilter"
+    "awsTypes": [
+      "aws:ses/receiptFilter:ReceiptFilter"
+    ]
   },
   "AWS::SES::ReceiptRule": {
     "provider": "aws",
@@ -525,7 +625,9 @@
       ],
       "format": "ruleSetName:ruleName"
     },
-    "awsType": "aws:ses/receiptRule:ReceiptRule"
+    "awsTypes": [
+      "aws:ses/receiptRule:ReceiptRule"
+    ]
   },
   "AWS::SES::ReceiptRuleSet": {
     "provider": "aws",
@@ -535,7 +637,9 @@
       ],
       "format": "ruleSetName"
     },
-    "awsType": "aws:ses/receiptRuleSet:ReceiptRuleSet"
+    "awsTypes": [
+      "aws:ses/receiptRuleSet:ReceiptRuleSet"
+    ]
   },
   "AWS::SSM::MaintenanceWindow": {
     "provider": "aws",
@@ -545,7 +649,9 @@
       ],
       "format": "id"
     },
-    "awsType": "aws:ssm/maintenanceWindow:MaintenanceWindow"
+    "awsTypes": [
+      "aws:ssm/maintenanceWindow:MaintenanceWindow"
+    ]
   },
   "AWS::SSM::MaintenanceWindowTarget": {
     "provider": "aws",
@@ -556,7 +662,9 @@
       ],
       "format": "windowId:id"
     },
-    "awsType": "aws:ssm/maintenanceWindowTarget:MaintenanceWindowTarget"
+    "awsTypes": [
+      "aws:ssm/maintenanceWindowTarget:MaintenanceWindowTarget"
+    ]
   },
   "AWS::SSM::MaintenanceWindowTask": {
     "provider": "aws",
@@ -567,7 +675,9 @@
       ],
       "format": "windowId:id"
     },
-    "awsType": "aws:ssm/maintenanceWindowTask:MaintenanceWindowTask"
+    "awsTypes": [
+      "aws:ssm/maintenanceWindowTask:MaintenanceWindowTask"
+    ]
   },
   "AWS::SageMaker::CodeRepository": {
     "provider": "aws",
@@ -577,7 +687,9 @@
       ],
       "format": "codeRepositoryName"
     },
-    "awsType": "aws:sagemaker/codeRepository:CodeRepository"
+    "awsTypes": [
+      "aws:sagemaker/codeRepository:CodeRepository"
+    ]
   },
   "AWS::SageMaker::Model": {
     "provider": "aws",
@@ -587,7 +699,9 @@
       ],
       "format": "name"
     },
-    "awsType": "aws:sagemaker/model:Model"
+    "awsTypes": [
+      "aws:sagemaker/model:Model"
+    ]
   },
   "AWS::SageMaker::NotebookInstance": {
     "provider": "aws",
@@ -597,7 +711,9 @@
       ],
       "format": "name"
     },
-    "awsType": "aws:sagemaker/notebookInstance:NotebookInstance"
+    "awsTypes": [
+      "aws:sagemaker/notebookInstance:NotebookInstance"
+    ]
   },
   "AWS::SageMaker::Workteam": {
     "provider": "aws",
@@ -607,7 +723,9 @@
       ],
       "format": "workteamName"
     },
-    "awsType": "aws:sagemaker/workteam:Workteam"
+    "awsTypes": [
+      "aws:sagemaker/workteam:Workteam"
+    ]
   },
   "AWS::ServiceDiscovery::HttpNamespace": {
     "provider": "aws",
@@ -617,7 +735,9 @@
       ],
       "format": "id"
     },
-    "awsType": "aws:servicediscovery/httpNamespace:HttpNamespace"
+    "awsTypes": [
+      "aws:servicediscovery/httpNamespace:HttpNamespace"
+    ]
   },
   "AWS::ServiceDiscovery::Instance": {
     "provider": "aws",
@@ -627,7 +747,9 @@
       ],
       "format": "id"
     },
-    "awsType": "aws:servicediscovery/instance:Instance"
+    "awsTypes": [
+      "aws:servicediscovery/instance:Instance"
+    ]
   },
   "AWS::ServiceDiscovery::PrivateDnsNamespace": {
     "provider": "aws",
@@ -637,7 +759,9 @@
       ],
       "format": "id"
     },
-    "awsType": "aws:servicediscovery/privateDnsNamespace:PrivateDnsNamespace"
+    "awsTypes": [
+      "aws:servicediscovery/privateDnsNamespace:PrivateDnsNamespace"
+    ]
   },
   "AWS::ServiceDiscovery::PublicDnsNamespace": {
     "provider": "aws",
@@ -647,7 +771,9 @@
       ],
       "format": "id"
     },
-    "awsType": "aws:servicediscovery/publicDnsNamespace:PublicDnsNamespace"
+    "awsTypes": [
+      "aws:servicediscovery/publicDnsNamespace:PublicDnsNamespace"
+    ]
   },
   "AWS::ServiceDiscovery::Service": {
     "provider": "aws",
@@ -657,7 +783,9 @@
       ],
       "format": "id"
     },
-    "awsType": "aws:servicediscovery/service:Service"
+    "awsTypes": [
+      "aws:servicediscovery/service:Service"
+    ]
   },
   "AWS::ServiceCatalog::Portfolio": {
     "provider": "aws",
@@ -667,7 +795,9 @@
       ],
       "format": "id"
     },
-    "awsType": "aws:servicecatalog/portfolio:Portfolio"
+    "awsTypes": [
+      "aws:servicecatalog/portfolio:Portfolio"
+    ]
   },
   "AWS::AppSync::ApiCache": {
     "provider": "aws",
@@ -677,7 +807,9 @@
       ],
       "format": "apiId"
     },
-    "awsType": "aws:appsync/apiCache:ApiCache"
+    "awsTypes": [
+      "aws:appsync/apiCache:ApiCache"
+    ]
   },
   "AWS::DMS::Endpoint": {
     "provider": "aws",
@@ -687,7 +819,9 @@
       ],
       "format": "endpointId"
     },
-    "awsType": "aws:dms/endpoint:Endpoint"
+    "awsTypes": [
+      "aws:dms/endpoint:Endpoint"
+    ]
   },
   "AWS::DMS::ReplicationInstance": {
     "provider": "aws",
@@ -697,7 +831,9 @@
       ],
       "format": "replicationInstanceId"
     },
-    "awsType": "aws:dms/replicationInstance:ReplicationInstance"
+    "awsTypes": [
+      "aws:dms/replicationInstance:ReplicationInstance"
+    ]
   },
   "AWS::DMS::ReplicationSubnetGroup": {
     "provider": "aws",
@@ -707,7 +843,9 @@
       ],
       "format": "replicationSubnetGroupId"
     },
-    "awsType": "aws:dms/replicationSubnetGroup:ReplicationSubnetGroup"
+    "awsTypes": [
+      "aws:dms/replicationSubnetGroup:ReplicationSubnetGroup"
+    ]
   },
   "AWS::DMS::ReplicationTask": {
     "provider": "aws",
@@ -717,7 +855,9 @@
       ],
       "format": "replicationTaskId"
     },
-    "awsType": "aws:dms/replicationTask:ReplicationTask"
+    "awsTypes": [
+      "aws:dms/replicationTask:ReplicationTask"
+    ]
   },
   "AWS::SQS::QueuePolicy": {
     "provider": "aws",
@@ -727,7 +867,9 @@
       ],
       "format": "queueUrl"
     },
-    "awsType": "aws:sqs/queuePolicy:QueuePolicy"
+    "awsTypes": [
+      "aws:sqs/queuePolicy:QueuePolicy"
+    ]
   },
   "AWS::WorkSpaces::Workspace": {
     "provider": "aws",
@@ -737,7 +879,9 @@
       ],
       "format": "workspaceId"
     },
-    "awsType": "aws:workspaces/workspace:Workspace"
+    "awsTypes": [
+      "aws:workspaces/workspace:Workspace"
+    ]
   },
   "AWS::AppStream::StackFleetAssociation": {
     "provider": "aws",
@@ -748,7 +892,9 @@
       ],
       "format": "fleetName/stackName"
     },
-    "awsType": "aws:appstream/fleetStackAssociation:FleetStackAssociation"
+    "awsTypes": [
+      "aws:appstream/fleetStackAssociation:FleetStackAssociation"
+    ]
   },
   "AWS::AppStream::StackUserAssociation": {
     "provider": "aws",
@@ -760,7 +906,9 @@
       ],
       "format": "userName/authenticationType/stackName"
     },
-    "awsType": "aws:appstream/userStackAssociation:UserStackAssociation"
+    "awsTypes": [
+      "aws:appstream/userStackAssociation:UserStackAssociation"
+    ]
   },
   "AWS::DocDB::DBCluster": {
     "provider": "aws",
@@ -770,7 +918,9 @@
       ],
       "format": "dbClusterIdentifier"
     },
-    "awsType": "aws:docdb/cluster:Cluster"
+    "awsTypes": [
+      "aws:docdb/cluster:Cluster"
+    ]
   },
   "AWS::DocDB::DBClusterParameterGroup": {
     "provider": "aws",
@@ -780,7 +930,9 @@
       ],
       "format": "name"
     },
-    "awsType": "aws:docdb/clusterParameterGroup:ClusterParameterGroup"
+    "awsTypes": [
+      "aws:docdb/clusterParameterGroup:ClusterParameterGroup"
+    ]
   },
   "AWS::DocDB::DBInstance": {
     "provider": "aws",
@@ -790,7 +942,9 @@
       ],
       "format": "dbInstanceIdentifier"
     },
-    "awsType": "aws:docdb/clusterInstance:ClusterInstance"
+    "awsTypes": [
+      "aws:docdb/clusterInstance:ClusterInstance"
+    ]
   },
   "AWS::DocDB::DBSubnetGroup": {
     "provider": "aws",
@@ -800,7 +954,9 @@
       ],
       "format": "dbSubnetGroupName"
     },
-    "awsType": "aws:docdb/subnetGroup:SubnetGroup"
+    "awsTypes": [
+      "aws:docdb/subnetGroup:SubnetGroup"
+    ]
   },
   "AWS::EC2::ClientVpnEndpoint": {
     "provider": "aws",
@@ -810,7 +966,9 @@
       ],
       "format": "clientVpnEndpointId"
     },
-    "awsType": "aws:ec2/clientVpnEndpoint:ClientVpnEndpoint"
+    "awsTypes": [
+      "aws:ec2clientvpn/endpoint:Endpoint"
+    ]
   },
   "AWS::ECR::PublicRepository": {
     "provider": "aws",
@@ -820,7 +978,9 @@
       ],
       "format": "repositoryName"
     },
-    "awsType": "aws:ecrpublic/repository:Repository"
+    "awsTypes": [
+      "aws:ecrpublic/repository:Repository"
+    ]
   },
   "AWS::EMR::InstanceFleetConfig": {
     "provider": "aws",
@@ -831,7 +991,9 @@
       ],
       "format": "clusterId/instanceFleetId"
     },
-    "awsType": "aws:emr/instanceFleet:InstanceFleet"
+    "awsTypes": [
+      "aws:emr/instanceFleet:InstanceFleet"
+    ]
   },
   "AWS::EMR::InstanceGroupConfig": {
     "provider": "aws",
@@ -842,7 +1004,9 @@
       ],
       "format": "clusterId/instanceGroupId"
     },
-    "awsType": "aws:emr/instanceGroup:InstanceGroup"
+    "awsTypes": [
+      "aws:emr/instanceGroup:InstanceGroup"
+    ]
   },
   "AWS::ElastiCache::CacheCluster": {
     "provider": "aws",
@@ -852,7 +1016,9 @@
       ],
       "format": "cacheClusterId"
     },
-    "awsType": "aws:elasticache/cluster:Cluster"
+    "awsTypes": [
+      "aws:elasticache/cluster:Cluster"
+    ]
   },
   "AWS::FSx::StorageVirtualMachine": {
     "provider": "aws",
@@ -862,7 +1028,9 @@
       ],
       "format": "storageVirtualMachineId"
     },
-    "awsType": "aws:fsx/ontapStorageVirtualMachine:OntapStorageVirtualMachine"
+    "awsTypes": [
+      "aws:fsx/ontapStorageVirtualMachine:OntapStorageVirtualMachine"
+    ]
   },
   "AWS::Glue::Table": {
     "provider": "aws",
@@ -874,7 +1042,9 @@
       ],
       "format": "catalogId:databaseName:tableName"
     },
-    "awsType": "aws:glue/catalogTable:CatalogTable"
+    "awsTypes": [
+      "aws:glue/catalogTable:CatalogTable"
+    ]
   },
   "AWS::Route53::RecordSetGroup": {
     "provider": "aws",
@@ -884,7 +1054,9 @@
       ],
       "format": "hostedZoneId"
     },
-    "awsType": "aws:route53/record:Record"
+    "awsTypes": [
+      "aws:route53/record:Record"
+    ]
   },
   "AWS::SageMaker::EndpointConfig": {
     "provider": "aws",
@@ -894,7 +1066,9 @@
       ],
       "format": "endpointConfigName"
     },
-    "awsType": "aws:sagemaker/endpointConfiguration:EndpointConfiguration"
+    "awsTypes": [
+      "aws:sagemaker/endpointConfiguration:EndpointConfiguration"
+    ]
   },
   "AWS::SageMaker::NotebookInstanceLifecycleConfig": {
     "provider": "aws",
@@ -904,7 +1078,9 @@
       ],
       "format": "notebookInstanceLifecycleConfigName"
     },
-    "awsType": "aws:sagemaker/notebookInstanceLifecycleConfiguration:NotebookInstanceLifecycleConfiguration"
+    "awsTypes": [
+      "aws:sagemaker/notebookInstanceLifecycleConfiguration:NotebookInstanceLifecycleConfiguration"
+    ]
   },
   "AWS::ServiceCatalog::LaunchRoleConstraint": {
     "provider": "aws",
@@ -914,7 +1090,9 @@
       ],
       "format": "constraintId"
     },
-    "awsType": "aws:servicecatalog/constraint:Constraint"
+    "awsTypes": [
+      "aws:servicecatalog/constraint:Constraint"
+    ]
   },
   "AWS::ServiceCatalog::StackSetConstraint": {
     "provider": "aws",
@@ -924,7 +1102,9 @@
       ],
       "format": "constraintId"
     },
-    "awsType": "aws:servicecatalog/constraint:Constraint"
+    "awsTypes": [
+      "aws:servicecatalog/constraint:Constraint"
+    ]
   },
   "AWS::ServiceCatalog::AcceptedPortfolioShare": {
     "provider": "aws",
@@ -934,7 +1114,9 @@
       ],
       "format": "accountId"
     },
-    "awsType": "aws:servicecatalog/portfolioShare:PortfolioShare"
+    "awsTypes": [
+      "aws:servicecatalog/portfolioShare:PortfolioShare"
+    ]
   },
   "AWS::EC2::ClientVpnTargetNetworkAssociation": {
     "provider": "aws",
@@ -945,7 +1127,9 @@
       ],
       "format": "clientVpnEndpointId,associationId"
     },
-    "awsType": "aws:ec2clientvpn/networkAssociation:NetworkAssociation"
+    "awsTypes": [
+      "aws:ec2clientvpn/networkAssociation:NetworkAssociation"
+    ]
   },
   "AWS::EC2::NetworkAclEntry": {
     "provider": "aws",
@@ -958,7 +1142,9 @@
       ],
       "format": "networkAclId:ruleNumber:protocol:egress"
     },
-    "awsType": "aws:ec2/networkAclRule:NetworkAclRule"
+    "awsTypes": [
+      "aws:ec2/networkAclRule:NetworkAclRule"
+    ]
   },
   "AWS::EC2::NetworkInterfacePermission": {
     "provider": "aws",
@@ -968,7 +1154,9 @@
       ],
       "format": "networkInterfacePermissionId"
     },
-    "awsType": "aws:ec2/networkInterfacePermission:NetworkInterfacePermission"
+    "awsTypes": [
+      "aws:ec2/networkInterfacePermission:NetworkInterfacePermission"
+    ]
   },
   "AWS::ElasticLoadBalancing::LoadBalancer": {
     "provider": "aws",
@@ -978,7 +1166,9 @@
       ],
       "format": "name"
     },
-    "awsType": "aws:elb/loadBalancer:LoadBalancer"
+    "awsTypes": [
+      "aws:elb/loadBalancer:LoadBalancer"
+    ]
   },
   "AWS::IAM::UserToGroupAddition": {
     "provider": "aws",
@@ -989,7 +1179,9 @@
       ],
       "format": "userName/groupNames"
     },
-    "awsType": "aws:iam/userGroupMembership:UserGroupMembership"
+    "awsTypes": [
+      "aws:iam/userGroupMembership:UserGroupMembership"
+    ]
   },
   "AWS::ElasticLoadBalancingV2::ListenerCertificate": {
     "provider": "aws",
@@ -1000,6 +1192,359 @@
       ],
       "format": "listenerArn_certificateArn"
     },
-    "awsType": "aws:lb/listenerCertificate:ListenerCertificate"
+    "awsTypes": [
+      "aws:lb/listenerCertificate:ListenerCertificate"
+    ]
+  },
+  "AWS::AmazonMQ::ConfigurationAssociation": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "id"
+      ],
+      "format": "id"
+    },
+    "awsTypes": [
+      "aws:mq/configuration:Configuration",
+      "aws:mq/broker:Broker"
+    ],
+    "note": "Association via configuration block on Broker"
+  },
+  "AWS::ApiGatewayV2::ApiGatewayManagedOverrides": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "id",
+        "name"
+      ],
+      "format": "id/name"
+    },
+    "awsTypes": [
+      "aws:apigatewayv2/api:Api",
+      "aws:apigatewayv2/stage:Stage"
+    ],
+    "note": "Overrides expressed through Api/Stage args"
+  },
+  "AWS::AppSync::GraphQLSchema": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "id"
+      ],
+      "format": "id"
+    },
+    "awsTypes": [
+      "aws:appsync/graphQLApi:GraphQLApi"
+    ],
+    "note": "Schema provided via graphQLApi schema argument"
+  },
+  "AWS::BCMDataExports::Export": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "exportArn"
+      ],
+      "format": "exportArn"
+    },
+    "awsTypes": [
+      "aws:bcmdata/export:Export"
+    ]
+  },
+  "AWS::CertificateManager::Certificate": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "arn"
+      ],
+      "format": "arn"
+    },
+    "awsTypes": [
+      "aws:acm/certificate:Certificate"
+    ]
+  },
+  "AWS::CloudWatch::AnomalyDetector": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "anomalyDetectorArn"
+      ],
+      "format": "anomalyDetectorArn"
+    },
+    "awsTypes": [
+      "aws:cloudwatch/logAnomalyDetector:LogAnomalyDetector"
+    ]
+  },
+  "AWS::CloudWatch::InsightRule": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "name"
+      ],
+      "format": "name"
+    },
+    "awsTypes": [
+      "aws:cloudwatch/contributorInsightRule:ContributorInsightRule"
+    ]
+  },
+  "AWS::Config::OrganizationConfigRule": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "name"
+      ],
+      "format": "name"
+    },
+    "awsTypes": [
+      "aws:cfg/organizationManagedRule:OrganizationManagedRule",
+      "aws:cfg/organizationCustomRule:OrganizationCustomRule"
+    ],
+    "note": "Managed vs custom rule types"
+  },
+  "AWS::DirectoryService::MicrosoftAD": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "id"
+      ],
+      "format": "id"
+    },
+    "awsTypes": [
+      "aws:directoryservice/directory:Directory"
+    ],
+    "note": "Set edition/type to MicrosoftAD"
+  },
+  "AWS::DLM::LifecyclePolicy": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "id"
+      ],
+      "format": "id"
+    },
+    "awsTypes": [
+      "aws:dlm/lifecyclePolicy:LifecyclePolicy"
+    ]
+  },
+  "AWS::EC2::VPNGatewayRoutePropagation": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "routeTableId",
+        "vpnGatewayId"
+      ],
+      "format": "routeTableId_vpnGatewayId"
+    },
+    "awsTypes": [
+      "aws:ec2/vpnGatewayRoutePropagation:VpnGatewayRoutePropagation"
+    ]
+  },
+  "AWS::FSx::FileSystem": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "id"
+      ],
+      "format": "id"
+    },
+    "awsTypes": [
+      "aws:fsx/lustreFileSystem:LustreFileSystem",
+      "aws:fsx/windowsFileSystem:WindowsFileSystem",
+      "aws:fsx/ontapFileSystem:OntapFileSystem",
+      "aws:fsx/openZfsFileSystem:OpenZfsFileSystem"
+    ],
+    "note": "Different resources per FSx file system type"
+  },
+  "AWS::FSx::Snapshot": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "id"
+      ],
+      "format": "id"
+    },
+    "awsTypes": [
+      "aws:fsx/backup:Backup"
+    ],
+    "note": "Terraform uses backup terminology"
+  },
+  "AWS::FSx::Volume": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "id"
+      ],
+      "format": "id"
+    },
+    "awsTypes": [
+      "aws:fsx/ontapVolume:OntapVolume",
+      "aws:fsx/openZfsVolume:OpenZfsVolume"
+    ],
+    "note": "Different resources per volume type"
+  },
+  "AWS::IoT::PolicyPrincipalAttachment": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "policy",
+        "target"
+      ],
+      "format": "policy|target"
+    },
+    "awsTypes": [
+      "aws:iot/policyAttachment:PolicyAttachment"
+    ]
+  },
+  "AWS::IoT::ThingPrincipalAttachment": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "thing",
+        "principal"
+      ],
+      "format": "thing|principal"
+    },
+    "awsTypes": [
+      "aws:iot/thingPrincipalAttachment:ThingPrincipalAttachment"
+    ]
+  },
+  "AWS::KinesisAnalyticsV2::ApplicationCloudWatchLoggingOption": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "name"
+      ],
+      "format": "name"
+    },
+    "awsTypes": [
+      "aws:kinesisanalyticsv2/application:Application"
+    ],
+    "note": "Modeled as nested cloudwatch_logging_options block"
+  },
+  "AWS::KinesisAnalyticsV2::ApplicationOutput": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "name"
+      ],
+      "format": "name"
+    },
+    "awsTypes": [
+      "aws:kinesisanalyticsv2/application:Application"
+    ],
+    "note": "Modeled as nested output block"
+  },
+  "AWS::KinesisAnalyticsV2::ApplicationReferenceDataSource": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "name"
+      ],
+      "format": "name"
+    },
+    "awsTypes": [
+      "aws:kinesisanalyticsv2/application:Application"
+    ],
+    "note": "Modeled as reference_data_source block"
+  },
+  "AWS::LakeFormation::DataLakeSettings": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "catalogId"
+      ],
+      "format": "catalogId"
+    },
+    "awsTypes": [
+      "aws:lakeformation/dataLakeSettings:DataLakeSettings"
+    ]
+  },
+  "AWS::LakeFormation::Permissions": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "principal",
+        "resourceIdentifiers"
+      ],
+      "format": "principal,resourceIdentifiers"
+    },
+    "awsTypes": [
+      "aws:lakeformation/permissions:Permissions"
+    ]
+  },
+  "AWS::LakeFormation::Resource": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "arn"
+      ],
+      "format": "arn"
+    },
+    "awsTypes": [
+      "aws:lakeformation/resource:Resource"
+    ]
+  },
+  "AWS::Lightsail::Domain": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "domainName"
+      ],
+      "format": "domainName"
+    },
+    "awsTypes": [
+      "aws:lightsail/domain:Domain"
+    ]
+  },
+  "AWS::MediaConvert::JobTemplate": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "name"
+      ],
+      "format": "name"
+    },
+    "awsTypes": [
+      "aws:mediaconvert/queue:Queue"
+    ],
+    "note": "Job templates managed on the queue resource"
+  },
+  "AWS::MediaConvert::Preset": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "name"
+      ],
+      "format": "name"
+    },
+    "awsTypes": [
+      "aws:mediaconvert/queue:Queue"
+    ],
+    "note": "Presets managed on the queue resource"
+  },
+  "AWS::MediaConvert::Queue": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "name"
+      ],
+      "format": "name"
+    },
+    "awsTypes": [
+      "aws:mediaconvert/queue:Queue"
+    ]
+  },
+  "AWS::Route53::RecordSet": {
+    "provider": "aws",
+    "primaryIdentifier": {
+      "parts": [
+        "zoneId",
+        "name",
+        "type"
+      ],
+      "format": "zoneId_name_type"
+    },
+    "awsTypes": [
+      "aws:route53/record:Record"
+    ]
   }
 }
