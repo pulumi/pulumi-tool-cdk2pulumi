@@ -364,9 +364,10 @@
     "provider": "aws",
     "primaryIdentifier": {
       "parts": [
+        "clientVpnEndpointId",
         "targetNetworkCidr"
       ],
-      "format": "targetNetworkCidr"
+      "format": "clientVpnEndpointId,targetNetworkCidr"
     },
     "awsTypes": [
       "aws:ec2clientvpn/authorizationRule:AuthorizationRule"
@@ -376,9 +377,11 @@
     "provider": "aws",
     "primaryIdentifier": {
       "parts": [
+        "clientVpnEndpointId",
+        "targetSubnetId",
         "destinationCidrBlock"
       ],
-      "format": "destinationCidrBlock"
+      "format": "clientVpnEndpointId,targetSubnetId,destinationCidrBlock"
     },
     "awsTypes": [
       "aws:ec2clientvpn/route:Route"
@@ -502,11 +505,12 @@
         "tableName",
         "partitionValues"
       ],
-      "format": "catalogId/databaseName/tableName/partitionValues"
+      "format": "catalogId:databaseName:tableName:partitionValues"
     },
     "awsTypes": [
       "aws:glue/partition:Partition"
-    ]
+    ],
+    "note": "Use a `#` delimiter between partition values, e.g. `123456789012:MyDatabase:MyTable:val1#val2`"
   },
   "AWS::Glue::SecurityConfiguration": {
     "provider": "aws",
@@ -1116,7 +1120,8 @@
     },
     "awsTypes": [
       "aws:servicecatalog/portfolioShare:PortfolioShare"
-    ]
+    ],
+    "note": "Import using the portfolio share ID. For example: port-12344321:ACCOUNT:123456789012"
   },
   "AWS::EC2::ClientVpnTargetNetworkAssociation": {
     "provider": "aws",
@@ -1181,7 +1186,8 @@
     },
     "awsTypes": [
       "aws:iam/userGroupMembership:UserGroupMembership"
-    ]
+    ],
+    "note": "to import IAM user group membership using the user name and group names separated by /. For example: `user1/group1/group2`"
   },
   "AWS::ElasticLoadBalancingV2::ListenerCertificate": {
     "provider": "aws",
