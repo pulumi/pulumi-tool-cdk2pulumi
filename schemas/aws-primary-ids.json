@@ -506,86 +506,6 @@
     },
     "awsType": "aws:medialive/inputSecurityGroup:InputSecurityGroup"
   },
-  "AWS::Pinpoint::APNSChannel": {
-    "provider": "aws",
-    "primaryIdentifier": {
-      "parts": [
-        "applicationId"
-      ],
-      "format": "applicationId"
-    },
-    "awsType": "aws:pinpoint/apnsChannel:ApnsChannel"
-  },
-  "AWS::Pinpoint::APNSSandboxChannel": {
-    "provider": "aws",
-    "primaryIdentifier": {
-      "parts": [
-        "applicationId"
-      ],
-      "format": "applicationId"
-    },
-    "awsType": "aws:pinpoint/apnsSandboxChannel:ApnsSandboxChannel"
-  },
-  "AWS::Pinpoint::APNSVoipChannel": {
-    "provider": "aws",
-    "primaryIdentifier": {
-      "parts": [
-        "applicationId"
-      ],
-      "format": "applicationId"
-    },
-    "awsType": "aws:pinpoint/apnsVoipChannel:ApnsVoipChannel"
-  },
-  "AWS::Pinpoint::APNSVoipSandboxChannel": {
-    "provider": "aws",
-    "primaryIdentifier": {
-      "parts": [
-        "applicationId"
-      ],
-      "format": "applicationId"
-    },
-    "awsType": "aws:pinpoint/apnsVoipSandboxChannel:ApnsVoipSandboxChannel"
-  },
-  "AWS::Pinpoint::App": {
-    "provider": "aws",
-    "primaryIdentifier": {
-      "parts": [
-        "applicationId"
-      ],
-      "format": "applicationId"
-    },
-    "awsType": "aws:pinpoint/app:App"
-  },
-  "AWS::Pinpoint::GCMChannel": {
-    "provider": "aws",
-    "primaryIdentifier": {
-      "parts": [
-        "applicationId"
-      ],
-      "format": "applicationId"
-    },
-    "awsType": "aws:pinpoint/gcmChannel:GcmChannel"
-  },
-  "AWS::Pinpoint::SMSChannel": {
-    "provider": "aws",
-    "primaryIdentifier": {
-      "parts": [
-        "applicationId"
-      ],
-      "format": "applicationId"
-    },
-    "awsType": "aws:pinpoint/smsChannel:SmsChannel"
-  },
-  "AWS::QLDB::Ledger": {
-    "provider": "aws",
-    "primaryIdentifier": {
-      "parts": [
-        "name"
-      ],
-      "format": "name"
-    },
-    "awsType": "aws:qldb/ledger:Ledger"
-  },
   "AWS::SES::ReceiptFilter": {
     "provider": "aws",
     "primaryIdentifier": {
@@ -749,147 +669,6 @@
     },
     "awsType": "aws:servicecatalog/portfolio:Portfolio"
   },
-  "AWS::WAF::ByteMatchSet": {
-    "provider": "aws",
-    "primaryIdentifier": {
-      "parts": [
-        "id"
-      ],
-      "format": "id"
-    },
-    "awsType": "aws:waf/byteMatchSet:ByteMatchSet"
-  },
-  "AWS::WAF::Rule": {
-    "provider": "aws",
-    "primaryIdentifier": {
-      "parts": [
-        "id"
-      ],
-      "format": "id"
-    },
-    "awsType": "aws:waf/rule:Rule"
-  },
-  "AWS::WAF::SizeConstraintSet": {
-    "provider": "aws",
-    "primaryIdentifier": {
-      "parts": [
-        "id"
-      ],
-      "format": "id"
-    },
-    "awsType": "aws:waf/sizeConstraintSet:SizeConstraintSet"
-  },
-  "AWS::WAF::SqlInjectionMatchSet": {
-    "provider": "aws",
-    "primaryIdentifier": {
-      "parts": [
-        "id"
-      ],
-      "format": "id"
-    },
-    "awsType": "aws:waf/sqlInjectionMatchSet:SqlInjectionMatchSet"
-  },
-  "AWS::WAF::WebACL": {
-    "provider": "aws",
-    "primaryIdentifier": {
-      "parts": [
-        "id"
-      ],
-      "format": "id"
-    },
-    "awsType": "aws:waf/webAcl:WebAcl"
-  },
-  "AWS::WAFRegional::ByteMatchSet": {
-    "provider": "aws",
-    "primaryIdentifier": {
-      "parts": [
-        "id"
-      ],
-      "format": "id"
-    },
-    "awsType": "aws:wafregional/byteMatchSet:ByteMatchSet"
-  },
-  "AWS::WAFRegional::GeoMatchSet": {
-    "provider": "aws",
-    "primaryIdentifier": {
-      "parts": [
-        "id"
-      ],
-      "format": "id"
-    },
-    "awsType": "aws:wafregional/geoMatchSet:GeoMatchSet"
-  },
-  "AWS::WAFRegional::RateBasedRule": {
-    "provider": "aws",
-    "primaryIdentifier": {
-      "parts": [
-        "id"
-      ],
-      "format": "id"
-    },
-    "awsType": "aws:wafregional/rateBasedRule:RateBasedRule"
-  },
-  "AWS::WAFRegional::RegexPatternSet": {
-    "provider": "aws",
-    "primaryIdentifier": {
-      "parts": [
-        "id"
-      ],
-      "format": "id"
-    },
-    "awsType": "aws:wafregional/regexPatternSet:RegexPatternSet"
-  },
-  "AWS::WAFRegional::Rule": {
-    "provider": "aws",
-    "primaryIdentifier": {
-      "parts": [
-        "id"
-      ],
-      "format": "id"
-    },
-    "awsType": "aws:wafregional/rule:Rule"
-  },
-  "AWS::WAFRegional::SizeConstraintSet": {
-    "provider": "aws",
-    "primaryIdentifier": {
-      "parts": [
-        "id"
-      ],
-      "format": "id"
-    },
-    "awsType": "aws:wafregional/sizeConstraintSet:SizeConstraintSet"
-  },
-  "AWS::WAFRegional::SqlInjectionMatchSet": {
-    "provider": "aws",
-    "primaryIdentifier": {
-      "parts": [
-        "id"
-      ],
-      "format": "id"
-    },
-    "awsType": "aws:wafregional/sqlInjectionMatchSet:SqlInjectionMatchSet"
-  },
-  "AWS::WAFRegional::WebACL": {
-    "provider": "aws",
-    "primaryIdentifier": {
-      "parts": [
-        "id"
-      ],
-      "format": "id"
-    },
-    "awsType": "aws:wafregional/webAcl:WebAcl"
-  },
-  "AWS::WAFRegional::WebACLAssociation": {
-    "provider": "aws",
-    "primaryIdentifier": {
-      "parts": [
-        "webAclId",
-        "resourceArn"
-      ],
-      "format": "webAclId/resourceArn"
-    },
-    "awsType": "aws:wafregional/webAclAssociation:WebAclAssociation"
-  },
   "AWS::AppSync::ApiCache": {
     "provider": "aws",
     "primaryIdentifier": {
@@ -940,46 +719,6 @@
     },
     "awsType": "aws:dms/replicationTask:ReplicationTask"
   },
-  "AWS::Pinpoint::ADMChannel": {
-    "provider": "aws",
-    "primaryIdentifier": {
-      "parts": [
-        "applicationId"
-      ],
-      "format": "applicationId"
-    },
-    "awsType": "aws:pinpoint/admChannel:AdmChannel"
-  },
-  "AWS::Pinpoint::BaiduChannel": {
-    "provider": "aws",
-    "primaryIdentifier": {
-      "parts": [
-        "applicationId"
-      ],
-      "format": "applicationId"
-    },
-    "awsType": "aws:pinpoint/baiduChannel:BaiduChannel"
-  },
-  "AWS::Pinpoint::EmailChannel": {
-    "provider": "aws",
-    "primaryIdentifier": {
-      "parts": [
-        "applicationId"
-      ],
-      "format": "applicationId"
-    },
-    "awsType": "aws:pinpoint/emailChannel:EmailChannel"
-  },
-  "AWS::Pinpoint::EventStream": {
-    "provider": "aws",
-    "primaryIdentifier": {
-      "parts": [
-        "applicationId"
-      ],
-      "format": "applicationId"
-    },
-    "awsType": "aws:pinpoint/eventStream:EventStream"
-  },
   "AWS::SQS::QueuePolicy": {
     "provider": "aws",
     "primaryIdentifier": {
@@ -989,26 +728,6 @@
       "format": "queueUrl"
     },
     "awsType": "aws:sqs/queuePolicy:QueuePolicy"
-  },
-  "AWS::WAF::XssMatchSet": {
-    "provider": "aws",
-    "primaryIdentifier": {
-      "parts": [
-        "id"
-      ],
-      "format": "id"
-    },
-    "awsType": "aws:waf/xssMatchSet:XssMatchSet"
-  },
-  "AWS::WAFRegional::XssMatchSet": {
-    "provider": "aws",
-    "primaryIdentifier": {
-      "parts": [
-        "id"
-      ],
-      "format": "id"
-    },
-    "awsType": "aws:wafregional/xssMatchSet:XssMatchSet"
   },
   "AWS::WorkSpaces::Workspace": {
     "provider": "aws",
@@ -1282,15 +1001,5 @@
       "format": "listenerArn_certificateArn"
     },
     "awsType": "aws:lb/listenerCertificate:ListenerCertificate"
-  },
-  "AWS::KinesisAnalytics::Application": {
-    "provider": "aws",
-    "primaryIdentifier": {
-      "parts": [
-        "arn"
-      ],
-      "format": "arn"
-    },
-    "awsType": "aws:kinesis/analyticsApplication:AnalyticsApplication"
   }
 }
