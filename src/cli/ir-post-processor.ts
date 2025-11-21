@@ -182,6 +182,14 @@ function rewriteResources(
     // Rewrite dependsOn references from policies to roles
     const rewrittenResource = rewriteDependsOn(resource, policyToRoleMapping);
     rewritten.push(rewrittenResource);
+
+    if (rewrittenResource.typeToken.startsWith('aws-native:')) {
+      collector?.success(
+        stack,
+        resource,
+        rewrittenResource.typeToken,
+      );
+    }
   }
 
   return rewritten;
@@ -208,6 +216,13 @@ function recordConversionArtifacts(
   }
   if (produced.length > 1) {
     collector.fanOut(stack, source, produced);
+  }
+
+  // Also report success for any aws-native resources produced
+  for (const res of produced) {
+    if (res.typeToken.startsWith('aws-native:')) {
+      collector.success(stack, source, res.typeToken);
+    }
   }
 }
 

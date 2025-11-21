@@ -23,10 +23,18 @@ export interface FanOutEntry {
   emittedResources: Array<{ logicalId: string; typeToken: string }>;
 }
 
+export interface SuccessEntry {
+  kind: 'success';
+  logicalId: string;
+  cfnType: string;
+  typeToken: string;
+}
+
 export type ConversionReportEntry =
   | SkippedResourceEntry
   | ClassicConversionEntry
-  | FanOutEntry;
+  | FanOutEntry
+  | SuccessEntry;
 
 export interface StackConversionReport {
   stackId: string;
@@ -58,9 +66,10 @@ export interface ConversionReportCollector {
     resource: ResourceIR,
     emittedResources: ResourceIR[],
   ): void;
+  success(stack: StackIR, resource: ResourceIR, typeToken: string): void;
 }
 
-interface MutableStackReport extends StackConversionReport {}
+interface MutableStackReport extends StackConversionReport { }
 
 export class ConversionReportBuilder implements ConversionReportCollector {
   private readonly stackOrder: string[] = [];
@@ -134,6 +143,16 @@ export class ConversionReportBuilder implements ConversionReportCollector {
         logicalId: res.logicalId,
         typeToken: res.typeToken,
       })),
+    });
+  }
+
+  success(stack: StackIR, resource: ResourceIR, typeToken: string): void {
+    const report = this.getStackReport(stack.stackId);
+    report.entries.push({
+      kind: 'success',
+      logicalId: resource.logicalId,
+      cfnType: resource.cfnType,
+      typeToken,
     });
   }
 
