@@ -14,9 +14,10 @@ export interface ResourceMetadataProvider {
 /**
  * Intrinsic value adapter that emits IR-friendly references instead of Pulumi Outputs.
  */
-export class IrIntrinsicValueAdapter
-  implements IntrinsicValueAdapter<any, PropertyValue>
-{
+export class IrIntrinsicValueAdapter implements IntrinsicValueAdapter<
+  any,
+  PropertyValue
+> {
   private readonly metadata: ResourceMetadataProvider;
 
   constructor(metadata?: ResourceMetadataProvider) {

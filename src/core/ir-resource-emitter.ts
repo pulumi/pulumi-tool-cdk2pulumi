@@ -11,9 +11,11 @@ export interface IrResourceOptions {
   retainOnDelete?: boolean;
 }
 
-export class IrResourceEmitter
-  implements ResourceEmitter<ResourceIR, IrResourceOptions, StackAddress>
-{
+export class IrResourceEmitter implements ResourceEmitter<
+  ResourceIR,
+  IrResourceOptions,
+  StackAddress
+> {
   constructor(private readonly stack: StackIR) {}
 
   emitResource(
