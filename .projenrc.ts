@@ -21,6 +21,11 @@ const project = new TypeScriptProject({
     'yaml',
     'mock-fs',
   ],
+  workflowBootstrapSteps: [
+    {
+      uses: 'oven-sh/setup-bun@v2',
+    },
+  ],
 
   // deps: [],                /* Runtime dependencies of this module. */
   // description: undefined,  /* The description is just a string that helps people understand the purpose of the package. */
