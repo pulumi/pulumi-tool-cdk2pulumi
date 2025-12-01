@@ -67,7 +67,7 @@ export class AssemblyAnalyzer {
       type: AssetType,
       stackId: string,
       logicalId?: string,
-      path?: string,
+      assetPath?: string,
     ) => {
       if (!uniqueAssets.has(id)) {
         const details = assetLookup(id);
@@ -76,7 +76,7 @@ export class AssemblyAnalyzer {
           stackId,
           type,
           logicalId,
-          path,
+          path: assetPath,
           packaging: details?.packaging,
         });
       }

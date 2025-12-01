@@ -11,7 +11,7 @@ const project = new TypeScriptProject({
   ],
   release: true,
   releaseToNpm: false,
-  name: 'pulumi-cdk-convert',
+  name: 'cdk2pulumi',
   projenrcTs: true,
   packageManager: javascript.NodePackageManager.NPM,
   deps: [

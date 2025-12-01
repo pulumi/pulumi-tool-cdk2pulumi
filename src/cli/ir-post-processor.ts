@@ -6,6 +6,8 @@ import {
   PropertyMap,
   PropertyValue,
   ResourceAttributeReference,
+  Metadata,
+  PulumiProvider,
 } from '../core';
 import { ConversionReportCollector } from './conversion-report';
 
@@ -27,11 +29,17 @@ export function postProcessProgramIr(
   const bootstrapBucket = options.skipCustomResources
     ? undefined
     : findBootstrapBucket(program);
+  const metadata = new Metadata(PulumiProvider.AWS_NATIVE);
   return {
     ...program,
     stacks: program.stacks.map((stack) => {
       options.reportCollector?.stackStarted(stack);
-      const resources = rewriteResources(stack, bootstrapBucket, options);
+      const resources = rewriteResources(
+        stack,
+        bootstrapBucket,
+        metadata,
+        options,
+      );
       options.reportCollector?.stackFinished(stack, resources.length);
       return {
         ...stack,
@@ -44,6 +52,7 @@ export function postProcessProgramIr(
 function rewriteResources(
   stack: StackIR,
   bootstrapBucket: BootstrapBucketRef | undefined,
+  metadata: Metadata,
   options: PostProcessOptions = {},
 ): ResourceIR[] {
   const collector = options.reportCollector;
@@ -154,6 +163,15 @@ function rewriteResources(
       continue;
     }
 
+    if (resource.cfnType === 'AWS::SQS::QueuePolicy') {
+      const converted = convertQueuePolicy(resource);
+      recordConversionArtifacts(collector, stack, resource, converted);
+      for (const res of converted) {
+        rewritten.push(rewriteDependsOn(res, policyToRoleMapping));
+      }
+      continue;
+    }
+
     // Check if this is a Role resource that needs inline policies merged
     if (resource.cfnType === 'AWS::IAM::Role') {
       const converted = mergeInlinePoliciesIntoRole(resource, policiesByRole);
@@ -183,16 +201,15 @@ function rewriteResources(
     const rewrittenResource = rewriteDependsOn(resource, policyToRoleMapping);
     rewritten.push(rewrittenResource);
 
-    if (rewrittenResource.typeToken.startsWith('aws-native:')) {
-      collector?.success(
-        stack,
-        resource,
-        rewrittenResource.typeToken,
-      );
+    if (
+      rewrittenResource.typeToken.startsWith('aws-native:') &&
+      !isUnsupportedResource(rewrittenResource, metadata)
+    ) {
+      collector?.success(stack, resource, rewrittenResource.typeToken);
     }
   }
 
-  return rewritten;
+  return filterUnsupportedResources(stack, rewritten, collector, metadata);
 }
 
 function recordConversionArtifacts(
@@ -398,6 +415,33 @@ function convertCustomResource(
   };
 }
 
+function convertQueuePolicy(resource: ResourceIR): ResourceIR[] {
+  const props = resource.props;
+  if (!Array.isArray(props.queues)) {
+    throw new Error('QueuePolicy has an invalid value for `queues` property');
+  }
+
+  const policyDocument =
+    resource.cfnProperties.PolicyDocument ??
+    (props as PropertyMap).policyDocument;
+
+  return props.queues.flatMap((queue: PropertyValue, idx: number) => {
+    const logicalId =
+      idx === 0 ? resource.logicalId : `${resource.logicalId}-policy-${idx}`;
+    const convertedProps = removeUndefined({
+      policy: policyDocument,
+      queueUrl: queue,
+    });
+
+    return {
+      ...resource,
+      logicalId,
+      typeToken: 'aws:sqs/queuePolicy:QueuePolicy',
+      props: convertedProps,
+    };
+  });
+}
+
 function resolveBootstrapBucketName(
   bucket: BootstrapBucketRef,
 ): PropertyValue | undefined {
@@ -516,6 +560,45 @@ function isCustomResource(resource: ResourceIR): boolean {
     resource.cfnType === 'AWS::CloudFormation::CustomResource' ||
     resource.cfnType.startsWith('Custom::')
   );
+}
+
+function filterUnsupportedResources(
+  stack: StackIR,
+  resources: ResourceIR[],
+  collector: ConversionReportCollector | undefined,
+  metadata: Metadata,
+): ResourceIR[] {
+  const supported: ResourceIR[] = [];
+  for (const resource of resources) {
+    if (isUnsupportedResource(resource, metadata)) {
+      collector?.unsupportedType(
+        stack,
+        resource,
+        'Type not found in aws-native metadata',
+      );
+      continue;
+    }
+    supported.push(resource);
+  }
+  return supported;
+}
+
+function isUnsupportedResource(
+  resource: ResourceIR,
+  metadata: Metadata,
+): boolean {
+  if (!resource.typeToken.startsWith('aws-native:')) {
+    return false;
+  }
+
+  // Synthetic emulator should always be allowed even though it has no metadata entry
+  if (
+    resource.typeToken === 'aws-native:cloudformation:CustomResourceEmulator'
+  ) {
+    return false;
+  }
+
+  return metadata.tryFindResource(resource.cfnType) === undefined;
 }
 
 function findBootstrapBucket(

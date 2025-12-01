@@ -1,5 +1,5 @@
 {
-  "name": "pulumi-cdk-convert",
+  "name": "cdk2pulumi",
   "scripts": {
     "build": "npx projen build",
     "bump": "npx projen bump",

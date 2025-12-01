@@ -1,3 +1,4 @@
+import { ConversionReportBuilder } from '../../src/cli/conversion-report';
 import { postProcessProgramIr } from '../../src/cli/ir-post-processor';
 import { ProgramIR } from '../../src/core';
 
@@ -287,5 +288,146 @@ describe('postProcessProgramIr', () => {
       skipCustomResources: true,
     });
     expect(processed.stacks[0].resources).toHaveLength(0);
+  });
+
+  test('drops unsupported aws-native resources and reports them', () => {
+    const program: ProgramIR = {
+      stacks: [
+        {
+          stackId: 'AppStack',
+          stackPath: 'App/Stack',
+          resources: [
+            makeResource({
+              logicalId: 'Unsupported',
+              cfnType: 'AWS::NotAReal::Thing',
+              typeToken: 'aws-native:notareal:Thing',
+            }),
+          ],
+        },
+      ],
+    } as any;
+
+    const report = new ConversionReportBuilder();
+    const processed = postProcessProgramIr(program, {
+      reportCollector: report,
+    });
+
+    // Unsupported resource should be omitted from emitted stacks
+    expect(processed.stacks[0].resources).toHaveLength(0);
+
+    const built = report.build();
+    expect(built.stacks).toHaveLength(1);
+    expect(built.stacks[0].entries).toEqual([
+      {
+        kind: 'unsupportedType',
+        logicalId: 'Unsupported',
+        cfnType: 'AWS::NotAReal::Thing',
+        reason: 'Type not found in aws-native metadata',
+      },
+    ]);
+    expect(built.stacks[0].emittedResourceCount).toBe(0);
+    expect(built.stacks[0].originalResourceCount).toBe(1);
+  });
+
+  test('does not drop classic fallbacks as unsupported', () => {
+    const program: ProgramIR = {
+      stacks: [
+        {
+          stackId: 'AppStack',
+          stackPath: 'App/Stack',
+          resources: [
+            makeResource({
+              logicalId: 'Stage',
+              cfnType: 'AWS::ApiGatewayV2::Stage',
+              cfnProperties: {
+                ApiId: 'api-123',
+                StageName: '$default',
+              },
+            }),
+          ],
+        },
+      ],
+    } as any;
+
+    const report = new ConversionReportBuilder();
+    const processed = postProcessProgramIr(program, {
+      reportCollector: report,
+    });
+
+    expect(processed.stacks[0].resources).toHaveLength(1);
+    expect(processed.stacks[0].resources[0].typeToken).toBe(
+      'aws:apigatewayv2/stage:Stage',
+    );
+
+    const entries = report.build().stacks[0].entries;
+    expect(entries.find((e) => e.kind === 'unsupportedType')).toBeUndefined();
+    expect(
+      entries.find(
+        (e) =>
+          e.kind === 'classicFallback' &&
+          e.logicalId === 'Stage' &&
+          e.cfnType === 'AWS::ApiGatewayV2::Stage',
+      ),
+    ).toBeDefined();
+  });
+
+  test('converts SQS QueuePolicy to classic and fans out per queue', () => {
+    const program: ProgramIR = {
+      stacks: [
+        {
+          stackId: 'AppStack',
+          stackPath: 'App/Stack',
+          resources: [
+            makeResource({
+              logicalId: 'MyQueuePolicy',
+              cfnType: 'AWS::SQS::QueuePolicy',
+              cfnProperties: {
+                PolicyDocument: {
+                  Version: '2012-10-17',
+                  Statement: [{ Effect: 'Allow', Action: '*', Resource: '*' }],
+                },
+                Queues: ['https://example.com/q1', 'https://example.com/q2'],
+              },
+              props: {
+                queues: ['https://example.com/q1', 'https://example.com/q2'],
+              },
+              options: {
+                dependsOn: [{ id: 'Queue', stackPath: 'App/Stack' }],
+              },
+            }),
+          ],
+        },
+      ],
+    } as any;
+
+    const processed = postProcessProgramIr(program);
+    const resources = processed.stacks[0].resources;
+    expect(resources).toHaveLength(2);
+
+    expect(resources[0]).toMatchObject({
+      logicalId: 'MyQueuePolicy',
+      typeToken: 'aws:sqs/queuePolicy:QueuePolicy',
+      props: {
+        policy: {
+          Version: '2012-10-17',
+          Statement: [{ Effect: 'Allow', Action: '*', Resource: '*' }],
+        },
+        queueUrl: 'https://example.com/q1',
+      },
+      options: {
+        dependsOn: [{ id: 'Queue', stackPath: 'App/Stack' }],
+      },
+    });
+
+    expect(resources[1]).toMatchObject({
+      logicalId: 'MyQueuePolicy-policy-1',
+      typeToken: 'aws:sqs/queuePolicy:QueuePolicy',
+      props: {
+        queueUrl: 'https://example.com/q2',
+      },
+      options: {
+        dependsOn: [{ id: 'Queue', stackPath: 'App/Stack' }],
+      },
+    });
   });
 });

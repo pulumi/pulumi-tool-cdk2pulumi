@@ -21,7 +21,7 @@ interface MutableResourceTypeEntry {
  */
 export function summarizeResourceInventory(
   stacks: StackManifest[],
-  assetLookup: AssetLookup,
+  assetLookup: AssetLookup = () => undefined,
 ): ResourceInventorySummary {
   const metadata = new Metadata(PulumiProvider.AWS_NATIVE);
   const aggregates = new Map<string, MutableResourceTypeEntry>();

@@ -101,19 +101,19 @@ export function processMetadataProperty(
   switch (true) {
     case property.type === 'object' &&
       property.additionalProperties !== undefined: {
-        const props = processMetadataProperty(
-          property.additionalProperties,
-          types,
-          pulumiProvider,
-        );
-        return {
-          meta: props.meta,
-          nativeType:
-            props.nativeType === NativeType.JSON
-              ? props.nativeType
-              : NativeType.ADDITIONAL_PROPERTIES,
-        };
-      }
+      const props = processMetadataProperty(
+        property.additionalProperties,
+        types,
+        pulumiProvider,
+      );
+      return {
+        meta: props.meta,
+        nativeType:
+          props.nativeType === NativeType.JSON
+            ? props.nativeType
+            : NativeType.ADDITIONAL_PROPERTIES,
+      };
+    }
     case property.type !== undefined &&
       property.$ref === undefined &&
       property.properties === undefined &&

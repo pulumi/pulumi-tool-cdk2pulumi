@@ -2,6 +2,13 @@ import { ResourceIR, StackIR } from '../core';
 
 export type SkipResourceReason = 'cdkMetadata' | 'customResourceFiltered';
 
+export interface UnsupportedResourceEntry {
+  kind: 'unsupportedType';
+  logicalId: string;
+  cfnType: string;
+  reason?: string;
+}
+
 export interface SkippedResourceEntry {
   kind: 'skipped';
   logicalId: string;
@@ -31,6 +38,7 @@ export interface SuccessEntry {
 }
 
 export type ConversionReportEntry =
+  | UnsupportedResourceEntry
   | SkippedResourceEntry
   | ClassicConversionEntry
   | FanOutEntry
@@ -67,9 +75,10 @@ export interface ConversionReportCollector {
     emittedResources: ResourceIR[],
   ): void;
   success(stack: StackIR, resource: ResourceIR, typeToken: string): void;
+  unsupportedType(stack: StackIR, resource: ResourceIR, reason?: string): void;
 }
 
-interface MutableStackReport extends StackConversionReport { }
+interface MutableStackReport extends StackConversionReport {}
 
 export class ConversionReportBuilder implements ConversionReportCollector {
   private readonly stackOrder: string[] = [];
@@ -153,6 +162,16 @@ export class ConversionReportBuilder implements ConversionReportCollector {
       logicalId: resource.logicalId,
       cfnType: resource.cfnType,
       typeToken,
+    });
+  }
+
+  unsupportedType(stack: StackIR, resource: ResourceIR, reason?: string): void {
+    const report = this.getStackReport(stack.stackId);
+    report.entries.push({
+      kind: 'unsupportedType',
+      logicalId: resource.logicalId,
+      cfnType: resource.cfnType,
+      reason,
     });
   }
 
