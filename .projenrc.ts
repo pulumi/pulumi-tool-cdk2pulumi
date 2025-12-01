@@ -51,7 +51,7 @@ const packageLinuxArm = project.addTask('package:linux:arm', {
       env: {
         VERSION: "$(jq -r '.version' package.json)",
       },
-      exec: 'tar -czf dist/pulumi-tool-cdk2pulumi-v${VERSION}-linux-arm64.tar.gz dist/bin/linux-arm64/cdk2pulumi',
+      exec: 'tar -czf dist/pulumi-tool-cdk2pulumi-v${VERSION}-linux-arm64.tar.gz -C dist/bin/linux-arm64 cdk2pulumi',
     },
   ],
 });
@@ -64,7 +64,7 @@ const packageMacos = project.addTask('package:macos:arm', {
       env: {
         VERSION: "$(jq -r '.version' package.json)",
       },
-      exec: 'tar -czf dist/pulumi-tool-cdk2pulumi-v${VERSION}-darwin-arm64.tar.gz dist/bin/macos-arm64/cdk2pulumi',
+      exec: 'tar -czf dist/pulumi-tool-cdk2pulumi-v${VERSION}-darwin-arm64.tar.gz -C dist/bin/macos-arm64 cdk2pulumi',
     },
   ],
 });
