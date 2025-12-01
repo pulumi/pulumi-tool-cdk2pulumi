@@ -24,6 +24,24 @@
         }
       ]
     },
+    "bump": {
+      "name": "bump",
+      "description": "Bumps version based on latest git tag and generates a changelog entry",
+      "env": {
+        "OUTFILE": "package.json",
+        "CHANGELOG": "dist/changelog.md",
+        "BUMPFILE": "dist/version.txt",
+        "RELEASETAG": "dist/releasetag.txt",
+        "RELEASE_TAG_PREFIX": "",
+        "BUMP_PACKAGE": "commit-and-tag-version@^12"
+      },
+      "steps": [
+        {
+          "builtin": "release/bump-version"
+        }
+      ],
+      "condition": "git log --oneline -1 | grep -qv \"chore(release):\""
+    },
     "clobber": {
       "name": "clobber",
       "description": "hard resets to HEAD of origin and cleans the local repo",
@@ -149,6 +167,12 @@
       "steps": [
         {
           "exec": "bun build --compile --minify --sourcemap --target bun-linux-arm64 --outfile dist/bin/linux-arm64/cdk2pulumi src/cli/cli-runner.ts schemas/aws-native-metadata.json"
+        },
+        {
+          "env": {
+            "VERSION": "$(jq -r '.version' package.json)"
+          },
+          "exec": "tar -czf dist/pulumi-tool-cdk2pulumi-v${VERSION}-linux-arm64.tar.gz dist/bin/linux-arm64/cdk2pulumi"
         }
       ]
     },
@@ -157,6 +181,12 @@
       "steps": [
         {
           "exec": "bun build --compile --minify --sourcemap --target bun-macos-arm64 --outfile dist/bin/macos-arm64/cdk2pulumi src/cli/cli-runner.ts schemas/aws-native-metadata.json"
+        },
+        {
+          "env": {
+            "VERSION": "$(jq -r '.version' package.json)"
+          },
+          "exec": "tar -czf dist/pulumi-tool-cdk2pulumi-v${VERSION}-darwin-arm64.tar.gz dist/bin/macos-arm64/cdk2pulumi"
         }
       ]
     },
@@ -171,6 +201,30 @@
     "pre-compile": {
       "name": "pre-compile",
       "description": "Prepare the project for compilation"
+    },
+    "release": {
+      "name": "release",
+      "description": "Prepare a release from \"main\" branch",
+      "env": {
+        "RELEASE": "true"
+      },
+      "steps": [
+        {
+          "exec": "rm -fr dist"
+        },
+        {
+          "spawn": "bump"
+        },
+        {
+          "spawn": "build"
+        },
+        {
+          "spawn": "unbump"
+        },
+        {
+          "exec": "git diff --ignore-space-at-eol --exit-code"
+        }
+      ]
     },
     "test": {
       "name": "test",
@@ -194,6 +248,23 @@
         }
       ]
     },
+    "unbump": {
+      "name": "unbump",
+      "description": "Restores version to 0.0.0",
+      "env": {
+        "OUTFILE": "package.json",
+        "CHANGELOG": "dist/changelog.md",
+        "BUMPFILE": "dist/version.txt",
+        "RELEASETAG": "dist/releasetag.txt",
+        "RELEASE_TAG_PREFIX": "",
+        "BUMP_PACKAGE": "commit-and-tag-version@^12"
+      },
+      "steps": [
+        {
+          "builtin": "release/reset-version"
+        }
+      ]
+    },
     "upgrade": {
       "name": "upgrade",
       "description": "upgrade dependencies",
@@ -208,7 +279,7 @@
           "exec": "npm install"
         },
         {
-          "exec": "npm update @hallcor/pulumi-projen-project-types @swc/core @swc/jest @types/fs-extra @types/jest @types/mock-fs @types/node @typescript-eslint/eslint-plugin @typescript-eslint/parser constructs eslint-config-prettier eslint-import-resolver-typescript eslint-plugin-import eslint-plugin-prettier eslint jest jest-junit prettier projen ts-jest ts-node typescript @aws-cdk/cdk-assets-lib aws-cdk-lib fs-extra mock-fs yaml"
+          "exec": "npm update @hallcor/pulumi-projen-project-types @swc/core @swc/jest @types/fs-extra @types/jest @types/mock-fs @types/node @typescript-eslint/eslint-plugin @typescript-eslint/parser commit-and-tag-version constructs eslint-config-prettier eslint-import-resolver-typescript eslint-plugin-import eslint-plugin-prettier eslint jest jest-junit prettier projen ts-jest ts-node typescript @aws-cdk/cdk-assets-lib aws-cdk-lib fs-extra mock-fs yaml"
         },
         {
           "exec": "npx projen"

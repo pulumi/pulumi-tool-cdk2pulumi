@@ -6,7 +6,7 @@ This repository contains the standalone toolchain for converting AWS CDK applica
 
 ## Components
 
-### 1. CDK to Pulumi Converter (`cdk-to-pulumi`)
+### 1. CDK to Pulumi Converter (`cdk2pulumi`)
 
 A CLI tool that takes an existing AWS CDK application (specifically its Cloud Assembly), synthesizes it, converts the resulting CloudFormation templates into Pulumi resource definitions, and emits Pulumi YAML.
 
@@ -25,7 +25,7 @@ bun src/cli/cli-runner.ts --assembly path/to/cdk.out
 - Serializes `ProgramIR` to Pulumi YAML.
 - Supports stage selection via `--stage`.
 
-### 2. CDK Assembly Analyzer (`cdk-to-pulumi analyze`)
+### 2. CDK Assembly Analyzer (`cdk2pulumi analyze`)
 
 A CLI command that inspects an AWS CDK Cloud Assembly and emits a structured report (JSON/YAML) highlighting details to help plan a CDK → Pulumi migration.
 

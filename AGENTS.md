@@ -1,6 +1,6 @@
 # Agent Guide: Pulumi CDK Conversion
 
-This document guides agents working on the `pulumi-cdk-convert` workspace.
+This document guides agents working on the `cdk2pulumi` workspace.
 
 ## Context
 
