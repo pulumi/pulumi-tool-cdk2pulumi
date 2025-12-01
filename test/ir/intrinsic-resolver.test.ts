@@ -14,9 +14,10 @@ import {
   ResourceMetadataProvider,
 } from '../../src/core/resolvers';
 
-class StubIntrinsicValueAdapter
-  implements IntrinsicValueAdapter<any, PropertyValue>
-{
+class StubIntrinsicValueAdapter implements IntrinsicValueAdapter<
+  any,
+  PropertyValue
+> {
   getResourceAttribute(request: {
     resourceAddress: { stackPath: string; id: string };
     attribute: string;
