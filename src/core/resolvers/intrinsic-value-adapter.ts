@@ -41,7 +41,7 @@ export class IrIntrinsicValueAdapter implements IntrinsicValueAdapter<
     return this.makePropertyReference(
       request,
       attribute,
-      this.getDefaultPropertyName(mapping, attribute),
+      this.resolvePropertyName(mapping, attribute),
     );
   }
 
@@ -109,5 +109,32 @@ export class IrIntrinsicValueAdapter implements IntrinsicValueAdapter<
       return attribute;
     }
     return attributePropertyName(attribute);
+  }
+
+  /**
+   * CloudFormation attributes can be compound names like `Endpoint.Port`. Prefer a property
+   * name that actually exists on the target resource outputs, falling back to our legacy
+   * heuristic when we cannot find a better match.
+   */
+  private resolvePropertyName(
+    mapping: ResourceAttributeRequest<any, PropertyValue>['mapping'],
+    attribute: string,
+  ): string {
+    const parts = attribute.split('.');
+    const candidates: string[] = [];
+
+    if (parts.length > 1) {
+      const last = parts[parts.length - 1];
+      candidates.push(toSdkName(last));
+      candidates.push(toSdkName(parts.join('')));
+    }
+
+    candidates.push(this.getDefaultPropertyName(mapping, attribute));
+
+    const meta = this.metadata.tryFindResource(mapping.resourceType);
+    const outputs = new Set(Object.keys(meta?.outputs ?? {}));
+
+    const match = candidates.find((candidate) => outputs.has(candidate));
+    return match ?? candidates[0];
   }
 }

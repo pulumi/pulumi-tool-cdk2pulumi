@@ -14,12 +14,18 @@ import { ConversionReportCollector } from './conversion-report';
 export interface PostProcessOptions {
   skipCustomResources?: boolean;
   reportCollector?: ConversionReportCollector;
+  /**
+   * Optional explicit staging bucket name when not modeled as a resource in the assembly.
+   * This mirrors CDK's behavior where the bootstrap bucket name is hard-coded in asset metadata.
+   */
+  bootstrapBucketName?: string;
 }
 
 interface BootstrapBucketRef {
-  stackPath: string;
-  logicalId: string;
-  resource: ResourceIR;
+  stackPath?: string;
+  logicalId?: string;
+  resource?: ResourceIR;
+  bucketName?: PropertyValue;
 }
 
 export function postProcessProgramIr(
@@ -28,7 +34,7 @@ export function postProcessProgramIr(
 ): ProgramIR {
   const bootstrapBucket = options.skipCustomResources
     ? undefined
-    : findBootstrapBucket(program);
+    : findBootstrapBucket(program, options.bootstrapBucketName);
   const metadata = new Metadata(PulumiProvider.AWS_NATIVE);
   return {
     ...program,
@@ -58,66 +64,6 @@ function rewriteResources(
   const collector = options.reportCollector;
   const rewritten: ResourceIR[] = [];
 
-  // First pass: collect all IAM policies indexed by role reference
-  // Also track which policy logical IDs map to which role logical IDs
-  const policiesByRole = new Map<
-    string,
-    Array<{ name: string; document: PropertyValue }>
-  >();
-  const policyToRoleMapping = new Map<string, string>(); // policyLogicalId -> roleLogicalId
-
-  for (const resource of stack.resources) {
-    if (resource.cfnType === 'AWS::IAM::Policy') {
-      const props = resource.cfnProperties;
-      if (Array.isArray(props.Roles) && props.Roles.length > 0) {
-        // Extract role logical ID from the first role reference
-        // (policies with multiple roles would need more complex handling)
-        const firstRoleRef = props.Roles[0];
-        let roleLogicalId: string | undefined;
-
-        // Handle different types of role references
-        if (typeof firstRoleRef === 'object' && firstRoleRef !== null) {
-          // Check for ResourceAttributeReference structure
-          if ('resource' in firstRoleRef && firstRoleRef.resource) {
-            roleLogicalId = (firstRoleRef.resource as any).id;
-          }
-          // Check for direct Ref structure
-          else if ('Ref' in firstRoleRef) {
-            roleLogicalId = (firstRoleRef as any).Ref;
-          }
-        } else if (typeof firstRoleRef === 'string') {
-          // Direct string reference (role name) - we'll need to find the role by name
-          // For now, skip this case as it's less common
-        }
-
-        if (roleLogicalId) {
-          policyToRoleMapping.set(resource.logicalId, roleLogicalId);
-        } else {
-          // No debug logging needed here, just skip if roleLogicalId isn't found
-        }
-
-        // Store policies for merging into roles
-        for (const roleRef of props.Roles) {
-          const roleKey = JSON.stringify(roleRef);
-          if (!policiesByRole.has(roleKey)) {
-            policiesByRole.set(roleKey, []);
-          }
-          const policyName =
-            typeof props.PolicyName === 'string'
-              ? props.PolicyName
-              : resource.logicalId;
-          policiesByRole.get(roleKey)!.push({
-            name: policyName,
-            document: props.PolicyDocument,
-          });
-        }
-      }
-      // Skip this resource - we'll merge it into the role
-      collector?.resourceSkipped(stack, resource, 'mergedIntoRole' as any);
-      continue;
-    }
-  }
-
   // Second pass: process all resources and merge policies into roles
   for (const resource of stack.resources) {
     if (resource.cfnType === 'AWS::CDK::Metadata') {
@@ -128,38 +74,30 @@ function rewriteResources(
     if (resource.cfnType === 'AWS::ApiGatewayV2::Stage') {
       const converted = convertApiGatewayV2Stage(resource);
       recordConversionArtifacts(collector, stack, resource, [converted]);
-      const rewrittenConverted = rewriteDependsOn(
-        converted,
-        policyToRoleMapping,
-      );
-      rewritten.push(rewrittenConverted);
+      rewritten.push(converted);
       continue;
     }
 
     if (resource.cfnType === 'AWS::ServiceDiscovery::Service') {
       const converted = convertServiceDiscoveryService(resource);
       recordConversionArtifacts(collector, stack, resource, [converted]);
-      const rewrittenConverted = rewriteDependsOn(
-        converted,
-        policyToRoleMapping,
-      );
-      rewritten.push(rewrittenConverted);
+      rewritten.push(converted);
       continue;
     }
 
     if (resource.cfnType === 'AWS::ServiceDiscovery::PrivateDnsNamespace') {
       const converted = convertServiceDiscoveryPrivateDnsNamespace(resource);
       recordConversionArtifacts(collector, stack, resource, [converted]);
-      const rewrittenConverted = rewriteDependsOn(
-        converted,
-        policyToRoleMapping,
-      );
-      rewritten.push(rewrittenConverted);
+      rewritten.push(converted);
       continue;
     }
 
     if (resource.cfnType === 'AWS::IAM::Policy') {
-      // Already handled in first pass
+      const converted = convertIamPolicy(resource, stack);
+      recordConversionArtifacts(collector, stack, resource, converted);
+      for (const res of converted) {
+        rewritten.push(res);
+      }
       continue;
     }
 
@@ -167,19 +105,8 @@ function rewriteResources(
       const converted = convertQueuePolicy(resource);
       recordConversionArtifacts(collector, stack, resource, converted);
       for (const res of converted) {
-        rewritten.push(rewriteDependsOn(res, policyToRoleMapping));
+        rewritten.push(res);
       }
-      continue;
-    }
-
-    // Check if this is a Role resource that needs inline policies merged
-    if (resource.cfnType === 'AWS::IAM::Role') {
-      const converted = mergeInlinePoliciesIntoRole(resource, policiesByRole);
-      const rewrittenConverted = rewriteDependsOn(
-        converted,
-        policyToRoleMapping,
-      );
-      rewritten.push(rewrittenConverted);
       continue;
     }
 
@@ -188,17 +115,11 @@ function rewriteResources(
         collector?.resourceSkipped(stack, resource, 'customResourceFiltered');
         continue;
       }
-      if (!bootstrapBucket) {
-        throw new Error(
-          `Unable to locate the CDK staging bucket required to emulate custom resource ${resource.logicalId}.`,
-        );
-      }
       rewritten.push(convertCustomResource(resource, stack, bootstrapBucket));
       continue;
     }
 
-    // Rewrite dependsOn references from policies to roles
-    const rewrittenResource = rewriteDependsOn(resource, policyToRoleMapping);
+    const rewrittenResource = resource;
     rewritten.push(rewrittenResource);
 
     if (
@@ -383,35 +304,40 @@ function mergeInlinePoliciesIntoRole(
 function convertCustomResource(
   resource: ResourceIR,
   stack: StackIR,
-  bucket: BootstrapBucketRef,
+  bucket: BootstrapBucketRef | undefined,
 ): ResourceIR {
   const bucketName = resolveBootstrapBucketName(bucket);
-  const bucketAddress: StackAddress = {
-    stackPath: bucket.stackPath,
-    id: bucket.logicalId,
-  };
+  const bucketAddress: StackAddress | undefined =
+    bucket?.stackPath && bucket.logicalId
+      ? {
+          stackPath: bucket.stackPath,
+          id: bucket.logicalId,
+        }
+      : undefined;
   const bucketNameValue =
     bucketName ??
-    ({
-      kind: 'resourceAttribute',
-      resource: bucketAddress,
-      attributeName: 'Ref',
-      propertyName: 'bucketName',
-    } satisfies ResourceAttributeReference);
+    (bucketAddress
+      ? ({
+          kind: 'resourceAttribute',
+          resource: bucketAddress,
+          attributeName: 'Ref',
+          propertyName: 'bucketName',
+        } satisfies ResourceAttributeReference)
+      : undefined);
 
   const bucketKeyPrefix = `deploy-time/pulumi/custom-resources/${stack.stackId}/${resource.logicalId}`;
 
   return {
     ...resource,
     typeToken: 'aws-native:cloudformation:CustomResourceEmulator',
-    props: {
+    props: removeUndefined({
       bucketName: bucketNameValue,
       bucketKeyPrefix,
       serviceToken: resource.cfnProperties.ServiceToken,
       resourceType: resource.cfnType,
       customResourceProperties: resource.cfnProperties,
       stackId: stack.stackId,
-    },
+    }),
   };
 }
 
@@ -443,9 +369,17 @@ function convertQueuePolicy(resource: ResourceIR): ResourceIR[] {
 }
 
 function resolveBootstrapBucketName(
-  bucket: BootstrapBucketRef,
+  bucket: BootstrapBucketRef | undefined,
 ): PropertyValue | undefined {
-  const bucketProps = bucket.resource.props;
+  if (!bucket) {
+    return undefined;
+  }
+
+  if (bucket.bucketName) {
+    return bucket.bucketName;
+  }
+
+  const bucketProps = bucket.resource?.props;
   if (
     bucketProps &&
     typeof bucketProps === 'object' &&
@@ -453,6 +387,75 @@ function resolveBootstrapBucketName(
   ) {
     return (bucketProps as PropertyMap).bucketName;
   }
+  return undefined;
+}
+
+function convertIamPolicy(resource: ResourceIR, stack: StackIR): ResourceIR[] {
+  const props = resource.cfnProperties;
+  const roles = Array.isArray(props.Roles) ? props.Roles : [];
+  if (roles.length === 0) {
+    return [
+      {
+        ...resource,
+        typeToken: 'aws:iam/rolePolicy:RolePolicy',
+        props: removeUndefined({
+          name:
+            typeof props.PolicyName === 'string'
+              ? props.PolicyName
+              : resource.logicalId,
+          policy:
+            props.PolicyDocument ?? (resource.props as PropertyMap)?.policy,
+        }),
+      },
+    ];
+  }
+
+  return roles.map((roleRef: any, idx: number) => {
+    const logicalId =
+      idx === 0 ? resource.logicalId : `${resource.logicalId}-${idx}`;
+    const roleName = convertRoleReferenceToRoleIdentifier(roleRef, stack);
+    return {
+      ...resource,
+      logicalId,
+      typeToken: 'aws:iam/rolePolicy:RolePolicy',
+      props: removeUndefined({
+        name:
+          typeof props.PolicyName === 'string'
+            ? props.PolicyName
+            : resource.logicalId,
+        policy: props.PolicyDocument ?? (resource.props as PropertyMap)?.policy,
+        role: roleName,
+      }),
+    };
+  });
+}
+
+function convertRoleReferenceToRoleIdentifier(
+  roleRef: any,
+  stack: StackIR,
+): PropertyValue | undefined {
+  if (typeof roleRef === 'string') {
+    return roleRef;
+  }
+
+  if (roleRef && typeof roleRef === 'object') {
+    if ('resource' in roleRef && roleRef.resource) {
+      const res = roleRef.resource as any;
+      return {
+        kind: 'resourceAttribute',
+        resource: { stackPath: res.stackPath ?? stack.stackPath, id: res.id },
+        attributeName: 'roleName',
+      } satisfies ResourceAttributeReference;
+    }
+    if ('Ref' in roleRef && typeof roleRef.Ref === 'string') {
+      return {
+        kind: 'resourceAttribute',
+        resource: { stackPath: stack.stackPath, id: roleRef.Ref },
+        attributeName: 'roleName',
+      } satisfies ResourceAttributeReference;
+    }
+  }
+
   return undefined;
 }
 
@@ -603,7 +606,12 @@ function isUnsupportedResource(
 
 function findBootstrapBucket(
   program: ProgramIR,
+  bucketNameOverride?: string,
 ): BootstrapBucketRef | undefined {
+  if (bucketNameOverride) {
+    return { bucketName: bucketNameOverride };
+  }
+
   const prioritized = program.stacks.filter((stack) =>
     /StagingStack|CDKToolkit|BootstrapStack/i.test(stack.stackId),
   );
