@@ -1,87 +1,69 @@
 # Pulumi CDK Conversion Tooling
 
-This repository contains the standalone toolchain for converting AWS CDK applications to Pulumi and analyzing CDK Cloud Assemblies.
+> [!CAUTION]
+> This is currently an **experimental** tool and may experience breaking changes.
 
-**Note:** This code was extracted from the main `pulumi-cdk` repository to facilitate independent development of the conversion tools. The long-term goal is to reintegrate this functionality back into the `pulumi-cdk` library.
+Pulumi tool plugin for converting AWS CDK Cloud Assemblies to Pulumi programs, analyzing assemblies, and looking up import identifiers.
 
-## Components
+## Installation
 
-### 1. CDK to Pulumi Converter (`cdk2pulumi`)
-
-A CLI tool that takes an existing AWS CDK application (specifically its Cloud Assembly), synthesizes it, converts the resulting CloudFormation templates into Pulumi resource definitions, and emits Pulumi YAML.
-
-**Goal:** Provide a reusable conversion pipeline that operates on Cloud Assembly artifacts and returns a neutral intermediate representation (IR) for resources/outputs, which is then serialized to Pulumi YAML.
-
-**Usage:**
+Install the Pulumi tool plugin:
 
 ```bash
-# Convert a CDK Cloud Assembly to Pulumi YAML
-bun src/cli/cli-runner.ts --assembly path/to/cdk.out
+pulumi plugin install tool cdk2pulumi
 ```
 
-**Key Features:**
-- Extracts reusable conversion logic into `src/core`.
-- Supports `StackConverter` adaptation for both real Pulumi resources and IR.
-- Serializes `ProgramIR` to Pulumi YAML.
-- Supports stage selection via `--stage`.
-- Partial stack conversion: if you convert only consumer stacks, cross-stack references fall back to Pulumi config placeholders (`${external.<stack>.<output>}`), and the conversion report lists the required config keys. Set them with `pulumi config set external.<stack>.<output> <value>` before deployment.
+## Commands and Examples
 
-### 2. CDK Assembly Analyzer (`cdk2pulumi analyze`)
+All commands run through the Pulumi CLI. Use `--` to pass arguments to the plugin.
 
-A CLI command that inspects an AWS CDK Cloud Assembly and emits a structured report (JSON/YAML) highlighting details to help plan a CDK → Pulumi migration.
+### Convert a CDK assembly to Pulumi YAML
 
-**Goal:** Summarize application structure, environments, construct usage, resource inventory, and other metadata.
-
-**Usage:**
+Produces `Pulumi.yaml` by default and a conversion report alongside it (`Pulumi.yaml.report.json`).
 
 ```bash
-# Analyze a CDK Cloud Assembly
-bun src/cli/cli-runner.ts analyze --assembly path/to/cdk.out --format json
+# Convert an entire assembly
+pulumi plugin run cdk2pulumi -- --assembly path/to/cdk.out
+
+# Target a specific stage (nested assembly) and write to a custom location
+pulumi plugin run cdk2pulumi -- --assembly path/to/cdk.out --stage prod --out dist/prod/Pulumi.yaml
+
+# Convert only certain stacks
+pulumi plugin run cdk2pulumi -- --assembly path/to/cdk.out --stacks ApiStack,WorkerStack
+
+# Skip CDK custom resources (useful for diffing only)
+pulumi plugin run cdk2pulumi -- --assembly path/to/cdk.out --skip-custom
 ```
 
-**Key Features:**
-- Detects language and heuristics.
-- Enumerates stages and stacks.
-- Extracts environment details (Account/Region).
-- Analyzes construct tree (L1, L2, Custom, Third-party).
-- Inventories resources and assets.
+Notes:
+- Cross-stack references in partially converted stacks become config placeholders (`${external.<stack>.<output>}`). Set them with `pulumi config set external.<stack>.<output> <value>` before deployment.
+- Disable or relocate the conversion report with `--no-report` or `--report <path>`.
 
-### 3. Resource import ID helper (`cdk2pulumi ids`)
+### Analyze a CDK assembly for migration planning
 
-Look up the import identifier format and the parts required for a given resource type (Pulumi token or CFN type):
+Outputs JSON by default; use `--format yaml` if preferred.
 
 ```bash
-bun src/cli/cli-runner.ts ids aws-native:acmpca:Certificate
-# or get JSON output
-bun src/cli/cli-runner.ts ids aws-native:acmpca:Certificate --json
+pulumi plugin run cdk2pulumi -- analyze --assembly path/to/cdk.out --format yaml --output reports/analysis.yaml
 ```
 
-## Development
+### Look up import identifiers (`ids`)
 
-### Build
+Returns the required Pulumi import ID shape for a resource token or CloudFormation type.
 
 ```bash
-# Install dependencies
-npm install
-
-# Build the project
-npm run build
-
-# Build standalone binary with Bun
-npm run package:linux:arm
+pulumi plugin run cdk2pulumi -- ids aws-native:acmpca:Certificate
+pulumi plugin run cdk2pulumi -- ids AWS::S3::Bucket --json
 ```
 
-### Architecture
+## Developing
 
-- **`src/core`**: Core logic for conversion, assembly reading, graph building, and IR generation.
-- **`src/cli`**: CLI entrypoint and runners.
-- **`src/`**: Source code.
+- Install dependencies: `npm install`
+- Build: `npm run build`
+- Package standalone binary with Bun: `npm run package`
 
-## Documentation
+Architecture and plans:
+- Core conversion/analysis logic lives in `src/core`; the CLI entrypoint is `src/cli/cli-runner.ts`.
+- Detailed implementation plans live in `specs/conversion.md` and `specs/analysis.md`.
 
-- See [specs/conversion.md](./specs/conversion.md) for the detailed implementation plan of the Conversion CLI.
-- See [specs/analysis.md](./specs/analysis.md) for the detailed implementation plan of the Analyzer.
-
-### Custom resource emulation
-
-When we rewrite CDK custom resources, we use the `aws-native:cloudformation:CustomResourceEmulator`, which requires an S3 bucket to stash payloads. CDK custom resources themselves do not depend on a bucket, but CDK apps already have a bootstrap asset bucket. We look for the asset manifest and reuse its bucket name when present; if the name cannot be found we still emit the emulator and omit `bucketName`, leaving it to future handling (or a different bucket strategy). We could swap to creating a dedicated bucket later if needed.
+Custom resource emulation: CDK custom resources are rewritten to `aws-native:cloudformation:CustomResourceEmulator`. The tool tries to reuse the CDK bootstrap asset bucket when present; otherwise the bucket name is omitted, leaving bucket handling to later configuration.
