@@ -6,6 +6,7 @@ import {
   ResourceIR,
   StackAddress,
 } from '../core';
+import { ConversionReportCollector } from './conversion-report';
 import {
   PropertySerializationContext,
   serializePropertyValue,
@@ -17,6 +18,7 @@ interface PulumiYamlDocument {
   name: string;
   runtime: string;
   resources: Record<string, PulumiYamlResource>;
+  config?: Record<string, PulumiYamlConfigEntry>;
 }
 
 interface PulumiYamlResource {
@@ -30,14 +32,31 @@ interface PulumiYamlResourceOptions {
   protect?: boolean;
 }
 
-export function serializeProgramIr(program: ProgramIR): string {
+interface PulumiYamlConfigEntry {
+  type?: string;
+  default?: any;
+  secret?: boolean;
+}
+
+export function serializeProgramIr(
+  program: ProgramIR,
+  options?: { externalConfigCollector?: ConversionReportCollector },
+): string {
   const resourceNames = new ResourceNameAllocator(program);
   const parameterDefaults = collectParameterDefaults(program);
   const stackOutputs = collectStackOutputs(program);
+  const includedStackPaths = new Set(
+    program.stacks.map((stack) => stack.stackPath),
+  );
+  const externalConfigCollector = options?.externalConfigCollector;
+  const externalConfigKeys = new Set<string>();
+  const externalStackOutputName = (stackPath: string, outputName: string) =>
+    formatConfigVariable(formatExternalConfigKey(stackPath, outputName));
 
   const ctx: PropertySerializationContext = {
     getResourceName: (address) => resourceNames.getName(address),
-    getStackOutputName: () => undefined,
+    getStackOutputName: (stackPath, outputName) =>
+      externalStackOutputName(stackPath, outputName),
     getParameterDefault: (stackPath, parameterName) =>
       parameterDefaults.get(parameterKey(stackPath, parameterName)),
   };
@@ -45,8 +64,25 @@ export function serializeProgramIr(program: ProgramIR): string {
   const document: PulumiYamlDocument = {
     name: DEFAULT_PROJECT_NAME,
     runtime: 'yaml',
-    resources: buildResourceMap(program, resourceNames, ctx, stackOutputs),
+    resources: buildResourceMap(
+      program,
+      resourceNames,
+      ctx,
+      stackOutputs,
+      includedStackPaths,
+      externalConfigCollector,
+      externalConfigKeys,
+    ),
   };
+
+  if (externalConfigKeys.size > 0) {
+    document.config = Object.fromEntries(
+      Array.from(externalConfigKeys.values()).map((key) => [
+        key,
+        { type: 'string' } satisfies PulumiYamlConfigEntry,
+      ]),
+    );
+  }
 
   return stringify(document, {
     lineWidth: 0,
@@ -58,6 +94,9 @@ function buildResourceMap(
   names: ResourceNameAllocator,
   ctx: PropertySerializationContext,
   stackOutputs: Map<string, PropertyValue>,
+  includedStackPaths?: Set<string>,
+  externalConfigCollector?: ConversionReportCollector,
+  externalConfigKeys?: Set<string>,
 ): Record<string, PulumiYamlResource> {
   const resources: Record<string, PulumiYamlResource> = {};
 
@@ -77,6 +116,11 @@ function buildResourceMap(
         resource.props,
         ctx,
         stackOutputs,
+        includedStackPaths,
+        externalConfigCollector,
+        stack,
+        resource.logicalId,
+        externalConfigKeys,
       );
       const options = serializeResourceOptions(resource, names);
 
@@ -103,11 +147,40 @@ function serializeResourceProperties(
   props: PropertyMap,
   ctx: PropertySerializationContext,
   stackOutputs: Map<string, PropertyValue>,
+  includedStackPaths: Set<string> | undefined,
+  externalConfigCollector: ConversionReportCollector | undefined,
+  stack: { stackId: string; stackPath: string },
+  resourceLogicalId: string,
+  externalConfigKeys: Set<string> | undefined,
 ) {
-  const resolvedProps = resolveStackOutputReferences(
-    props as PropertyValue,
+  const resolvedProps = resolveStackOutputReferences(props as PropertyValue, {
     stackOutputs,
-  );
+    includedStackPaths,
+    onMissingStackOutput: externalConfigCollector
+      ? (ref, path) => {
+          const configKey = formatExternalConfigKey(
+            ref.stackPath,
+            ref.outputName,
+          );
+          externalConfigKeys?.add(configKey);
+          externalConfigCollector.externalConfigRequirement({
+            consumerStackId: stack.stackId,
+            consumerStackPath: stack.stackPath,
+            resourceLogicalId,
+            propertyPath: formatPropertyPath(path),
+            sourceStackPath: ref.stackPath,
+            outputName: ref.outputName,
+            configKey,
+          });
+        }
+      : (ref) => {
+          const configKey = formatExternalConfigKey(
+            ref.stackPath,
+            ref.outputName,
+          );
+          externalConfigKeys?.add(configKey);
+        },
+  });
   return serializePropertyValue(resolvedProps, ctx) as Record<string, unknown>;
 }
 
@@ -142,6 +215,41 @@ function serializeResourceOptions(
 
 function formatResourceReference(name: string): string {
   return `\${${name}}`;
+}
+
+function formatExternalConfigKey(
+  stackPath: string,
+  outputName: string,
+): string {
+  const normalizedStack = normalizeForConfigKey(stackPath);
+  const normalizedOutput = normalizeForConfigKey(outputName);
+  return `external.${normalizedStack}.${normalizedOutput}`;
+}
+
+function formatConfigVariable(key: string): string {
+  return key;
+}
+
+function normalizeForConfigKey(value: string): string {
+  const dotted = value.replace(/[\\/]+/g, '.');
+  return dotted.replace(/[^A-Za-z0-9_.-]/g, '-');
+}
+
+function formatPropertyPath(path: (string | number)[]): string {
+  if (path.length === 0) {
+    return '(root)';
+  }
+  return path
+    .map((part) => (typeof part === 'number' ? `[${part}]` : part))
+    .reduce((acc, part) => {
+      if (acc.length === 0) {
+        return part;
+      }
+      if (part.startsWith('[')) {
+        return `${acc}${part}`;
+      }
+      return `${acc}.${part}`;
+    }, '');
 }
 
 class ResourceNameAllocator {
@@ -228,10 +336,20 @@ function stackOutputKey(stackPath: string, outputName: string): string {
   return `${stackPath}::${outputName}`;
 }
 
+interface ResolveStackOutputOptions {
+  stackOutputs: Map<string, PropertyValue>;
+  includedStackPaths?: Set<string>;
+  onMissingStackOutput?: (
+    ref: { kind: 'stackOutput'; stackPath: string; outputName: string },
+    path: (string | number)[],
+  ) => void;
+}
+
 function resolveStackOutputReferences(
   value: PropertyValue,
-  stackOutputs: Map<string, PropertyValue>,
+  options: ResolveStackOutputOptions,
   seen?: string[],
+  path: (string | number)[] = [],
 ): PropertyValue {
   if (
     value === null ||
@@ -243,8 +361,8 @@ function resolveStackOutputReferences(
   }
 
   if (Array.isArray(value)) {
-    return value.map((item) =>
-      resolveStackOutputReferences(item, stackOutputs, seen),
+    return value.map((item, idx) =>
+      resolveStackOutputReferences(item, options, seen, [...path, idx]),
     );
   }
 
@@ -252,20 +370,20 @@ function resolveStackOutputReferences(
     return Object.fromEntries(
       Object.entries(value).map(([key, nested]) => [
         key,
-        resolveStackOutputReferences(nested, stackOutputs, seen),
+        resolveStackOutputReferences(nested, options, seen, [...path, key]),
       ]),
     );
   }
 
   switch (value.kind) {
     case 'stackOutput':
-      return resolveStackOutputValue(value, stackOutputs, seen ?? []);
+      return resolveStackOutputValue(value, options, seen ?? [], path);
     case 'concat':
       return {
         kind: 'concat',
         delimiter: value.delimiter,
         values: value.values.map((item) =>
-          resolveStackOutputReferences(item, stackOutputs, seen),
+          resolveStackOutputReferences(item, options, seen, path),
         ),
       };
     default:
@@ -275,8 +393,9 @@ function resolveStackOutputReferences(
 
 function resolveStackOutputValue(
   ref: { kind: 'stackOutput'; stackPath: string; outputName: string },
-  stackOutputs: Map<string, PropertyValue>,
+  options: ResolveStackOutputOptions,
   seen: string[],
+  path: (string | number)[],
 ): PropertyValue {
   const key = stackOutputKey(ref.stackPath, ref.outputName);
   if (seen.includes(key)) {
@@ -284,13 +403,17 @@ function resolveStackOutputValue(
       `Detected circular stack output reference involving ${ref.stackPath}/${ref.outputName}`,
     );
   }
-  const value = stackOutputs.get(key);
-  if (value === undefined) {
+  const value = options.stackOutputs.get(key);
+  if (value !== undefined) {
+    return resolveStackOutputReferences(value, options, [...seen, key], path);
+  }
+  if (options.includedStackPaths?.has(ref.stackPath)) {
     throw new Error(
       `Failed to resolve stack output ${ref.outputName} in stack ${ref.stackPath}`,
     );
   }
-  return resolveStackOutputReferences(value, stackOutputs, [...seen, key]);
+  options.onMissingStackOutput?.(ref, path);
+  return ref;
 }
 
 function isPropertyMap(value: PropertyValue): value is PropertyMap {

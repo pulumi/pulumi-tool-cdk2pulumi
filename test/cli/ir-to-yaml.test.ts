@@ -1,4 +1,5 @@
 import { parse } from 'yaml';
+import { ConversionReportBuilder } from '../../src/cli/conversion-report';
 import { serializeProgramIr } from '../../src/cli/ir-to-yaml';
 import { ProgramIR, ResourceAttributeReference } from '../../src/core';
 
@@ -237,6 +238,83 @@ describe('serializeProgramIr', () => {
 
     const parsed = parse(serializeProgramIr(program));
     expect(parsed.resources.Topic.properties.sourceArn).toBe('${bucket.arn}');
+  });
+
+  test('replaces missing producer stack outputs with config.require', () => {
+    const program: ProgramIR = {
+      stacks: [
+        {
+          stackId: 'Consumer',
+          stackPath: 'Stacks/Consumer',
+          resources: [
+            {
+              logicalId: 'Topic',
+              cfnType: 'AWS::SNS::Topic',
+              cfnProperties: {
+                SourceArn: {
+                  kind: 'stackOutput',
+                  stackPath: 'Stacks/Producer',
+                  outputName: 'BucketArn',
+                },
+              },
+              typeToken: 'aws-native:sns:Topic',
+              props: {
+                sourceArn: {
+                  kind: 'stackOutput',
+                  stackPath: 'Stacks/Producer',
+                  outputName: 'BucketArn',
+                },
+              },
+            },
+          ],
+        },
+      ],
+    };
+
+    const parsed = parse(serializeProgramIr(program));
+    expect(parsed.resources.Topic.properties.sourceArn).toBe(
+      '${external.Stacks.Producer.BucketArn}',
+    );
+  });
+
+  test('records external config requirements in report collector', () => {
+    const program: ProgramIR = {
+      stacks: [
+        {
+          stackId: 'Consumer',
+          stackPath: 'Stacks/Consumer',
+          resources: [
+            {
+              logicalId: 'Topic',
+              cfnType: 'AWS::SNS::Topic',
+              cfnProperties: {},
+              typeToken: 'aws-native:sns:Topic',
+              props: {
+                sourceArn: {
+                  kind: 'stackOutput',
+                  stackPath: 'Stacks/Producer',
+                  outputName: 'BucketArn',
+                },
+              },
+            },
+          ],
+        },
+      ],
+    };
+
+    const collector = new ConversionReportBuilder();
+    serializeProgramIr(program, { externalConfigCollector: collector });
+    expect(collector.build().externalConfigRequirements).toEqual([
+      {
+        consumerStackId: 'Consumer',
+        consumerStackPath: 'Stacks/Consumer',
+        resourceLogicalId: 'Topic',
+        propertyPath: 'sourceArn',
+        sourceStackPath: 'Stacks/Producer',
+        outputName: 'BucketArn',
+        configKey: 'external.Stacks.Producer.BucketArn',
+      },
+    ]);
   });
 
   test('escapes interpolation markers inside literal strings', () => {

@@ -44,6 +44,16 @@ export type ConversionReportEntry =
   | FanOutEntry
   | SuccessEntry;
 
+export interface ExternalConfigRequirement {
+  consumerStackId: string;
+  consumerStackPath: string;
+  resourceLogicalId: string;
+  propertyPath: string;
+  sourceStackPath: string;
+  outputName: string;
+  configKey: string;
+}
+
 export interface StackConversionReport {
   stackId: string;
   stackPath: string;
@@ -54,6 +64,7 @@ export interface StackConversionReport {
 
 export interface ConversionReport {
   stacks: StackConversionReport[];
+  externalConfigRequirements: ExternalConfigRequirement[];
 }
 
 export interface ConversionReportCollector {
@@ -76,6 +87,7 @@ export interface ConversionReportCollector {
   ): void;
   success(stack: StackIR, resource: ResourceIR, typeToken: string): void;
   unsupportedType(stack: StackIR, resource: ResourceIR, reason?: string): void;
+  externalConfigRequirement(requirement: ExternalConfigRequirement): void;
 }
 
 interface MutableStackReport extends StackConversionReport {}
@@ -83,6 +95,7 @@ interface MutableStackReport extends StackConversionReport {}
 export class ConversionReportBuilder implements ConversionReportCollector {
   private readonly stackOrder: string[] = [];
   private readonly stacks = new Map<string, MutableStackReport>();
+  private readonly externalConfigs: ExternalConfigRequirement[] = [];
 
   stackStarted(stack: StackIR): void {
     if (this.stacks.has(stack.stackId)) {
@@ -175,6 +188,10 @@ export class ConversionReportBuilder implements ConversionReportCollector {
     });
   }
 
+  externalConfigRequirement(requirement: ExternalConfigRequirement): void {
+    this.externalConfigs.push(requirement);
+  }
+
   build(): ConversionReport {
     return {
       stacks: this.stackOrder.map((stackId) => {
@@ -187,6 +204,7 @@ export class ConversionReportBuilder implements ConversionReportCollector {
           entries: report.entries.slice(),
         };
       }),
+      externalConfigRequirements: this.externalConfigs.slice(),
     };
   }
 

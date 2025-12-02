@@ -190,7 +190,9 @@ export function runCliWithOptions(options: ConvertCliOptions): void {
     options.stackFilters,
     options.stage,
   );
-  const yaml = serializeProgramIr(program);
+  const yaml = serializeProgramIr(program, {
+    externalConfigCollector: reportBuilder,
+  });
   const targetDir = path.dirname(options.outFile);
   fs.ensureDirSync(targetDir);
   fs.writeFileSync(options.outFile, yaml);

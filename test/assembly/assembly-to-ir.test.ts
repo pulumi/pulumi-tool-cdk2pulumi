@@ -178,6 +178,80 @@ describe('convertAssemblyToProgramIr', () => {
       },
     });
   });
+
+  test('Fn::ImportValue resolves using exports from filtered-out stacks', () => {
+    const producer = new StackManifest({
+      id: 'ProducerStack',
+      templatePath: 'producer.json',
+      metadata: {},
+      tree: {
+        id: 'ProducerStack',
+        path: 'App/Producer',
+      },
+      template: {
+        Resources: {
+          Bucket: {
+            Type: 'AWS::S3::Bucket',
+            Properties: {},
+          },
+        },
+        Outputs: {
+          BucketArn: {
+            Value: 'arn:aws:s3:::bucket',
+            Export: {
+              Name: 'SharedExport',
+            },
+          },
+        },
+      },
+      dependencies: [],
+      nestedStacks: {},
+    });
+
+    const consumer = new StackManifest({
+      id: 'ConsumerStack',
+      templatePath: 'consumer.json',
+      metadata: {},
+      tree: {
+        id: 'ConsumerStack',
+        path: 'App/Consumer',
+      },
+      template: {
+        Resources: {
+          Topic: {
+            Type: 'AWS::SNS::Topic',
+            Properties: {
+              SourceArn: {
+                'Fn::ImportValue': 'SharedExport',
+              },
+            },
+          },
+        },
+      },
+      dependencies: [],
+      nestedStacks: {},
+    });
+
+    const reader = {
+      stackManifests: [producer, consumer],
+    } as unknown as AssemblyManifestReader;
+
+    const program = convertAssemblyToProgramIr(
+      reader,
+      new Set(['ConsumerStack']),
+    );
+    expect(program.stacks).toHaveLength(1);
+    const topic = program.stacks[0].resources.find(
+      (resource) => resource.logicalId === 'Topic',
+    );
+    expect(topic?.props).toMatchObject({
+      sourceArn: {
+        kind: 'stackOutput',
+        stackPath: 'App/Producer',
+        outputName: 'BucketArn',
+      },
+    });
+  });
 });
 
 function createStackManifest(): StackManifest {

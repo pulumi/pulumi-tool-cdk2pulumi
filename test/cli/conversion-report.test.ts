@@ -39,6 +39,7 @@ describe('ConversionReportBuilder', () => {
           entries: [],
         },
       ],
+      externalConfigRequirements: [],
     });
   });
 
@@ -97,6 +98,35 @@ describe('ConversionReportBuilder', () => {
           ],
         },
       ],
+      externalConfigRequirements: [],
     });
+  });
+
+  test('records external config requirements', () => {
+    const builder = new ConversionReportBuilder();
+    const stack = makeStack([makeResource('ResourceA')]);
+    builder.stackStarted(stack);
+    builder.externalConfigRequirement({
+      consumerStackId: stack.stackId,
+      consumerStackPath: stack.stackPath,
+      resourceLogicalId: 'ResourceA',
+      propertyPath: 'Properties.SourceArn',
+      sourceStackPath: 'App/Producer',
+      outputName: 'BucketArn',
+      configKey: 'external.App.Producer.BucketArn',
+    });
+    builder.stackFinished(stack, 1);
+
+    expect(builder.build().externalConfigRequirements).toEqual([
+      {
+        consumerStackId: 'TestStack',
+        consumerStackPath: 'App/TestStack',
+        resourceLogicalId: 'ResourceA',
+        propertyPath: 'Properties.SourceArn',
+        sourceStackPath: 'App/Producer',
+        outputName: 'BucketArn',
+        configKey: 'external.App.Producer.BucketArn',
+      },
+    ]);
   });
 });

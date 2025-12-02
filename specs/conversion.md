@@ -83,9 +83,17 @@ Develop a reusable conversion pipeline that takes an existing AWS CDK applicatio
   - [x] Extend `collectStackOutputs` / `resolveStackOutputReferences` so that imports are de-referenced just like direct `Ref`-to-output mappings.
   - [x] If the importer references a stack that was filtered out via `--stacks`, decide whether to emit a warning or error (failing fast is preferable).
 - [ ] Add tests:
-  - [x] Unit tests in `src/core` covering the intrinsic resolver’s import handling (happy path + missing export).
+- [x] Unit tests in `src/core` covering the intrinsic resolver’s import handling (happy path + missing export).
   - [ ] CLI serializer tests proving cross-stack imports get flattened to the underlying resource properties.
   - [ ] Update the stage integration test to run without `--stacks` once imports are supported (i.e., convert the entire Dev stage). _(Currently blocked by the unresolved `Fn::GetAZs` intrinsic; see `tests/cli/stage.integration.test.ts` for the regression test that captures the failure case.)_
+
+### Partial Stack Conversion / External Stack Outputs
+- [x] Build the export/stack-output index from the entire assembly before stack filtering so we can identify references to skipped stacks/outputs.
+- [x] Default behavior: when the producer stack is present, inline stack output references as today; when it is absent (filtered out), gracefully rewrite the reference (direct or via `Fn::ImportValue`) to a Pulumi config lookup using deterministic keys (e.g., `external.<stackId>.<outputName>`) and `config.require` (non-secret).
+- [x] Feed this behavior into the serializer (`resolveStackOutputReferences` and friends) so it emits config placeholders instead of crashing when producers are missing.
+- [x] Extend the conversion report with a section that lists the external config values required for deployment (consumer stack/logical ID/property, source stack/output, emitted config key).
+- [x] Document the behavior in the CLI README section, including guidance on how to set the generated config values when only converting a subset of stacks.
+- [x] Tests: serializer unit tests for the config placeholder path and the inline path; a CLI integration that converts a consumer stack while skipping the producer stack and asserts the report/config output.
 
 #### Serializer Module Detail
 

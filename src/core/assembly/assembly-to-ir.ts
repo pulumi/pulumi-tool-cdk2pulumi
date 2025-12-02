@@ -39,16 +39,18 @@ export function convertAssemblyToProgramIr(
   manifest: AssemblyManifestReader,
   stackFilter?: Set<string>,
 ): ProgramIR {
-  const inputs: StackConversionInput[] = [];
+  const allInputs: StackConversionInput[] = [];
+  const selectedInputs: StackConversionInput[] = [];
   for (const stackManifest of manifest.stackManifests) {
-    if (stackFilter && !stackFilter.has(stackManifest.id)) {
-      continue;
+    const inputs = collectStackConversionInputs(stackManifest);
+    allInputs.push(...inputs);
+    if (!stackFilter || stackFilter.has(stackManifest.id)) {
+      selectedInputs.push(...inputs);
     }
-    inputs.push(...collectStackConversionInputs(stackManifest));
   }
 
-  const exportLookup = buildExportLookup(inputs);
-  const stacks = inputs.map((input) =>
+  const exportLookup = buildExportLookup(allInputs);
+  const stacks = selectedInputs.map((input) =>
     convertStackToIr(input, {
       lookupExport: (name) => exportLookup.get(name),
     }),

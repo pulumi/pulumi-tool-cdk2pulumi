@@ -24,6 +24,7 @@ bun src/cli/cli-runner.ts --assembly path/to/cdk.out
 - Supports `StackConverter` adaptation for both real Pulumi resources and IR.
 - Serializes `ProgramIR` to Pulumi YAML.
 - Supports stage selection via `--stage`.
+- Partial stack conversion: if you convert only consumer stacks, cross-stack references fall back to Pulumi config placeholders (`${external.<stack>.<output>}`), and the conversion report lists the required config keys. Set them with `pulumi config set external.<stack>.<output> <value>` before deployment.
 
 ### 2. CDK Assembly Analyzer (`cdk2pulumi analyze`)
 
