@@ -298,6 +298,46 @@ describe('postProcessProgramIr', () => {
     });
   });
 
+  test('replaces AWS::AccountId intrinsic in bootstrap bucket names used by custom resources', () => {
+    const program: ProgramIR = {
+      stacks: [
+        {
+          stackId: 'AppStack',
+          stackPath: 'App/Stack',
+          resources: [
+            makeResource({
+              logicalId: 'CustomResource',
+              cfnType: 'Custom::Demo',
+              cfnProperties: {
+                ServiceToken: 'arn:aws:lambda:us-east-1:123:function:demo',
+              },
+            }),
+          ],
+        },
+      ],
+    } as any;
+
+    const processed = postProcessProgramIr(program, {
+      bootstrapBucketName: 'cdk-hnb659fds-assets-${AWS::AccountId}-us-west-2',
+    });
+    const custom = processed.stacks[0].resources[0];
+    expect(custom.props?.bucketName).toEqual({
+      kind: 'concat',
+      delimiter: '',
+      values: [
+        'cdk-hnb659fds-assets-',
+        {
+          'fn::invoke': {
+            function: 'aws:sts/getCallerIdentity:getCallerIdentity',
+            arguments: {},
+            return: 'accountId',
+          },
+        },
+        '-us-west-2',
+      ],
+    });
+  });
+
   test('skips custom resources when option enabled', () => {
     const program: ProgramIR = {
       stacks: [

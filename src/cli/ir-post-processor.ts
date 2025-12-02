@@ -5,6 +5,7 @@ import {
   StackAddress,
   PropertyMap,
   PropertyValue,
+  ConcatValue,
   ResourceAttributeReference,
   Metadata,
   PulumiProvider,
@@ -306,7 +307,9 @@ function convertCustomResource(
   stack: StackIR,
   bucket: BootstrapBucketRef | undefined,
 ): ResourceIR {
-  const bucketName = resolveBootstrapBucketName(bucket);
+  const bucketName = replaceAwsAccountIdIntrinsic(
+    resolveBootstrapBucketName(bucket),
+  );
   const bucketAddress: StackAddress | undefined =
     bucket?.stackPath && bucket.logicalId
       ? {
@@ -339,6 +342,74 @@ function convertCustomResource(
       stackId: stack.stackId,
     }),
   };
+}
+
+function replaceAwsAccountIdIntrinsic(
+  value: PropertyValue | undefined,
+): PropertyValue | undefined {
+  if (value === undefined || value === null) {
+    return value;
+  }
+
+  if (typeof value === 'string') {
+    return replaceAwsAccountIdInString(value);
+  }
+
+  if (isConcatValue(value)) {
+    return {
+      ...value,
+      values: value.values.map(
+        (part) => replaceAwsAccountIdIntrinsic(part) ?? part,
+      ),
+    };
+  }
+
+  return value;
+}
+
+function replaceAwsAccountIdInString(value: string): PropertyValue {
+  const parts = value.split('${AWS::AccountId}');
+  if (parts.length === 1) {
+    return value;
+  }
+
+  const pieces: PropertyValue[] = [];
+  for (let i = 0; i < parts.length; i++) {
+    const part = parts[i];
+    if (part.length > 0) {
+      pieces.push(part);
+    }
+    if (i < parts.length - 1) {
+      pieces.push(makeAccountIdInvoke());
+    }
+  }
+
+  return pieces.length === 1
+    ? pieces[0]
+    : ({
+        kind: 'concat',
+        delimiter: '',
+        values: pieces,
+      } satisfies ConcatValue);
+}
+
+function makeAccountIdInvoke(): PropertyMap {
+  return {
+    'fn::invoke': {
+      function: 'aws:sts/getCallerIdentity:getCallerIdentity',
+      arguments: {},
+      return: 'accountId',
+    },
+  };
+}
+
+function isConcatValue(value: PropertyValue): value is ConcatValue {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    !Array.isArray(value) &&
+    (value as any).kind === 'concat'
+  );
 }
 
 function convertQueuePolicy(resource: ResourceIR): ResourceIR[] {
