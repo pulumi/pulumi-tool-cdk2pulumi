@@ -3,6 +3,11 @@ import * as fs from 'fs-extra';
 import * as YAML from 'yaml';
 import { ProgramIR } from '../core';
 import { ConversionReportBuilder } from './conversion-report';
+import {
+  IdLookupError,
+  lookupIdentifier,
+  renderIdentifier,
+} from './identifier-help';
 import { postProcessProgramIr, PostProcessOptions } from './ir-post-processor';
 import { serializeProgramIr } from './ir-to-yaml';
 import { AssemblyAnalyzer } from '../core/analysis';
@@ -30,9 +35,15 @@ export interface AnalyzeCliOptions {
   outputFile?: string;
 }
 
+export interface IdsCliOptions {
+  type: string;
+  json: boolean;
+}
+
 export type ParsedCliCommand =
   | { command: 'convert'; options: ConvertCliOptions }
-  | { command: 'analyze'; options: AnalyzeCliOptions };
+  | { command: 'analyze'; options: AnalyzeCliOptions }
+  | { command: 'ids'; options: IdsCliOptions };
 
 class CliError extends Error {}
 
@@ -45,11 +56,14 @@ export function parseArguments(argv: string[]): ParsedCliCommand {
   if (command === 'analyze') {
     return { command, options: parseAnalyzeArguments(args) };
   }
+  if (command === 'ids') {
+    return { command, options: parseIdsArguments(args) };
+  }
   return { command: 'convert', options: parseConvertArguments(args) };
 }
 
 function extractCommand(argv: string[]): {
-  command: 'convert' | 'analyze';
+  command: 'convert' | 'analyze' | 'ids';
   args: string[];
 } {
   if (argv.length === 0) {
@@ -61,6 +75,9 @@ function extractCommand(argv: string[]): {
   }
   if (candidate === 'analyze') {
     return { command: 'analyze', args: argv.slice(1) };
+  }
+  if (candidate === 'ids') {
+    return { command: 'ids', args: argv.slice(1) };
   }
   if (candidate.startsWith('--')) {
     return { command: 'convert', args: argv };
@@ -177,6 +194,34 @@ function parseAnalyzeArguments(argv: string[]): AnalyzeCliOptions {
   return { assemblyDir, stage, format, outputFile };
 }
 
+function parseIdsArguments(argv: string[]): IdsCliOptions {
+  let type: string | undefined;
+  let json = false;
+
+  for (let i = 0; i < argv.length; i++) {
+    const arg = argv[i];
+    switch (arg) {
+      case '--json':
+        json = true;
+        break;
+      case '--help':
+      case '-h':
+        throw new CliError(usage());
+      default:
+        if (type) {
+          throw new CliError(`Unexpected argument: ${arg}\n${usage()}`);
+        }
+        type = arg;
+    }
+  }
+
+  if (!type) {
+    throw new CliError(`Missing required type\n${usage()}`);
+  }
+
+  return { type, json };
+}
+
 export function runCliWithOptions(options: ConvertCliOptions): void {
   const reportBuilder = options.reportFile
     ? new ConversionReportBuilder()
@@ -229,6 +274,28 @@ export function runAnalyzeWithOptions(
   logger.log(serialized);
 }
 
+export function runIdsWithOptions(
+  options: IdsCliOptions,
+  logger: Pick<Console, 'log' | 'error'> = console,
+): void {
+  try {
+    const info = lookupIdentifier(options.type);
+    if (options.json) {
+      logger.log(JSON.stringify(info, null, 2));
+      return;
+    }
+    logger.log(renderIdentifier(info, options.type));
+  } catch (err) {
+    if (err instanceof IdLookupError) {
+      const message = err.suggestions?.length
+        ? `${err.message}\nDid you mean:\n  - ${err.suggestions.join('\n  - ')}`
+        : err.message;
+      throw new CliError(message);
+    }
+    throw err;
+  }
+}
+
 export function runCli(
   argv: string[],
   logger: Pick<Console, 'log' | 'error'> = console,
@@ -248,7 +315,7 @@ export function runCli(
       };
       runCliWithOptions(resolved);
       logger.log(`Wrote Pulumi YAML to ${resolved.outFile}`);
-    } else {
+    } else if (parsed.command === 'analyze') {
       const resolved: AnalyzeCliOptions = {
         assemblyDir: path.resolve(parsed.options.assemblyDir),
         stage: parsed.options.stage,
@@ -258,6 +325,8 @@ export function runCli(
           : undefined,
       };
       runAnalyzeWithOptions(resolved, logger);
+    } else {
+      runIdsWithOptions(parsed.options, logger);
     }
     return 0;
   } catch (err) {
@@ -312,7 +381,7 @@ function requireValue(flag: string, value: string | undefined): string {
 }
 
 function usage(): string {
-  return `Usage:\n  cdk-to-pulumi [convert] --assembly <cdk.out> [--stage <name>] [--out <pulumi.yaml>] [--skip-custom] [--stacks <name1,name2>] [--report <path>] [--no-report]\n  cdk-to-pulumi analyze --assembly <cdk.out> [--stage <name>] [--format json|yaml] [--output <file>]`;
+  return `Usage:\n  cdk-to-pulumi [convert] --assembly <cdk.out> [--stage <name>] [--out <pulumi.yaml>] [--skip-custom] [--stacks <name1,name2>] [--report <path>] [--no-report]\n  cdk-to-pulumi analyze --assembly <cdk.out> [--stage <name>] [--format json|yaml] [--output <file>]\n  cdk-to-pulumi ids <pulumi-type|cfn-type> [--json]`;
 }
 
 function parseList(value: string): string[] {

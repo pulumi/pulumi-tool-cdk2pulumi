@@ -46,6 +46,16 @@ bun src/cli/cli-runner.ts analyze --assembly path/to/cdk.out --format json
 - Analyzes construct tree (L1, L2, Custom, Third-party).
 - Inventories resources and assets.
 
+### 3. Resource import ID helper (`cdk2pulumi ids`)
+
+Look up the import identifier format and the parts required for a given resource type (Pulumi token or CFN type):
+
+```bash
+bun src/cli/cli-runner.ts ids aws-native:acmpca:Certificate
+# or get JSON output
+bun src/cli/cli-runner.ts ids aws-native:acmpca:Certificate --json
+```
+
 ## Development
 
 ### Build

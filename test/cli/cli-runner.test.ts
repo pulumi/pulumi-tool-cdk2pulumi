@@ -5,6 +5,7 @@ import {
   runCliWithOptions,
   runCli,
   runAnalyzeWithOptions,
+  runIdsWithOptions,
 } from '../../src/cli/cli-runner';
 import { postProcessProgramIr } from '../../src/cli/ir-post-processor';
 import { serializeProgramIr } from '../../src/cli/ir-to-yaml';
@@ -36,6 +37,18 @@ jest.mock('../../src/core/analysis', () => ({
   AssemblyAnalyzer: jest.fn(),
 }));
 
+jest.mock('../../src/cli/identifier-help', () => ({
+  lookupIdentifier: jest.fn(),
+  renderIdentifier: jest.fn(),
+  IdLookupError: class extends Error {
+    suggestions?: string[];
+    constructor(message: string, suggestions?: string[]) {
+      super(message);
+      this.suggestions = suggestions;
+    }
+  },
+}));
+
 const mockedConvert =
   convertAssemblyDirectoryToProgramIr as jest.MockedFunction<
     typeof convertAssemblyDirectoryToProgramIr
@@ -54,6 +67,16 @@ const mockedPostProcess = postProcessProgramIr as jest.MockedFunction<
 const mockedAnalyzer = AssemblyAnalyzer as jest.MockedClass<
   typeof AssemblyAnalyzer
 >;
+const mockedIdentifier = jest.requireMock('../../src/cli/identifier-help') as {
+  lookupIdentifier: jest.Mock;
+  renderIdentifier: jest.Mock;
+  IdLookupError: new (
+    message: string,
+    suggestions?: string[],
+  ) => Error & {
+    suggestions?: string[];
+  };
+};
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -207,6 +230,22 @@ describe('parseArguments', () => {
       },
     });
   });
+
+  test('parses ids subcommand', () => {
+    expect(parseArguments(['ids', 'aws-native:acmpca:Certificate'])).toEqual({
+      command: 'ids',
+      options: { type: 'aws-native:acmpca:Certificate', json: false },
+    });
+  });
+
+  test('honors json flag for ids', () => {
+    expect(
+      parseArguments(['ids', 'AWS::ACMPCA::Certificate', '--json']),
+    ).toEqual({
+      command: 'ids',
+      options: { type: 'AWS::ACMPCA::Certificate', json: true },
+    });
+  });
 });
 
 describe('runCliWithOptions', () => {
@@ -224,7 +263,10 @@ describe('runCliWithOptions', () => {
     });
 
     expect(mockedConvert).toHaveBeenCalledWith('/app/cdk.out', undefined);
-    expect(mockedSerialize).toHaveBeenCalledWith({ stacks: [] });
+    expect(mockedSerialize).toHaveBeenCalledWith(
+      { stacks: [] },
+      expect.any(Object),
+    );
     expect(mockedFs.ensureDirSync).toHaveBeenNthCalledWith(1, '/tmp/out');
     expect(mockedFs.writeFileSync).toHaveBeenNthCalledWith(
       1,
@@ -357,6 +399,61 @@ describe('runAnalyzeWithOptions', () => {
   });
 });
 
+describe('runIdsWithOptions', () => {
+  test('renders identifier in text mode', () => {
+    mockedIdentifier.lookupIdentifier.mockReturnValue({
+      cfnType: 'AWS::ACMPCA::Certificate',
+      provider: 'aws-native',
+      pulumiTypes: ['aws-native:acmpca:Certificate'],
+      format: '{arn}/{certificateAuthorityArn}',
+      parts: [],
+    });
+    mockedIdentifier.renderIdentifier.mockReturnValue('rendered');
+    const logger = { log: jest.fn(), error: jest.fn() };
+
+    runIdsWithOptions(
+      { type: 'aws-native:acmpca:Certificate', json: false },
+      logger,
+    );
+
+    expect(mockedIdentifier.lookupIdentifier).toHaveBeenCalledWith(
+      'aws-native:acmpca:Certificate',
+    );
+    expect(mockedIdentifier.renderIdentifier).toHaveBeenCalled();
+    expect(logger.log).toHaveBeenCalledWith('rendered');
+  });
+
+  test('renders identifier in json mode', () => {
+    mockedIdentifier.lookupIdentifier.mockReturnValue({
+      cfnType: 'AWS::ACMPCA::Certificate',
+      provider: 'aws-native',
+      pulumiTypes: ['aws-native:acmpca:Certificate'],
+      format: '{arn}/{certificateAuthorityArn}',
+      parts: [],
+    });
+    const logger = { log: jest.fn(), error: jest.fn() };
+
+    runIdsWithOptions(
+      { type: 'aws-native:acmpca:Certificate', json: true },
+      logger,
+    );
+
+    expect(logger.log).toHaveBeenCalledWith(
+      expect.stringContaining('AWS::ACMPCA::Certificate'),
+    );
+  });
+
+  test('wraps lookup errors', () => {
+    mockedIdentifier.lookupIdentifier.mockImplementation(() => {
+      throw new mockedIdentifier.IdLookupError('nope', ['foo']);
+    });
+    const logger = { log: jest.fn(), error: jest.fn() };
+    expect(() =>
+      runIdsWithOptions({ type: 'Unknown', json: false }, logger),
+    ).toThrow(/nope/);
+  });
+});
+
 describe('runCli', () => {
   test('returns error code when required args missing', () => {
     const logger = { log: jest.fn(), error: jest.fn() };
@@ -370,6 +467,24 @@ describe('runCli', () => {
     const code = runCli(['analyze', '--assembly', './cdk.out'], logger as any);
     expect(code).toBe(0);
     expect(logger.log).toHaveBeenCalled();
+  });
+
+  test('invokes ids flow when subcommand specified', () => {
+    mockedIdentifier.lookupIdentifier.mockReturnValue({
+      cfnType: 'AWS::ACMPCA::Certificate',
+      provider: 'aws-native',
+      pulumiTypes: ['aws-native:acmpca:Certificate'],
+      format: '{arn}/{certificateAuthorityArn}',
+      parts: [],
+    });
+    mockedIdentifier.renderIdentifier.mockReturnValue('rendered');
+    const logger = { log: jest.fn(), error: jest.fn() };
+    const code = runCli(
+      ['ids', 'aws-native:acmpca:Certificate'],
+      logger as any,
+    );
+    expect(code).toBe(0);
+    expect(logger.log).toHaveBeenCalledWith('rendered');
   });
 });
 
