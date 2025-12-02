@@ -328,7 +328,7 @@ describe('postProcessProgramIr', () => {
         'cdk-hnb659fds-assets-',
         {
           'fn::invoke': {
-            function: 'aws:sts/getCallerIdentity:getCallerIdentity',
+            function: 'aws:index/getCallerIdentity:getCallerIdentity',
             arguments: {},
             return: 'accountId',
           },

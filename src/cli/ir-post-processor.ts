@@ -396,7 +396,7 @@ function replaceAwsAccountIdInString(value: string): PropertyValue {
 function makeAccountIdInvoke(): PropertyMap {
   return {
     'fn::invoke': {
-      function: 'aws:sts/getCallerIdentity:getCallerIdentity',
+      function: 'aws:index/getCallerIdentity:getCallerIdentity',
       arguments: {},
       return: 'accountId',
     },
