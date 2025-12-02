@@ -160,7 +160,7 @@ describe('postProcessProgramIr', () => {
     });
   });
 
-  test('merges IAM policies into Role resources as inline policies', () => {
+  test('converts IAM policies to RolePolicy resources instead of inlining', () => {
     const program: ProgramIR = {
       stacks: [
         {
@@ -206,23 +206,20 @@ describe('postProcessProgramIr', () => {
     const processed = postProcessProgramIr(program);
     const stackResources = processed.stacks[0].resources;
 
-    // Should only have the Role resource (Policy is merged into it)
-    expect(stackResources).toHaveLength(1);
+    // Should have the Role and a separate RolePolicy
+    expect(stackResources).toHaveLength(2);
 
-    const role = stackResources[0];
-    expect(role.logicalId).toBe('MyRole');
-    expect(role.cfnType).toBe('AWS::IAM::Role');
-
-    // Check that the inline policy was merged
-    expect(role.props?.policies).toBeDefined();
-    expect(Array.isArray(role.props.policies)).toBe(true);
-    expect(role.props.policies).toHaveLength(1);
-    expect(role.props.policies[0]).toMatchObject({
-      policyName: 'MyInlinePolicy',
-      policyDocument: {
+    const rolePolicy = stackResources.find(
+      (r) => r.typeToken === 'aws:iam/rolePolicy:RolePolicy',
+    )!;
+    expect(rolePolicy.logicalId).toBe('MyPolicy');
+    expect(rolePolicy.props).toMatchObject({
+      name: 'MyInlinePolicy',
+      policy: {
         Version: '2012-10-17',
         Statement: [{ Effect: 'Allow', Action: 's3:GetObject', Resource: '*' }],
       },
+      role: expect.anything(),
     });
   });
 
@@ -263,6 +260,39 @@ describe('postProcessProgramIr', () => {
     );
     expect(custom.props).toMatchObject({
       bucketName: 'cdk-staging-bucket',
+      serviceToken: 'arn:aws:lambda:us-east-1:123:function:demo',
+      resourceType: 'Custom::Demo',
+    });
+  });
+
+  test('rewrites custom resources to emulator using provided bucket name when staging bucket stack is absent', () => {
+    const program: ProgramIR = {
+      stacks: [
+        {
+          stackId: 'AppStack',
+          stackPath: 'App/Stack',
+          resources: [
+            makeResource({
+              logicalId: 'CustomResource',
+              cfnType: 'Custom::Demo',
+              cfnProperties: {
+                ServiceToken: 'arn:aws:lambda:us-east-1:123:function:demo',
+              },
+            }),
+          ],
+        },
+      ],
+    } as any;
+
+    const processed = postProcessProgramIr(program, {
+      bootstrapBucketName: 'cdk-hnb659fds-assets-123456789012-us-west-2',
+    });
+    const custom = processed.stacks[0].resources[0];
+    expect(custom.typeToken).toBe(
+      'aws-native:cloudformation:CustomResourceEmulator',
+    );
+    expect(custom.props).toMatchObject({
+      bucketName: 'cdk-hnb659fds-assets-123456789012-us-west-2',
       serviceToken: 'arn:aws:lambda:us-east-1:123:function:demo',
       resourceType: 'Custom::Demo',
     });

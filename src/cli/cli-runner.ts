@@ -7,6 +7,7 @@ import { postProcessProgramIr, PostProcessOptions } from './ir-post-processor';
 import { serializeProgramIr } from './ir-to-yaml';
 import { AssemblyAnalyzer } from '../core/analysis';
 import {
+  AssemblyManifestReader,
   convertAssemblyDirectoryToProgramIr,
   convertStageInAssemblyDirectoryToProgramIr,
 } from '../core/assembly';
@@ -292,7 +293,13 @@ function loadProgramIr(
       )
     : convertAssemblyDirectoryToProgramIr(assemblyDir, stackFilterSet);
   const filtered = filterProgramStacks(program, stackFilters);
-  return postProcessProgramIr(filtered, options);
+  const bootstrapBucketName =
+    options?.bootstrapBucketName ??
+    discoverBootstrapBucketName(assemblyDir, stage);
+  return postProcessProgramIr(filtered, {
+    ...options,
+    bootstrapBucketName,
+  });
 }
 
 function requireValue(flag: string, value: string | undefined): string {
@@ -328,6 +335,64 @@ function filterProgramStacks(
     throw new CliError(`Unknown stack(s): ${missing.join(', ')}`);
   }
   return { ...program, stacks };
+}
+
+function discoverBootstrapBucketName(
+  assemblyDir: string,
+  stage?: string,
+): string | undefined {
+  try {
+    const reader = AssemblyManifestReader.fromDirectory(assemblyDir);
+    const bucketFromRoot = findBootstrapBucketNameInManifest(reader);
+    if (bucketFromRoot) {
+      return bucketFromRoot;
+    }
+
+    if (!stage) {
+      return undefined;
+    }
+
+    try {
+      const nested = reader.loadNestedAssembly(stage);
+      return findBootstrapBucketNameInManifest(nested);
+    } catch {
+      return undefined;
+    }
+  } catch {
+    return undefined;
+  }
+}
+
+function findBootstrapBucketNameInManifest(
+  reader: AssemblyManifestReader,
+): string | undefined {
+  for (const artifact of Object.values(reader.artifacts)) {
+    if (artifact.type !== 'cdk:asset-manifest') {
+      continue;
+    }
+    const props = artifact.properties as any;
+    const manifestFile = props?.file;
+    if (!manifestFile) {
+      continue;
+    }
+    const manifestPath = path.join(reader.directory, manifestFile);
+    try {
+      const manifest = fs.readJSONSync(manifestPath) as any;
+      const files = manifest.files ?? {};
+      for (const entry of Object.values<any>(files)) {
+        const destinations = entry?.destinations ?? {};
+        for (const dest of Object.values<any>(destinations)) {
+          const bucketName = dest?.bucketName;
+          if (typeof bucketName === 'string' && bucketName.length > 0) {
+            return bucketName;
+          }
+        }
+      }
+    } catch {
+      continue;
+    }
+  }
+  return undefined;
 }
 
 if (require.main === module) {

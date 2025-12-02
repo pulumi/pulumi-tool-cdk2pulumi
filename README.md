@@ -70,3 +70,7 @@ npm run package:linux:arm
 
 - See [specs/conversion.md](./specs/conversion.md) for the detailed implementation plan of the Conversion CLI.
 - See [specs/analysis.md](./specs/analysis.md) for the detailed implementation plan of the Analyzer.
+
+### Custom resource emulation
+
+When we rewrite CDK custom resources, we use the `aws-native:cloudformation:CustomResourceEmulator`, which requires an S3 bucket to stash payloads. CDK custom resources themselves do not depend on a bucket, but CDK apps already have a bootstrap asset bucket. We look for the asset manifest and reuse its bucket name when present; if the name cannot be found we still emit the emulator and omit `bucketName`, leaving it to future handling (or a different bucket strategy). We could swap to creating a dedicated bucket later if needed.
