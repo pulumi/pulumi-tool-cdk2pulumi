@@ -21,6 +21,13 @@ describe('lookupIdentifier', () => {
     expect(info.parts.every((p) => p.source === 'segment')).toBe(true);
   });
 
+  test('remaps irreversible names to find id descriptions', () => {
+    const info = lookupIdentifier('aws-native:amazonmq:Configuration');
+    const idPart = info.parts.find((p) => p.name.toLowerCase() === 'id');
+    expect(idPart?.source).toBe('output');
+    expect(idPart?.description).toContain('Amazon MQ configuration');
+  });
+
   test('suggests similar types when unknown', () => {
     try {
       lookupIdentifier('aws-native:doesnot:Exist');

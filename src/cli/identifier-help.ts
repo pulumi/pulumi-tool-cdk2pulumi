@@ -16,6 +16,7 @@ interface PrimaryIdentifierEntry {
 interface AwsNativeResourceMetadata {
   inputs?: Record<string, { description?: string }>;
   outputs?: Record<string, { description?: string }>;
+  irreversibleNames?: Record<string, string>;
 }
 
 interface AwsImportDocEntry {
@@ -185,10 +186,15 @@ function annotateAwsNativeParts(
   const metadata = loadAwsNativeMetadata().resources[pulumiType];
   const inputs = metadata?.inputs ?? {};
   const outputs = metadata?.outputs ?? {};
+  const irreversible = metadata?.irreversibleNames ?? {};
 
   return parts.map((name) => {
-    const inputMeta = inputs[name];
-    const outputMeta = outputs[name];
+    const resolvedName =
+      name in inputs || name in outputs
+        ? name
+        : resolveIrreversibleName(name, irreversible);
+    const inputMeta = inputs[resolvedName];
+    const outputMeta = outputs[resolvedName];
     if (inputMeta) {
       return {
         name,
@@ -209,6 +215,16 @@ function annotateAwsNativeParts(
       description: undefined,
     };
   });
+}
+
+function resolveIrreversibleName(
+  original: string,
+  irreversible: Record<string, string>,
+): string {
+  const target = Object.entries(irreversible).find(
+    ([, cfName]) => cfName.toLowerCase() === original.toLowerCase(),
+  );
+  return target ? target[0] : original;
 }
 
 function annotateAwsClassicParts(parts: string[]): IdentifierPartInfo[] {
