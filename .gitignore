@@ -53,4 +53,5 @@ junit.xml
 !AGENTS.md
 Pulumi.yaml
 Pulumi.yaml.report.json
+Pulumi.*.yaml
 !/.projenrc.ts
