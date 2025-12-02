@@ -105,28 +105,31 @@ function loadPrimaryIdentifiers() {
   return primaryIdentifiersCache;
 }
 
-function loadAwsNativeMetadata() {
-  if (awsNativeMetadataCache) {
-    return awsNativeMetadataCache;
-  }
-  awsNativeMetadataCache = JSON.parse(
-    fs.readFileSync(awsNativeMetadataPath, 'utf-8'),
-  );
-  return awsNativeMetadataCache;
+function loadAwsNativeMetadata(): {
+  resources: Record<string, AwsNativeResourceMetadata>;
+} {
+  const metadata =
+    awsNativeMetadataCache ??
+    (awsNativeMetadataCache = JSON.parse(
+      fs.readFileSync(awsNativeMetadataPath, 'utf-8'),
+    ));
+  return metadata;
 }
 
-function loadAwsImportDocs() {
-  if (awsImportDocsCache) {
-    return awsImportDocsCache;
-  }
-  try {
-    awsImportDocsCache = JSON.parse(
-      fs.readFileSync(awsImportDocsPath, 'utf-8'),
-    );
-  } catch {
-    awsImportDocsCache = {};
-  }
-  return awsImportDocsCache;
+function loadAwsImportDocs(): Record<string, AwsImportDocEntry> {
+  const docs: Record<string, AwsImportDocEntry> =
+    awsImportDocsCache ??
+    (() => {
+      try {
+        awsImportDocsCache = JSON.parse(
+          fs.readFileSync(awsImportDocsPath, 'utf-8'),
+        );
+      } catch {
+        awsImportDocsCache = {};
+      }
+      return awsImportDocsCache!;
+    })();
+  return docs;
 }
 
 export function lookupIdentifier(type: string): IdentifierInfo {
