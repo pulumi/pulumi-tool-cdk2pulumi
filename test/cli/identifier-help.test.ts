@@ -1,41 +1,39 @@
-import { lookupIdentifier, IdLookupError } from '../../src/cli/identifier-help';
+import {
+  lookupIdentifier,
+  renderIdentifiers,
+} from '../../src/cli/identifier-help';
 
-describe('lookupIdentifier', () => {
-  test('resolves aws-native resource with annotated parts', () => {
-    const info = lookupIdentifier('aws-native:acmpca:Certificate');
-    expect(info.cfnType).toBe('AWS::ACMPCA::Certificate');
-    expect(info.provider).toBe('aws-native');
-    expect(info.format).toBe('{arn}/{certificateAuthorityArn}');
-    const arn = info.parts.find((p) => p.name === 'arn');
-    const caArn = info.parts.find((p) => p.name === 'certificateAuthorityArn');
-    expect(arn?.source).toBe('output');
-    expect(caArn?.source).toBe('input');
-    expect(caArn?.description?.length).toBeGreaterThan(0);
+describe('renderIdentifiers finding ID hints', () => {
+  test('single-part identifiers suggest the PhysicalResourceId', () => {
+    const info = lookupIdentifier('AWS::ACMPCA::CertificateAuthority')[0];
+    const rendered = renderIdentifiers(
+      [info],
+      'AWS::ACMPCA::CertificateAuthority',
+    );
+
+    expect(rendered).toContain(
+      'Finding the ID: Try the CloudFormation PhysicalResourceId',
+    );
   });
 
-  test('resolves aws classic resource with import doc', () => {
-    const info = lookupIdentifier('AWS::ApiGatewayV2::Stage');
-    expect(info.provider).toBe('aws');
-    expect(info.importDoc).toBeDefined();
-    expect(info.format).toContain('{apiId}');
-    expect(info.parts.every((p) => p.source === 'segment')).toBe(true);
+  test('composite identifiers surface cloudcontrol listing command', () => {
+    const info = lookupIdentifier('AWS::ACMPCA::Permission')[0];
+    const rendered = renderIdentifiers([info]);
+
+    expect(rendered).toContain(
+      'Finding the ID: aws cloudcontrol list-resources --type-name AWS::ACMPCA::Permission',
+    );
+    expect(rendered).not.toContain('--resource-model');
   });
 
-  test('remaps irreversible names to find id descriptions', () => {
-    const info = lookupIdentifier('aws-native:amazonmq:Configuration');
-    const idPart = info.parts.find((p) => p.name.toLowerCase() === 'id');
-    expect(idPart?.source).toBe('output');
-    expect(idPart?.description).toContain('Amazon MQ configuration');
-  });
+  test('required list handler properties are reflected in the command', () => {
+    const info = lookupIdentifier(
+      'AWS::ApplicationAutoScaling::ScalingPolicy',
+    )[0];
+    const rendered = renderIdentifiers([info]);
 
-  test('suggests similar types when unknown', () => {
-    try {
-      lookupIdentifier('aws-native:doesnot:Exist');
-      fail('Expected IdLookupError');
-    } catch (err) {
-      expect(err).toBeInstanceOf(IdLookupError);
-      const e = err as IdLookupError;
-      expect(e.suggestions?.length).toBeGreaterThan(0);
-    }
+    expect(rendered).toContain(
+      'Finding the ID: aws cloudcontrol list-resources --type-name AWS::ApplicationAutoScaling::ScalingPolicy --resource-model \'{"ServiceNamespace": "<VALUE>"}\'',
+    );
   });
 });

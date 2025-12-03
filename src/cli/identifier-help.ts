@@ -3,6 +3,10 @@ import * as path from 'path';
 
 type Provider = 'aws' | 'aws-native';
 
+type PrimaryIdentifierEntryOrList =
+  | PrimaryIdentifierEntry
+  | PrimaryIdentifierEntry[];
+
 interface PrimaryIdentifierEntry {
   provider: Provider;
   primaryIdentifier: {
@@ -17,6 +21,10 @@ interface AwsNativeResourceMetadata {
   inputs?: Record<string, { description?: string }>;
   outputs?: Record<string, { description?: string }>;
   irreversibleNames?: Record<string, string>;
+  listHandlerSchema?: {
+    properties?: Record<string, unknown>;
+    required?: string[];
+  };
 }
 
 interface AwsImportDocEntry {
@@ -40,6 +48,7 @@ export interface IdentifierInfo {
   parts: IdentifierPartInfo[];
   note?: string;
   importDoc?: string;
+  listHandlerRequiredProperties?: string[];
 }
 
 export class IdLookupError extends Error {
@@ -67,7 +76,7 @@ const awsImportDocsPath = path.resolve(
 // Lazy-loaded caches to keep startup fast for other commands.
 let primaryIdentifiersCache:
   | {
-      byCfn: Map<string, PrimaryIdentifierEntry>;
+      byCfn: Map<string, PrimaryIdentifierEntry[]>;
       byPulumi: Map<
         string,
         Array<{ cfnType: string; entry: PrimaryIdentifierEntry }>
@@ -81,26 +90,37 @@ let awsNativeMetadataCache:
   | undefined;
 let awsImportDocsCache: Record<string, AwsImportDocEntry> | undefined;
 
+function normalizeEntries(
+  entryOrList: PrimaryIdentifierEntryOrList,
+): PrimaryIdentifierEntry[] {
+  return Array.isArray(entryOrList) ? entryOrList : [entryOrList];
+}
+
 function loadPrimaryIdentifiers() {
   if (primaryIdentifiersCache) {
     return primaryIdentifiersCache;
   }
-  const raw: Record<string, PrimaryIdentifierEntry> = JSON.parse(
+  const raw: Record<string, PrimaryIdentifierEntryOrList> = JSON.parse(
     fs.readFileSync(primaryIdentifiersPath, 'utf-8'),
   );
-  const byCfn = new Map<string, PrimaryIdentifierEntry>();
+  const byCfn = new Map<string, PrimaryIdentifierEntry[]>();
   const byPulumi = new Map<
     string,
     Array<{ cfnType: string; entry: PrimaryIdentifierEntry }>
   >();
-  for (const [cfnType, entry] of Object.entries(raw)) {
-    byCfn.set(cfnType, entry);
-    for (const token of entry.pulumiTypes ?? []) {
-      const list = byPulumi.get(token) ?? [];
-      list.push({ cfnType, entry });
-      byPulumi.set(token, list);
+
+  for (const [cfnType, entryOrList] of Object.entries(raw)) {
+    const entries = normalizeEntries(entryOrList);
+    byCfn.set(cfnType, entries);
+    for (const entry of entries) {
+      for (const token of entry.pulumiTypes ?? []) {
+        const list = byPulumi.get(token) ?? [];
+        list.push({ cfnType, entry });
+        byPulumi.set(token, list);
+      }
     }
   }
+
   primaryIdentifiersCache = { byCfn, byPulumi };
   return primaryIdentifiersCache;
 }
@@ -132,19 +152,25 @@ function loadAwsImportDocs(): Record<string, AwsImportDocEntry> {
   return docs;
 }
 
-export function lookupIdentifier(type: string): IdentifierInfo {
+export function lookupIdentifier(type: string): IdentifierInfo[] {
   const { byCfn, byPulumi } = loadPrimaryIdentifiers();
+
+  const infos: IdentifierInfo[] = [];
 
   const pulumiMatches = byPulumi.get(type);
   if (pulumiMatches && pulumiMatches.length > 0) {
-    // Prefer entries that explicitly list the provided token.
-    const chosen = pulumiMatches[0];
-    return buildIdentifierInfo(chosen.entry, chosen.cfnType, type);
+    for (const match of pulumiMatches) {
+      infos.push(buildIdentifierInfo(match.entry, match.cfnType, type));
+    }
+    return infos;
   }
 
-  const cfnMatch = byCfn.get(type);
-  if (cfnMatch) {
-    return buildIdentifierInfo(cfnMatch, type);
+  const cfnMatches = byCfn.get(type);
+  if (cfnMatches && cfnMatches.length > 0) {
+    for (const entry of cfnMatches) {
+      infos.push(buildIdentifierInfo(entry, type));
+    }
+    return infos;
   }
 
   const suggestions = suggestTypes(type, byCfn, byPulumi);
@@ -177,6 +203,10 @@ function buildIdentifierInfo(
     pulumiTypes: entry.pulumiTypes,
     format: formatDecorated,
     parts,
+    listHandlerRequiredProperties:
+      entry.provider === 'aws-native'
+        ? resolveListHandlerRequired(chosenPulumiType)
+        : undefined,
     ...(entry.note ? { note: entry.note } : {}),
     ...(importDoc ? { importDoc } : {}),
   };
@@ -240,7 +270,8 @@ function annotateAwsClassicParts(parts: string[]): IdentifierPartInfo[] {
 
 function decorateFormat(format: string, parts: string[]): string {
   let decorated = format;
-  for (const part of parts) {
+  const ordered = [...parts].sort((a, b) => b.length - a.length);
+  for (const part of ordered) {
     decorated = decorated.split(part).join(`{${part}}`);
   }
   return decorated;
@@ -248,7 +279,7 @@ function decorateFormat(format: string, parts: string[]): string {
 
 function suggestTypes(
   query: string,
-  byCfn: Map<string, PrimaryIdentifierEntry>,
+  byCfn: Map<string, PrimaryIdentifierEntry[]>,
   byPulumi: Map<
     string,
     Array<{ cfnType: string; entry: PrimaryIdentifierEntry }>
@@ -288,7 +319,16 @@ function distance(a: string, b: string): number {
   return dp[a.length][b.length];
 }
 
-export function renderIdentifier(
+export function renderIdentifiers(
+  infos: IdentifierInfo[],
+  requestedType?: string,
+): string {
+  return infos
+    .map((info) => renderIdentifier(info, requestedType))
+    .join('\n\n');
+}
+
+function renderIdentifier(
   info: IdentifierInfo,
   requestedType?: string,
 ): string {
@@ -326,5 +366,30 @@ export function renderIdentifier(
   if (info.importDoc) {
     lines.push(`Import doc: ${info.importDoc}`);
   }
+  lines.push(renderFindingIdHint(info));
   return lines.join('\n');
+}
+
+function renderFindingIdHint(info: IdentifierInfo): string {
+  if (info.parts.length <= 1) {
+    return 'Finding the ID: Try the CloudFormation PhysicalResourceId';
+  }
+
+  const baseCommand = `aws cloudcontrol list-resources --type-name ${info.cfnType}`;
+  const required = info.listHandlerRequiredProperties;
+  if (!required || required.length === 0) {
+    return `Finding the ID: ${baseCommand}`;
+  }
+
+  const model = required.map((name) => `"${name}": "<VALUE>"`).join(', ');
+  return `Finding the ID: ${baseCommand} --resource-model '{${model}}'`;
+}
+
+function resolveListHandlerRequired(pulumiType: string): string[] | undefined {
+  const metadata = loadAwsNativeMetadata().resources[pulumiType];
+  const required = metadata?.listHandlerSchema?.required;
+  if (!required || required.length === 0) {
+    return undefined;
+  }
+  return required;
 }

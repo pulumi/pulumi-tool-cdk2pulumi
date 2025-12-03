@@ -56,6 +56,8 @@ pulumi plugin run cdk2pulumi -- ids aws-native:acmpca:Certificate
 pulumi plugin run cdk2pulumi -- ids AWS::S3::Bucket --json
 ```
 
+Each result now includes a “Finding the ID” hint: single-part IDs suggest using the CloudFormation PhysicalResourceId, while composite IDs show an `aws cloudcontrol list-resources` example (adding `--resource-model '{...}'` when the Cloud Control list handler requires input).
+
 ## Developing
 
 - Install dependencies: `npm install`
