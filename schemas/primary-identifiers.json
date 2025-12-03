@@ -6,7 +6,7 @@
         "arn",
         "certificateAuthorityArn"
       ],
-      "format": "arn/certificateAuthorityArn"
+      "format": "arn|certificateAuthorityArn"
     },
     "pulumiTypes": [
       "aws-native:acmpca:Certificate"
@@ -43,7 +43,7 @@
         "certificateAuthorityArn",
         "principal"
       ],
-      "format": "certificateAuthorityArn/principal"
+      "format": "certificateAuthorityArn|principal"
     },
     "pulumiTypes": [
       "aws-native:acmpca:Permission"
@@ -140,7 +140,7 @@
         "accountId",
         "region"
       ],
-      "format": "accountId/region"
+      "format": "accountId|region"
     },
     "pulumiTypes": [
       "aws-native:arczonalshift:AutoshiftObserverNotificationStatus"
@@ -252,7 +252,7 @@
         "environmentName",
         "id"
       ],
-      "format": "appId/environmentName/id"
+      "format": "appId|environmentName|id"
     },
     "pulumiTypes": [
       "aws-native:amplifyuibuilder:Component"
@@ -266,7 +266,7 @@
         "environmentName",
         "id"
       ],
-      "format": "appId/environmentName/id"
+      "format": "appId|environmentName|id"
     },
     "pulumiTypes": [
       "aws-native:amplifyuibuilder:Form"
@@ -280,7 +280,7 @@
         "environmentName",
         "id"
       ],
-      "format": "appId/environmentName/id"
+      "format": "appId|environmentName|id"
     },
     "pulumiTypes": [
       "aws-native:amplifyuibuilder:Theme"
@@ -317,7 +317,7 @@
         "restApiId",
         "authorizerId"
       ],
-      "format": "restApiId/authorizerId"
+      "format": "restApiId|authorizerId"
     },
     "pulumiTypes": [
       "aws-native:apigateway:Authorizer"
@@ -330,7 +330,7 @@
         "domainName",
         "basePath"
       ],
-      "format": "domainName/basePath"
+      "format": "domainName|basePath"
     },
     "pulumiTypes": [
       "aws-native:apigateway:BasePathMapping"
@@ -367,7 +367,7 @@
         "deploymentId",
         "restApiId"
       ],
-      "format": "deploymentId/restApiId"
+      "format": "deploymentId|restApiId"
     },
     "pulumiTypes": [
       "aws-native:apigateway:Deployment"
@@ -380,7 +380,7 @@
         "documentationPartId",
         "restApiId"
       ],
-      "format": "documentationPartId/restApiId"
+      "format": "documentationPartId|restApiId"
     },
     "pulumiTypes": [
       "aws-native:apigateway:DocumentationPart"
@@ -393,7 +393,7 @@
         "documentationVersion",
         "restApiId"
       ],
-      "format": "documentationVersion/restApiId"
+      "format": "documentationVersion|restApiId"
     },
     "pulumiTypes": [
       "aws-native:apigateway:DocumentationVersion"
@@ -455,7 +455,7 @@
         "resourceId",
         "httpMethod"
       ],
-      "format": "restApiId/resourceId/httpMethod"
+      "format": "restApiId|resourceId|httpMethod"
     },
     "pulumiTypes": [
       "aws-native:apigateway:Method"
@@ -468,7 +468,7 @@
         "restApiId",
         "name"
       ],
-      "format": "restApiId/name"
+      "format": "restApiId|name"
     },
     "pulumiTypes": [
       "aws-native:apigateway:Model"
@@ -481,7 +481,7 @@
         "restApiId",
         "requestValidatorId"
       ],
-      "format": "restApiId/requestValidatorId"
+      "format": "restApiId|requestValidatorId"
     },
     "pulumiTypes": [
       "aws-native:apigateway:RequestValidator"
@@ -494,7 +494,7 @@
         "restApiId",
         "resourceId"
       ],
-      "format": "restApiId/resourceId"
+      "format": "restApiId|resourceId"
     },
     "pulumiTypes": [
       "aws-native:apigateway:Resource"
@@ -519,7 +519,7 @@
         "restApiId",
         "stageName"
       ],
-      "format": "restApiId/stageName"
+      "format": "restApiId|stageName"
     },
     "pulumiTypes": [
       "aws-native:apigateway:Stage"
@@ -595,7 +595,7 @@
         "apiMappingId",
         "domainName"
       ],
-      "format": "apiMappingId/domainName"
+      "format": "apiMappingId|domainName"
     },
     "pulumiTypes": [
       "aws-native:apigatewayv2:ApiMapping"
@@ -608,7 +608,7 @@
         "authorizerId",
         "apiId"
       ],
-      "format": "authorizerId/apiId"
+      "format": "authorizerId|apiId"
     },
     "pulumiTypes": [
       "aws-native:apigatewayv2:Authorizer"
@@ -621,7 +621,7 @@
         "apiId",
         "deploymentId"
       ],
-      "format": "apiId/deploymentId"
+      "format": "apiId|deploymentId"
     },
     "pulumiTypes": [
       "aws-native:apigatewayv2:Deployment"
@@ -646,7 +646,7 @@
         "apiId",
         "integrationId"
       ],
-      "format": "apiId/integrationId"
+      "format": "apiId|integrationId"
     },
     "pulumiTypes": [
       "aws-native:apigatewayv2:Integration"
@@ -660,7 +660,7 @@
         "integrationId",
         "integrationResponseId"
       ],
-      "format": "apiId/integrationId/integrationResponseId"
+      "format": "apiId|integrationId|integrationResponseId"
     },
     "pulumiTypes": [
       "aws-native:apigatewayv2:IntegrationResponse"
@@ -673,7 +673,7 @@
         "apiId",
         "modelId"
       ],
-      "format": "apiId/modelId"
+      "format": "apiId|modelId"
     },
     "pulumiTypes": [
       "aws-native:apigatewayv2:Model"
@@ -686,7 +686,7 @@
         "apiId",
         "routeId"
       ],
-      "format": "apiId/routeId"
+      "format": "apiId|routeId"
     },
     "pulumiTypes": [
       "aws-native:apigatewayv2:Route"
@@ -700,7 +700,7 @@
         "routeId",
         "routeResponseId"
       ],
-      "format": "apiId/routeId/routeResponseId"
+      "format": "apiId|routeId|routeResponseId"
     },
     "pulumiTypes": [
       "aws-native:apigatewayv2:RouteResponse"
@@ -762,7 +762,7 @@
         "applicationId",
         "configurationProfileId"
       ],
-      "format": "applicationId/configurationProfileId"
+      "format": "applicationId|configurationProfileId"
     },
     "pulumiTypes": [
       "aws-native:appconfig:ConfigurationProfile"
@@ -776,7 +776,7 @@
         "environmentId",
         "deploymentNumber"
       ],
-      "format": "applicationId/environmentId/deploymentNumber"
+      "format": "applicationId|environmentId|deploymentNumber"
     },
     "pulumiTypes": [
       "aws-native:appconfig:Deployment"
@@ -801,7 +801,7 @@
         "applicationId",
         "environmentId"
       ],
-      "format": "applicationId/environmentId"
+      "format": "applicationId|environmentId"
     },
     "pulumiTypes": [
       "aws-native:appconfig:Environment"
@@ -839,7 +839,7 @@
         "configurationProfileId",
         "versionNumber"
       ],
-      "format": "applicationId/configurationProfileId/versionNumber"
+      "format": "applicationId|configurationProfileId|versionNumber"
     },
     "pulumiTypes": [
       "aws-native:appconfig:HostedConfigurationVersion"
@@ -1113,7 +1113,7 @@
         "entitlementName",
         "applicationIdentifier"
       ],
-      "format": "stackName/entitlementName/applicationIdentifier"
+      "format": "stackName|entitlementName|applicationIdentifier"
     },
     "pulumiTypes": [
       "aws-native:appstream:ApplicationEntitlementAssociation"
@@ -1126,7 +1126,7 @@
         "fleetName",
         "applicationArn"
       ],
-      "format": "fleetName/applicationArn"
+      "format": "fleetName|applicationArn"
     },
     "pulumiTypes": [
       "aws-native:appstream:ApplicationFleetAssociation"
@@ -1151,7 +1151,7 @@
         "stackName",
         "name"
       ],
-      "format": "stackName/name"
+      "format": "stackName|name"
     },
     "pulumiTypes": [
       "aws-native:appstream:Entitlement"
@@ -1387,7 +1387,7 @@
         "scalableDimension",
         "serviceNamespace"
       ],
-      "format": "resourceId/scalableDimension/serviceNamespace"
+      "format": "resourceId|scalableDimension|serviceNamespace"
     },
     "pulumiTypes": [
       "aws-native:applicationautoscaling:ScalableTarget"
@@ -1400,7 +1400,7 @@
         "arn",
         "scalableDimension"
       ],
-      "format": "arn/scalableDimension"
+      "format": "arn|scalableDimension"
     },
     "pulumiTypes": [
       "aws-native:applicationautoscaling:ScalingPolicy"
@@ -1497,7 +1497,7 @@
         "statementName",
         "workGroup"
       ],
-      "format": "statementName/workGroup"
+      "format": "statementName|workGroup"
     },
     "pulumiTypes": [
       "aws-native:athena:PreparedStatement"
@@ -1558,7 +1558,7 @@
         "autoScalingGroupName",
         "lifecycleHookName"
       ],
-      "format": "autoScalingGroupName/lifecycleHookName"
+      "format": "autoScalingGroupName|lifecycleHookName"
     },
     "pulumiTypes": [
       "aws-native:autoscaling:LifecycleHook"
@@ -1583,7 +1583,7 @@
         "scheduledActionName",
         "autoScalingGroupName"
       ],
-      "format": "scheduledActionName/autoScalingGroupName"
+      "format": "scheduledActionName|autoScalingGroupName"
     },
     "pulumiTypes": [
       "aws-native:autoscaling:ScheduledAction"
@@ -1764,7 +1764,7 @@
         "restoreTestingPlanName",
         "restoreTestingSelectionName"
       ],
-      "format": "restoreTestingPlanName/restoreTestingSelectionName"
+      "format": "restoreTestingPlanName|restoreTestingSelectionName"
     },
     "pulumiTypes": [
       "aws-native:backup:RestoreTestingSelection"
@@ -1873,7 +1873,7 @@
         "agentId",
         "agentAliasId"
       ],
-      "format": "agentId/agentAliasId"
+      "format": "agentId|agentAliasId"
     },
     "pulumiTypes": [
       "aws-native:bedrock:AgentAlias"
@@ -1910,7 +1910,7 @@
         "policyArn",
         "version"
       ],
-      "format": "policyArn/version"
+      "format": "policyArn|version"
     },
     "pulumiTypes": [
       "aws-native:bedrock:AutomatedReasoningPolicyVersion"
@@ -1947,7 +1947,7 @@
         "knowledgeBaseId",
         "dataSourceId"
       ],
-      "format": "knowledgeBaseId/dataSourceId"
+      "format": "knowledgeBaseId|dataSourceId"
     },
     "pulumiTypes": [
       "aws-native:bedrock:DataSource"
@@ -1972,7 +1972,7 @@
         "arn",
         "flowArn"
       ],
-      "format": "arn/flowArn"
+      "format": "arn|flowArn"
     },
     "pulumiTypes": [
       "aws-native:bedrock:FlowAlias"
@@ -1985,7 +1985,7 @@
         "flowArn",
         "version"
       ],
-      "format": "flowArn/version"
+      "format": "flowArn|version"
     },
     "pulumiTypes": [
       "aws-native:bedrock:FlowVersion"
@@ -2010,7 +2010,7 @@
         "guardrailId",
         "version"
       ],
-      "format": "guardrailId/version"
+      "format": "guardrailId|version"
     },
     "pulumiTypes": [
       "aws-native:bedrock:GuardrailVersion"
@@ -2107,7 +2107,7 @@
         "gatewayIdentifier",
         "targetId"
       ],
-      "format": "gatewayIdentifier/targetId"
+      "format": "gatewayIdentifier|targetId"
     },
     "pulumiTypes": [
       "aws-native:bedrockagentcore:GatewayTarget"
@@ -2193,7 +2193,7 @@
         "actionId",
         "budgetName"
       ],
-      "format": "actionId/budgetName"
+      "format": "actionId|budgetName"
     },
     "pulumiTypes": [
       "aws-native:budgets:BudgetsAction"
@@ -2266,7 +2266,7 @@
         "keyspaceName",
         "tableName"
       ],
-      "format": "keyspaceName/tableName"
+      "format": "keyspaceName|tableName"
     },
     "pulumiTypes": [
       "aws-native:cassandra:Table"
@@ -2279,7 +2279,7 @@
         "keyspaceName",
         "typeName"
       ],
-      "format": "keyspaceName/typeName"
+      "format": "keyspaceName|typeName"
     },
     "pulumiTypes": [
       "aws-native:cassandra:Type"
@@ -2352,7 +2352,7 @@
         "analysisTemplateIdentifier",
         "membershipIdentifier"
       ],
-      "format": "analysisTemplateIdentifier/membershipIdentifier"
+      "format": "analysisTemplateIdentifier|membershipIdentifier"
     },
     "pulumiTypes": [
       "aws-native:cleanrooms:AnalysisTemplate"
@@ -2389,7 +2389,7 @@
         "configuredTableAssociationIdentifier",
         "membershipIdentifier"
       ],
-      "format": "configuredTableAssociationIdentifier/membershipIdentifier"
+      "format": "configuredTableAssociationIdentifier|membershipIdentifier"
     },
     "pulumiTypes": [
       "aws-native:cleanrooms:ConfiguredTableAssociation"
@@ -2402,7 +2402,7 @@
         "idMappingTableIdentifier",
         "membershipIdentifier"
       ],
-      "format": "idMappingTableIdentifier/membershipIdentifier"
+      "format": "idMappingTableIdentifier|membershipIdentifier"
     },
     "pulumiTypes": [
       "aws-native:cleanrooms:IdMappingTable"
@@ -2415,7 +2415,7 @@
         "idNamespaceAssociationIdentifier",
         "membershipIdentifier"
       ],
-      "format": "idNamespaceAssociationIdentifier/membershipIdentifier"
+      "format": "idNamespaceAssociationIdentifier|membershipIdentifier"
     },
     "pulumiTypes": [
       "aws-native:cleanrooms:IdNamespaceAssociation"
@@ -2440,7 +2440,7 @@
         "privacyBudgetTemplateIdentifier",
         "membershipIdentifier"
       ],
-      "format": "privacyBudgetTemplateIdentifier/membershipIdentifier"
+      "format": "privacyBudgetTemplateIdentifier|membershipIdentifier"
     },
     "pulumiTypes": [
       "aws-native:cleanrooms:PrivacyBudgetTemplate"
@@ -3127,7 +3127,7 @@
         "provider",
         "version"
       ],
-      "format": "category/provider/version"
+      "format": "category|provider|version"
     },
     "pulumiTypes": [
       "aws-native:codepipeline:CustomActionType"
@@ -3188,7 +3188,7 @@
         "resourceName",
         "syncType"
       ],
-      "format": "resourceName/syncType"
+      "format": "resourceName|syncType"
     },
     "pulumiTypes": [
       "aws-native:codestarconnections:SyncConfiguration"
@@ -3225,7 +3225,7 @@
         "identityPoolId",
         "identityProviderName"
       ],
-      "format": "identityPoolId/identityProviderName"
+      "format": "identityPoolId|identityProviderName"
     },
     "pulumiTypes": [
       "aws-native:cognito:IdentityPoolPrincipalTag"
@@ -3262,7 +3262,7 @@
         "userPoolId",
         "managedLoginBrandingId"
       ],
-      "format": "userPoolId/managedLoginBrandingId"
+      "format": "userPoolId|managedLoginBrandingId"
     },
     "pulumiTypes": [
       "aws-native:cognito:ManagedLoginBranding"
@@ -3275,7 +3275,7 @@
         "userPoolId",
         "termsId"
       ],
-      "format": "userPoolId/termsId"
+      "format": "userPoolId|termsId"
     },
     "pulumiTypes": [
       "aws-native:cognito:Terms"
@@ -3300,7 +3300,7 @@
         "userPoolId",
         "clientId"
       ],
-      "format": "userPoolId/clientId"
+      "format": "userPoolId|clientId"
     },
     "pulumiTypes": [
       "aws-native:cognito:UserPoolClient"
@@ -3313,7 +3313,7 @@
         "userPoolId",
         "domain"
       ],
-      "format": "userPoolId/domain"
+      "format": "userPoolId|domain"
     },
     "pulumiTypes": [
       "aws-native:cognito:UserPoolDomain"
@@ -3326,7 +3326,7 @@
         "userPoolId",
         "groupName"
       ],
-      "format": "userPoolId/groupName"
+      "format": "userPoolId|groupName"
     },
     "pulumiTypes": [
       "aws-native:cognito:UserPoolGroup"
@@ -3339,7 +3339,7 @@
         "userPoolId",
         "providerName"
       ],
-      "format": "userPoolId/providerName"
+      "format": "userPoolId|providerName"
     },
     "pulumiTypes": [
       "aws-native:cognito:UserPoolIdentityProvider"
@@ -3352,7 +3352,7 @@
         "userPoolId",
         "identifier"
       ],
-      "format": "userPoolId/identifier"
+      "format": "userPoolId|identifier"
     },
     "pulumiTypes": [
       "aws-native:cognito:UserPoolResourceServer"
@@ -3365,7 +3365,7 @@
         "userPoolId",
         "clientId"
       ],
-      "format": "userPoolId/clientId"
+      "format": "userPoolId|clientId"
     },
     "pulumiTypes": [
       "aws-native:cognito:UserPoolRiskConfigurationAttachment"
@@ -3378,7 +3378,7 @@
         "userPoolId",
         "clientId"
       ],
-      "format": "userPoolId/clientId"
+      "format": "userPoolId|clientId"
     },
     "pulumiTypes": [
       "aws-native:cognito:UserPoolUiCustomizationAttachment"
@@ -3391,7 +3391,7 @@
         "userPoolId",
         "username"
       ],
-      "format": "userPoolId/username"
+      "format": "userPoolId|username"
     },
     "pulumiTypes": [
       "aws-native:cognito:UserPoolUser"
@@ -3405,7 +3405,7 @@
         "groupName",
         "username"
       ],
-      "format": "userPoolId/groupName/username"
+      "format": "userPoolId|groupName|username"
     },
     "pulumiTypes": [
       "aws-native:cognito:UserPoolUserToGroupAttachment"
@@ -3442,7 +3442,7 @@
         "authorizedAccountId",
         "authorizedAwsRegion"
       ],
-      "format": "authorizedAccountId/authorizedAwsRegion"
+      "format": "authorizedAccountId|authorizedAwsRegion"
     },
     "pulumiTypes": [
       "aws-native:configuration:AggregationAuthorization"
@@ -3577,7 +3577,7 @@
         "instanceId",
         "origin"
       ],
-      "format": "instanceId/origin"
+      "format": "instanceId|origin"
     },
     "pulumiTypes": [
       "aws-native:connect:ApprovedOrigin"
@@ -3675,7 +3675,7 @@
         "associationId",
         "resourceType"
       ],
-      "format": "instanceArn/associationId/resourceType"
+      "format": "instanceArn|associationId|resourceType"
     },
     "pulumiTypes": [
       "aws-native:connect:InstanceStorageConfig"
@@ -3689,7 +3689,7 @@
         "integrationType",
         "integrationArn"
       ],
-      "format": "instanceId/integrationType/integrationArn"
+      "format": "instanceId|integrationType|integrationArn"
     },
     "pulumiTypes": [
       "aws-native:connect:IntegrationAssociation"
@@ -3714,7 +3714,7 @@
         "instanceArn",
         "name"
       ],
-      "format": "instanceArn/name"
+      "format": "instanceArn|name"
     },
     "pulumiTypes": [
       "aws-native:connect:PredefinedAttribute"
@@ -3787,7 +3787,7 @@
         "instanceId",
         "associationId"
       ],
-      "format": "instanceId/associationId"
+      "format": "instanceId|associationId"
     },
     "pulumiTypes": [
       "aws-native:connect:SecurityKey"
@@ -3932,7 +3932,7 @@
         "targetIdentifier",
         "controlIdentifier"
       ],
-      "format": "targetIdentifier/controlIdentifier"
+      "format": "targetIdentifier|controlIdentifier"
     },
     "pulumiTypes": [
       "aws-native:controltower:EnabledControl"
@@ -3957,7 +3957,7 @@
         "domainName",
         "calculatedAttributeName"
       ],
-      "format": "domainName/calculatedAttributeName"
+      "format": "domainName|calculatedAttributeName"
     },
     "pulumiTypes": [
       "aws-native:customerprofiles:CalculatedAttributeDefinition"
@@ -3982,7 +3982,7 @@
         "domainName",
         "eventStreamName"
       ],
-      "format": "domainName/eventStreamName"
+      "format": "domainName|eventStreamName"
     },
     "pulumiTypes": [
       "aws-native:customerprofiles:EventStream"
@@ -3995,7 +3995,7 @@
         "domainName",
         "eventTriggerName"
       ],
-      "format": "domainName/eventTriggerName"
+      "format": "domainName|eventTriggerName"
     },
     "pulumiTypes": [
       "aws-native:customerprofiles:EventTrigger"
@@ -4008,7 +4008,7 @@
         "domainName",
         "uri"
       ],
-      "format": "domainName/uri"
+      "format": "domainName|uri"
     },
     "pulumiTypes": [
       "aws-native:customerprofiles:Integration"
@@ -4021,7 +4021,7 @@
         "domainName",
         "objectTypeName"
       ],
-      "format": "domainName/objectTypeName"
+      "format": "domainName|objectTypeName"
     },
     "pulumiTypes": [
       "aws-native:customerprofiles:ObjectType"
@@ -4034,7 +4034,7 @@
         "domainName",
         "segmentDefinitionName"
       ],
-      "format": "domainName/segmentDefinitionName"
+      "format": "domainName|segmentDefinitionName"
     },
     "pulumiTypes": [
       "aws-native:customerprofiles:SegmentDefinition"
@@ -4491,7 +4491,7 @@
         "domainId",
         "connectionId"
       ],
-      "format": "domainId/connectionId"
+      "format": "domainId|connectionId"
     },
     "pulumiTypes": [
       "aws-native:datazone:Connection"
@@ -4504,7 +4504,7 @@
         "domainId",
         "id"
       ],
-      "format": "domainId/id"
+      "format": "domainId|id"
     },
     "pulumiTypes": [
       "aws-native:datazone:DataSource"
@@ -4529,7 +4529,7 @@
         "domainId",
         "id"
       ],
-      "format": "domainId/id"
+      "format": "domainId|id"
     },
     "pulumiTypes": [
       "aws-native:datazone:DomainUnit"
@@ -4542,7 +4542,7 @@
         "domainId",
         "id"
       ],
-      "format": "domainId/id"
+      "format": "domainId|id"
     },
     "pulumiTypes": [
       "aws-native:datazone:Environment"
@@ -4556,7 +4556,7 @@
         "environmentId",
         "id"
       ],
-      "format": "domainId/environmentId/id"
+      "format": "domainId|environmentId|id"
     },
     "pulumiTypes": [
       "aws-native:datazone:EnvironmentActions"
@@ -4569,7 +4569,7 @@
         "domainId",
         "environmentBlueprintId"
       ],
-      "format": "domainId/environmentBlueprintId"
+      "format": "domainId|environmentBlueprintId"
     },
     "pulumiTypes": [
       "aws-native:datazone:EnvironmentBlueprintConfiguration"
@@ -4582,7 +4582,7 @@
         "domainId",
         "id"
       ],
-      "format": "domainId/id"
+      "format": "domainId|id"
     },
     "pulumiTypes": [
       "aws-native:datazone:EnvironmentProfile"
@@ -4595,7 +4595,7 @@
         "domainIdentifier",
         "formTypeIdentifier"
       ],
-      "format": "domainIdentifier/formTypeIdentifier"
+      "format": "domainIdentifier|formTypeIdentifier"
     },
     "pulumiTypes": [
       "aws-native:datazone:FormType"
@@ -4608,7 +4608,7 @@
         "domainId",
         "id"
       ],
-      "format": "domainId/id"
+      "format": "domainId|id"
     },
     "pulumiTypes": [
       "aws-native:datazone:GroupProfile"
@@ -4624,7 +4624,7 @@
         "ownerType",
         "ownerIdentifier"
       ],
-      "format": "domainIdentifier/entityType/entityIdentifier/ownerType/ownerIdentifier"
+      "format": "domainIdentifier|entityType|entityIdentifier|ownerType|ownerIdentifier"
     },
     "pulumiTypes": [
       "aws-native:datazone:Owner"
@@ -4640,7 +4640,7 @@
         "entityType",
         "policyType"
       ],
-      "format": "domainIdentifier/grantId/entityIdentifier/entityType/policyType"
+      "format": "domainIdentifier|grantId|entityIdentifier|entityType|policyType"
     },
     "pulumiTypes": [
       "aws-native:datazone:PolicyGrant"
@@ -4653,7 +4653,7 @@
         "domainId",
         "id"
       ],
-      "format": "domainId/id"
+      "format": "domainId|id"
     },
     "pulumiTypes": [
       "aws-native:datazone:Project"
@@ -4668,7 +4668,7 @@
         "memberIdentifierType",
         "projectIdentifier"
       ],
-      "format": "domainIdentifier/memberIdentifier/memberIdentifierType/projectIdentifier"
+      "format": "domainIdentifier|memberIdentifier|memberIdentifierType|projectIdentifier"
     },
     "pulumiTypes": [
       "aws-native:datazone:ProjectMembership"
@@ -4681,7 +4681,7 @@
         "domainIdentifier",
         "identifier"
       ],
-      "format": "domainIdentifier/identifier"
+      "format": "domainIdentifier|identifier"
     },
     "pulumiTypes": [
       "aws-native:datazone:ProjectProfile"
@@ -4695,7 +4695,7 @@
         "environmentId",
         "id"
       ],
-      "format": "domainId/environmentId/id"
+      "format": "domainId|environmentId|id"
     },
     "pulumiTypes": [
       "aws-native:datazone:SubscriptionTarget"
@@ -4708,7 +4708,7 @@
         "domainId",
         "id"
       ],
-      "format": "domainId/id"
+      "format": "domainId|id"
     },
     "pulumiTypes": [
       "aws-native:datazone:UserProfile"
@@ -4757,7 +4757,7 @@
         "farmId",
         "limitId"
       ],
-      "format": "farmId/limitId"
+      "format": "farmId|limitId"
     },
     "pulumiTypes": [
       "aws-native:deadline:Limit"
@@ -4807,7 +4807,7 @@
         "queueId",
         "queueEnvironmentId"
       ],
-      "format": "farmId/queueId/queueEnvironmentId"
+      "format": "farmId|queueId|queueEnvironmentId"
     },
     "pulumiTypes": [
       "aws-native:deadline:QueueEnvironment"
@@ -4821,7 +4821,7 @@
         "fleetId",
         "queueId"
       ],
-      "format": "farmId/fleetId/queueId"
+      "format": "farmId|fleetId|queueId"
     },
     "pulumiTypes": [
       "aws-native:deadline:QueueFleetAssociation"
@@ -4835,7 +4835,7 @@
         "limitId",
         "queueId"
       ],
-      "format": "farmId/limitId/queueId"
+      "format": "farmId|limitId|queueId"
     },
     "pulumiTypes": [
       "aws-native:deadline:QueueLimitAssociation"
@@ -4848,7 +4848,7 @@
         "farmId",
         "storageProfileId"
       ],
-      "format": "farmId/storageProfileId"
+      "format": "farmId|storageProfileId"
     },
     "pulumiTypes": [
       "aws-native:deadline:StorageProfile"
@@ -4873,7 +4873,7 @@
         "graphArn",
         "memberId"
       ],
-      "format": "graphArn/memberId"
+      "format": "graphArn|memberId"
     },
     "pulumiTypes": [
       "aws-native:detective:MemberInvitation"
@@ -5263,7 +5263,7 @@
         "publicIp",
         "allocationId"
       ],
-      "format": "publicIp/allocationId"
+      "format": "publicIp|allocationId"
     },
     "pulumiTypes": [
       "aws-native:ec2:Eip"
@@ -5300,7 +5300,7 @@
         "certificateArn",
         "roleArn"
       ],
-      "format": "certificateArn/roleArn"
+      "format": "certificateArn|roleArn"
     },
     "pulumiTypes": [
       "aws-native:ec2:EnclaveCertificateIamRoleAssociation"
@@ -5362,7 +5362,7 @@
         "ipamPoolAllocationId",
         "cidr"
       ],
-      "format": "ipamPoolId/ipamPoolAllocationId/cidr"
+      "format": "ipamPoolId|ipamPoolAllocationId|cidr"
     },
     "pulumiTypes": [
       "aws-native:ec2:IpamAllocation"
@@ -5387,7 +5387,7 @@
         "ipamPoolId",
         "ipamPoolCidrId"
       ],
-      "format": "ipamPoolId/ipamPoolCidrId"
+      "format": "ipamPoolId|ipamPoolCidrId"
     },
     "pulumiTypes": [
       "aws-native:ec2:IpamPoolCidr"
@@ -5508,7 +5508,7 @@
         "destinationCidrBlock",
         "localGatewayRouteTableId"
       ],
-      "format": "destinationCidrBlock/localGatewayRouteTableId"
+      "format": "destinationCidrBlock|localGatewayRouteTableId"
     },
     "pulumiTypes": [
       "aws-native:ec2:LocalGatewayRoute"
@@ -5706,7 +5706,7 @@
         "metric",
         "statistic"
       ],
-      "format": "source/destination/metric/statistic"
+      "format": "source|destination|metric|statistic"
     },
     "pulumiTypes": [
       "aws-native:ec2:NetworkPerformanceMetricSubscription"
@@ -5743,7 +5743,7 @@
         "routeTableId",
         "cidrBlock"
       ],
-      "format": "routeTableId/cidrBlock"
+      "format": "routeTableId|cidrBlock"
     },
     "pulumiTypes": [
       "aws-native:ec2:Route"
@@ -5768,7 +5768,7 @@
         "routeServerId",
         "vpcId"
       ],
-      "format": "routeServerId/vpcId"
+      "format": "routeServerId|vpcId"
     },
     "pulumiTypes": [
       "aws-native:ec2:RouteServerAssociation"
@@ -5805,7 +5805,7 @@
         "routeServerId",
         "routeTableId"
       ],
-      "format": "routeServerId/routeTableId"
+      "format": "routeServerId|routeTableId"
     },
     "pulumiTypes": [
       "aws-native:ec2:RouteServerPropagation"
@@ -5866,7 +5866,7 @@
         "groupId",
         "vpcId"
       ],
-      "format": "groupId/vpcId"
+      "format": "groupId|vpcId"
     },
     "pulumiTypes": [
       "aws-native:ec2:SecurityGroupVpcAssociation"
@@ -6060,7 +6060,7 @@
         "transitGatewayAttachmentId",
         "subnetId"
       ],
-      "format": "transitGatewayMulticastDomainId/transitGatewayAttachmentId/subnetId"
+      "format": "transitGatewayMulticastDomainId|transitGatewayAttachmentId|subnetId"
     },
     "pulumiTypes": [
       "aws-native:ec2:TransitGatewayMulticastDomainAssociation"
@@ -6074,7 +6074,7 @@
         "groupIpAddress",
         "networkInterfaceId"
       ],
-      "format": "transitGatewayMulticastDomainId/groupIpAddress/networkInterfaceId"
+      "format": "transitGatewayMulticastDomainId|groupIpAddress|networkInterfaceId"
     },
     "pulumiTypes": [
       "aws-native:ec2:TransitGatewayMulticastGroupMember"
@@ -6088,7 +6088,7 @@
         "groupIpAddress",
         "networkInterfaceId"
       ],
-      "format": "transitGatewayMulticastDomainId/groupIpAddress/networkInterfaceId"
+      "format": "transitGatewayMulticastDomainId|groupIpAddress|networkInterfaceId"
     },
     "pulumiTypes": [
       "aws-native:ec2:TransitGatewayMulticastGroupSource"
@@ -6113,7 +6113,7 @@
         "transitGatewayRouteTableId",
         "destinationCidrBlock"
       ],
-      "format": "transitGatewayRouteTableId/destinationCidrBlock"
+      "format": "transitGatewayRouteTableId|destinationCidrBlock"
     },
     "pulumiTypes": [
       "aws-native:ec2:TransitGatewayRoute"
@@ -6138,7 +6138,7 @@
         "transitGatewayRouteTableId",
         "transitGatewayAttachmentId"
       ],
-      "format": "transitGatewayRouteTableId/transitGatewayAttachmentId"
+      "format": "transitGatewayRouteTableId|transitGatewayAttachmentId"
     },
     "pulumiTypes": [
       "aws-native:ec2:TransitGatewayRouteTableAssociation"
@@ -6151,7 +6151,7 @@
         "transitGatewayRouteTableId",
         "transitGatewayAttachmentId"
       ],
-      "format": "transitGatewayRouteTableId/transitGatewayAttachmentId"
+      "format": "transitGatewayRouteTableId|transitGatewayAttachmentId"
     },
     "pulumiTypes": [
       "aws-native:ec2:TransitGatewayRouteTablePropagation"
@@ -6212,7 +6212,7 @@
         "id",
         "vpcId"
       ],
-      "format": "id/vpcId"
+      "format": "id|vpcId"
     },
     "pulumiTypes": [
       "aws-native:ec2:VpcCidrBlock"
@@ -6225,7 +6225,7 @@
         "dhcpOptionsId",
         "vpcId"
       ],
-      "format": "dhcpOptionsId/vpcId"
+      "format": "dhcpOptionsId|vpcId"
     },
     "pulumiTypes": [
       "aws-native:ec2:VpcdhcpOptionsAssociation"
@@ -6286,7 +6286,7 @@
         "attachmentType",
         "vpcId"
       ],
-      "format": "attachmentType/vpcId"
+      "format": "attachmentType|vpcId"
     },
     "pulumiTypes": [
       "aws-native:ec2:VpcGatewayAttachment"
@@ -6323,7 +6323,7 @@
         "destinationCidrBlock",
         "vpnConnectionId"
       ],
-      "format": "destinationCidrBlock/vpnConnectionId"
+      "format": "destinationCidrBlock|vpnConnectionId"
     },
     "pulumiTypes": [
       "aws-native:ec2:VpnConnectionRoute"
@@ -6421,7 +6421,7 @@
         "volumeId",
         "instanceId"
       ],
-      "format": "volumeId/instanceId"
+      "format": "volumeId|instanceId"
     },
     "pulumiTypes": [
       "aws-native:ec2:VolumeAttachment"
@@ -6554,7 +6554,7 @@
         "cluster",
         "service"
       ],
-      "format": "cluster/service"
+      "format": "cluster|service"
     },
     "pulumiTypes": [
       "aws-native:ecs:PrimaryTaskSet"
@@ -6567,7 +6567,7 @@
         "serviceArn",
         "cluster"
       ],
-      "format": "serviceArn/cluster"
+      "format": "serviceArn|cluster"
     },
     "pulumiTypes": [
       "aws-native:ecs:Service"
@@ -6593,7 +6593,7 @@
         "service",
         "id"
       ],
-      "format": "cluster/service/id"
+      "format": "cluster|service|id"
     },
     "pulumiTypes": [
       "aws-native:ecs:TaskSet"
@@ -6642,7 +6642,7 @@
         "principalArn",
         "clusterName"
       ],
-      "format": "principalArn/clusterName"
+      "format": "principalArn|clusterName"
     },
     "pulumiTypes": [
       "aws-native:eks:AccessEntry"
@@ -6655,7 +6655,7 @@
         "clusterName",
         "addonName"
       ],
-      "format": "clusterName/addonName"
+      "format": "clusterName|addonName"
     },
     "pulumiTypes": [
       "aws-native:eks:Addon"
@@ -6680,7 +6680,7 @@
         "clusterName",
         "fargateProfileName"
       ],
-      "format": "clusterName/fargateProfileName"
+      "format": "clusterName|fargateProfileName"
     },
     "pulumiTypes": [
       "aws-native:eks:FargateProfile"
@@ -6694,7 +6694,7 @@
         "clusterName",
         "type"
       ],
-      "format": "identityProviderConfigName/clusterName/type"
+      "format": "identityProviderConfigName|clusterName|type"
     },
     "pulumiTypes": [
       "aws-native:eks:IdentityProviderConfig"
@@ -6806,7 +6806,7 @@
         "identityType",
         "identityName"
       ],
-      "format": "studioId/identityType/identityName"
+      "format": "studioId|identityType|identityName"
     },
     "pulumiTypes": [
       "aws-native:emr:StudioSessionMapping"
@@ -6975,7 +6975,7 @@
         "applicationName",
         "id"
       ],
-      "format": "applicationName/id"
+      "format": "applicationName|id"
     },
     "pulumiTypes": [
       "aws-native:elasticbeanstalk:ApplicationVersion"
@@ -6988,7 +6988,7 @@
         "applicationName",
         "templateName"
       ],
-      "format": "applicationName/templateName"
+      "format": "applicationName|templateName"
     },
     "pulumiTypes": [
       "aws-native:elasticbeanstalk:ConfigurationTemplate"
@@ -7098,7 +7098,7 @@
         "revocationId",
         "trustStoreArn"
       ],
-      "format": "revocationId/trustStoreArn"
+      "format": "revocationId|trustStoreArn"
     },
     "pulumiTypes": [
       "aws-native:elasticloadbalancingv2:TrustStoreRevocation"
@@ -7159,7 +7159,7 @@
         "arn",
         "statementId"
       ],
-      "format": "arn/statementId"
+      "format": "arn|statementId"
     },
     "pulumiTypes": [
       "aws-native:entityresolution:PolicyStatement"
@@ -7292,7 +7292,7 @@
         "eventBusName",
         "statementId"
       ],
-      "format": "eventBusName/statementId"
+      "format": "eventBusName|statementId"
     },
     "pulumiTypes": [
       "aws-native:events:EventBusPolicy"
@@ -7389,7 +7389,7 @@
         "experimentTemplateId",
         "accountId"
       ],
-      "format": "experimentTemplateId/accountId"
+      "format": "experimentTemplateId|accountId"
     },
     "pulumiTypes": [
       "aws-native:fis:TargetAccountConfiguration"
@@ -7926,7 +7926,7 @@
         "resourceArn",
         "resourcePropertyArn"
       ],
-      "format": "resourceArn/resourcePropertyArn"
+      "format": "resourceArn|resourcePropertyArn"
     },
     "pulumiTypes": [
       "aws-native:glue:IntegrationResourceProperty"
@@ -8016,7 +8016,7 @@
         "key",
         "value"
       ],
-      "format": "schemaVersionId/key/value"
+      "format": "schemaVersionId|key|value"
     },
     "pulumiTypes": [
       "aws-native:glue:SchemaVersionMetadata"
@@ -8151,7 +8151,7 @@
         "id",
         "arn"
       ],
-      "format": "id/arn"
+      "format": "id|arn"
     },
     "pulumiTypes": [
       "aws-native:groundstation:MissionProfile"
@@ -8176,7 +8176,7 @@
         "detectorId",
         "name"
       ],
-      "format": "detectorId/name"
+      "format": "detectorId|name"
     },
     "pulumiTypes": [
       "aws-native:guardduty:Filter"
@@ -8189,7 +8189,7 @@
         "id",
         "detectorId"
       ],
-      "format": "id/detectorId"
+      "format": "id|detectorId"
     },
     "pulumiTypes": [
       "aws-native:guardduty:IpSet"
@@ -8214,7 +8214,7 @@
         "detectorId",
         "masterId"
       ],
-      "format": "detectorId/masterId"
+      "format": "detectorId|masterId"
     },
     "pulumiTypes": [
       "aws-native:guardduty:Master"
@@ -8227,7 +8227,7 @@
         "detectorId",
         "memberId"
       ],
-      "format": "detectorId/memberId"
+      "format": "detectorId|memberId"
     },
     "pulumiTypes": [
       "aws-native:guardduty:Member"
@@ -8240,7 +8240,7 @@
         "detectorId",
         "id"
       ],
-      "format": "detectorId/id"
+      "format": "detectorId|id"
     },
     "pulumiTypes": [
       "aws-native:guardduty:PublishingDestination"
@@ -8253,7 +8253,7 @@
         "id",
         "detectorId"
       ],
-      "format": "id/detectorId"
+      "format": "id|detectorId"
     },
     "pulumiTypes": [
       "aws-native:guardduty:ThreatEntitySet"
@@ -8266,7 +8266,7 @@
         "id",
         "detectorId"
       ],
-      "format": "id/detectorId"
+      "format": "id|detectorId"
     },
     "pulumiTypes": [
       "aws-native:guardduty:ThreatIntelSet"
@@ -8279,7 +8279,7 @@
         "id",
         "detectorId"
       ],
-      "format": "id/detectorId"
+      "format": "id|detectorId"
     },
     "pulumiTypes": [
       "aws-native:guardduty:TrustedEntitySet"
@@ -8340,7 +8340,7 @@
         "policyName",
         "groupName"
       ],
-      "format": "policyName/groupName"
+      "format": "policyName|groupName"
     },
     "pulumiTypes": [
       "aws-native:iam:GroupPolicy"
@@ -8413,7 +8413,7 @@
         "policyName",
         "roleName"
       ],
-      "format": "policyName/roleName"
+      "format": "policyName|roleName"
     },
     "pulumiTypes": [
       "aws-native:iam:RolePolicy"
@@ -8474,7 +8474,7 @@
         "policyName",
         "userName"
       ],
-      "format": "policyName/userName"
+      "format": "policyName|userName"
     },
     "pulumiTypes": [
       "aws-native:iam:UserPolicy"
@@ -8657,7 +8657,7 @@
         "groupId",
         "identityStoreId"
       ],
-      "format": "groupId/identityStoreId"
+      "format": "groupId|identityStoreId"
     },
     "pulumiTypes": [
       "aws-native:identitystore:Group"
@@ -8670,7 +8670,7 @@
         "membershipId",
         "identityStoreId"
       ],
-      "format": "membershipId/identityStoreId"
+      "format": "membershipId|identityStoreId"
     },
     "pulumiTypes": [
       "aws-native:identitystore:GroupMembership"
@@ -9176,7 +9176,7 @@
         "packageName",
         "versionName"
       ],
-      "format": "packageName/versionName"
+      "format": "packageName|versionName"
     },
     "pulumiTypes": [
       "aws-native:iot:SoftwarePackageVersion"
@@ -9466,7 +9466,7 @@
         "workspaceId",
         "componentTypeId"
       ],
-      "format": "workspaceId/componentTypeId"
+      "format": "workspaceId|componentTypeId"
     },
     "pulumiTypes": [
       "aws-native:iottwinmaker:ComponentType"
@@ -9479,7 +9479,7 @@
         "workspaceId",
         "entityId"
       ],
-      "format": "workspaceId/entityId"
+      "format": "workspaceId|entityId"
     },
     "pulumiTypes": [
       "aws-native:iottwinmaker:Entity"
@@ -9492,7 +9492,7 @@
         "workspaceId",
         "sceneId"
       ],
-      "format": "workspaceId/sceneId"
+      "format": "workspaceId|sceneId"
     },
     "pulumiTypes": [
       "aws-native:iottwinmaker:Scene"
@@ -9505,7 +9505,7 @@
         "workspaceId",
         "syncSource"
       ],
-      "format": "workspaceId/syncSource"
+      "format": "workspaceId|syncSource"
     },
     "pulumiTypes": [
       "aws-native:iottwinmaker:SyncJob"
@@ -9710,7 +9710,7 @@
         "id",
         "indexId"
       ],
-      "format": "id/indexId"
+      "format": "id|indexId"
     },
     "pulumiTypes": [
       "aws-native:kendra:DataSource"
@@ -9723,7 +9723,7 @@
         "id",
         "indexId"
       ],
-      "format": "id/indexId"
+      "format": "id|indexId"
     },
     "pulumiTypes": [
       "aws-native:kendra:Faq"
@@ -9885,7 +9885,7 @@
         "tableName",
         "name"
       ],
-      "format": "tableCatalogId/databaseName/tableName/name"
+      "format": "tableCatalogId|databaseName|tableName|name"
     },
     "pulumiTypes": [
       "aws-native:lakeformation:DataCellsFilter"
@@ -9923,7 +9923,7 @@
         "principalIdentifier",
         "resourceIdentifier"
       ],
-      "format": "principalIdentifier/resourceIdentifier"
+      "format": "principalIdentifier|resourceIdentifier"
     },
     "pulumiTypes": [
       "aws-native:lakeformation:PrincipalPermissions"
@@ -9960,7 +9960,7 @@
         "resourceIdentifier",
         "tagsIdentifier"
       ],
-      "format": "resourceIdentifier/tagsIdentifier"
+      "format": "resourceIdentifier|tagsIdentifier"
     },
     "pulumiTypes": [
       "aws-native:lakeformation:TagAssociation"
@@ -9997,7 +9997,7 @@
         "functionName",
         "qualifier"
       ],
-      "format": "functionName/qualifier"
+      "format": "functionName|qualifier"
     },
     "pulumiTypes": [
       "aws-native:lambda:EventInvokeConfig"
@@ -10058,7 +10058,7 @@
         "functionName",
         "id"
       ],
-      "format": "functionName/id"
+      "format": "functionName|id"
     },
     "pulumiTypes": [
       "aws-native:lambda:Permission"
@@ -10119,7 +10119,7 @@
         "botAliasId",
         "botId"
       ],
-      "format": "botAliasId/botId"
+      "format": "botAliasId|botId"
     },
     "pulumiTypes": [
       "aws-native:lex:BotAlias"
@@ -10132,7 +10132,7 @@
         "botId",
         "botVersion"
       ],
-      "format": "botId/botVersion"
+      "format": "botId|botVersion"
     },
     "pulumiTypes": [
       "aws-native:lex:BotVersion"
@@ -10325,7 +10325,7 @@
         "certificateName",
         "loadBalancerName"
       ],
-      "format": "certificateName/loadBalancerName"
+      "format": "certificateName|loadBalancerName"
     },
     "pulumiTypes": [
       "aws-native:lightsail:LoadBalancerTlsCertificate"
@@ -10422,7 +10422,7 @@
         "trackerName",
         "consumerArn"
       ],
-      "format": "trackerName/consumerArn"
+      "format": "trackerName|consumerArn"
     },
     "pulumiTypes": [
       "aws-native:location:TrackerConsumer"
@@ -10436,7 +10436,7 @@
         "policyType",
         "policyName"
       ],
-      "format": "accountId/policyType/policyName"
+      "format": "accountId|policyType|policyName"
     },
     "pulumiTypes": [
       "aws-native:logs:AccountPolicy"
@@ -10533,7 +10533,7 @@
         "logGroupName",
         "logStreamName"
       ],
-      "format": "logGroupName/logStreamName"
+      "format": "logGroupName|logStreamName"
     },
     "pulumiTypes": [
       "aws-native:logs:LogStream"
@@ -10546,7 +10546,7 @@
         "logGroupName",
         "filterName"
       ],
-      "format": "logGroupName/filterName"
+      "format": "logGroupName|filterName"
     },
     "pulumiTypes": [
       "aws-native:logs:MetricFilter"
@@ -10583,7 +10583,7 @@
         "filterName",
         "logGroupName"
       ],
-      "format": "filterName/logGroupName"
+      "format": "filterName|logGroupName"
     },
     "pulumiTypes": [
       "aws-native:logs:SubscriptionFilter"
@@ -10836,7 +10836,7 @@
         "bridgeArn",
         "name"
       ],
-      "format": "bridgeArn/name"
+      "format": "bridgeArn|name"
     },
     "pulumiTypes": [
       "aws-native:mediaconnect:BridgeOutputResource"
@@ -10849,7 +10849,7 @@
         "bridgeArn",
         "name"
       ],
-      "format": "bridgeArn/name"
+      "format": "bridgeArn|name"
     },
     "pulumiTypes": [
       "aws-native:mediaconnect:BridgeSource"
@@ -10910,7 +10910,7 @@
         "flowArn",
         "name"
       ],
-      "format": "flowArn/name"
+      "format": "flowArn|name"
     },
     "pulumiTypes": [
       "aws-native:mediaconnect:FlowVpcInterface"
@@ -10985,7 +10985,7 @@
         "id",
         "clusterId"
       ],
-      "format": "id/clusterId"
+      "format": "id|clusterId"
     },
     "pulumiTypes": [
       "aws-native:medialive:ChannelPlacementGroup"
@@ -11094,7 +11094,7 @@
         "programName",
         "multiplexId"
       ],
-      "format": "programName/multiplexId"
+      "format": "programName|multiplexId"
     },
     "pulumiTypes": [
       "aws-native:medialive:Multiplexprogram"
@@ -11227,7 +11227,7 @@
         "channelGroupName",
         "channelName"
       ],
-      "format": "channelGroupName/channelName"
+      "format": "channelGroupName|channelName"
     },
     "pulumiTypes": [
       "aws-native:mediapackagev2:ChannelPolicy"
@@ -11253,7 +11253,7 @@
         "channelName",
         "originEndpointName"
       ],
-      "format": "channelGroupName/channelName/originEndpointName"
+      "format": "channelGroupName|channelName|originEndpointName"
     },
     "pulumiTypes": [
       "aws-native:mediapackagev2:OriginEndpointPolicy"
@@ -11290,7 +11290,7 @@
         "liveSourceName",
         "sourceLocationName"
       ],
-      "format": "liveSourceName/sourceLocationName"
+      "format": "liveSourceName|sourceLocationName"
     },
     "pulumiTypes": [
       "aws-native:mediatailor:LiveSource"
@@ -11327,7 +11327,7 @@
         "sourceLocationName",
         "vodSourceName"
       ],
-      "format": "sourceLocationName/vodSourceName"
+      "format": "sourceLocationName|vodSourceName"
     },
     "pulumiTypes": [
       "aws-native:mediatailor:VodSource"
@@ -11616,7 +11616,7 @@
         "globalNetworkId",
         "customerGatewayArn"
       ],
-      "format": "globalNetworkId/customerGatewayArn"
+      "format": "globalNetworkId|customerGatewayArn"
     },
     "pulumiTypes": [
       "aws-native:networkmanager:CustomerGatewayAssociation"
@@ -11629,7 +11629,7 @@
         "globalNetworkId",
         "deviceId"
       ],
-      "format": "globalNetworkId/deviceId"
+      "format": "globalNetworkId|deviceId"
     },
     "pulumiTypes": [
       "aws-native:networkmanager:Device"
@@ -11666,7 +11666,7 @@
         "globalNetworkId",
         "linkId"
       ],
-      "format": "globalNetworkId/linkId"
+      "format": "globalNetworkId|linkId"
     },
     "pulumiTypes": [
       "aws-native:networkmanager:Link"
@@ -11680,7 +11680,7 @@
         "deviceId",
         "linkId"
       ],
-      "format": "globalNetworkId/deviceId/linkId"
+      "format": "globalNetworkId|deviceId|linkId"
     },
     "pulumiTypes": [
       "aws-native:networkmanager:LinkAssociation"
@@ -11693,7 +11693,7 @@
         "globalNetworkId",
         "siteId"
       ],
-      "format": "globalNetworkId/siteId"
+      "format": "globalNetworkId|siteId"
     },
     "pulumiTypes": [
       "aws-native:networkmanager:Site"
@@ -11730,7 +11730,7 @@
         "globalNetworkId",
         "transitGatewayArn"
       ],
-      "format": "globalNetworkId/transitGatewayArn"
+      "format": "globalNetworkId|transitGatewayArn"
     },
     "pulumiTypes": [
       "aws-native:networkmanager:TransitGatewayRegistration"
@@ -12031,7 +12031,7 @@
         "type",
         "name"
       ],
-      "format": "type/name"
+      "format": "type|name"
     },
     "pulumiTypes": [
       "aws-native:opensearchserverless:AccessPolicy"
@@ -12056,7 +12056,7 @@
         "indexName",
         "collectionEndpoint"
       ],
-      "format": "indexName/collectionEndpoint"
+      "format": "indexName|collectionEndpoint"
     },
     "pulumiTypes": [
       "aws-native:opensearchserverless:Index"
@@ -12069,7 +12069,7 @@
         "type",
         "name"
       ],
-      "format": "type/name"
+      "format": "type|name"
     },
     "pulumiTypes": [
       "aws-native:opensearchserverless:LifecyclePolicy"
@@ -12094,7 +12094,7 @@
         "type",
         "name"
       ],
-      "format": "type/name"
+      "format": "type|name"
     },
     "pulumiTypes": [
       "aws-native:opensearchserverless:SecurityPolicy"
@@ -12239,7 +12239,7 @@
         "connectorArn",
         "directoryRegistrationArn"
       ],
-      "format": "connectorArn/directoryRegistrationArn"
+      "format": "connectorArn|directoryRegistrationArn"
     },
     "pulumiTypes": [
       "aws-native:pcaconnectorad:ServicePrincipalName"
@@ -12264,7 +12264,7 @@
         "groupSecurityIdentifier",
         "templateArn"
       ],
-      "format": "groupSecurityIdentifier/templateArn"
+      "format": "groupSecurityIdentifier|templateArn"
     },
     "pulumiTypes": [
       "aws-native:pcaconnectorad:TemplateGroupAccessControlEntry"
@@ -12362,7 +12362,7 @@
         "packageVersion",
         "patchVersion"
       ],
-      "format": "packageId/packageVersion/patchVersion"
+      "format": "packageId|packageVersion|patchVersion"
     },
     "pulumiTypes": [
       "aws-native:panorama:PackageVersion"
@@ -12519,7 +12519,7 @@
         "applicationId",
         "dataAccessorId"
       ],
-      "format": "applicationId/dataAccessorId"
+      "format": "applicationId|dataAccessorId"
     },
     "pulumiTypes": [
       "aws-native:qbusiness:DataAccessor"
@@ -12533,7 +12533,7 @@
         "dataSourceId",
         "indexId"
       ],
-      "format": "applicationId/dataSourceId/indexId"
+      "format": "applicationId|dataSourceId|indexId"
     },
     "pulumiTypes": [
       "aws-native:qbusiness:DataSource"
@@ -12546,7 +12546,7 @@
         "applicationId",
         "indexId"
       ],
-      "format": "applicationId/indexId"
+      "format": "applicationId|indexId"
     },
     "pulumiTypes": [
       "aws-native:qbusiness:Index"
@@ -12559,7 +12559,7 @@
         "applicationId",
         "statementId"
       ],
-      "format": "applicationId/statementId"
+      "format": "applicationId|statementId"
     },
     "pulumiTypes": [
       "aws-native:qbusiness:Permission"
@@ -12572,7 +12572,7 @@
         "applicationId",
         "pluginId"
       ],
-      "format": "applicationId/pluginId"
+      "format": "applicationId|pluginId"
     },
     "pulumiTypes": [
       "aws-native:qbusiness:Plugin"
@@ -12585,7 +12585,7 @@
         "applicationId",
         "retrieverId"
       ],
-      "format": "applicationId/retrieverId"
+      "format": "applicationId|retrieverId"
     },
     "pulumiTypes": [
       "aws-native:qbusiness:Retriever"
@@ -12598,7 +12598,7 @@
         "applicationId",
         "webExperienceId"
       ],
-      "format": "applicationId/webExperienceId"
+      "format": "applicationId|webExperienceId"
     },
     "pulumiTypes": [
       "aws-native:qbusiness:WebExperience"
@@ -12611,7 +12611,7 @@
         "ledgerName",
         "id"
       ],
-      "format": "ledgerName/id"
+      "format": "ledgerName|id"
     },
     "pulumiTypes": [
       "aws-native:qldb:Stream"
@@ -12624,7 +12624,7 @@
         "analysisId",
         "awsAccountId"
       ],
-      "format": "analysisId/awsAccountId"
+      "format": "analysisId|awsAccountId"
     },
     "pulumiTypes": [
       "aws-native:quicksight:Analysis"
@@ -12637,7 +12637,7 @@
         "awsAccountId",
         "customPermissionsName"
       ],
-      "format": "awsAccountId/customPermissionsName"
+      "format": "awsAccountId|customPermissionsName"
     },
     "pulumiTypes": [
       "aws-native:quicksight:CustomPermissions"
@@ -12650,7 +12650,7 @@
         "awsAccountId",
         "dashboardId"
       ],
-      "format": "awsAccountId/dashboardId"
+      "format": "awsAccountId|dashboardId"
     },
     "pulumiTypes": [
       "aws-native:quicksight:Dashboard"
@@ -12663,7 +12663,7 @@
         "awsAccountId",
         "dataSetId"
       ],
-      "format": "awsAccountId/dataSetId"
+      "format": "awsAccountId|dataSetId"
     },
     "pulumiTypes": [
       "aws-native:quicksight:DataSet"
@@ -12676,7 +12676,7 @@
         "awsAccountId",
         "dataSourceId"
       ],
-      "format": "awsAccountId/dataSourceId"
+      "format": "awsAccountId|dataSourceId"
     },
     "pulumiTypes": [
       "aws-native:quicksight:DataSource"
@@ -12689,7 +12689,7 @@
         "awsAccountId",
         "folderId"
       ],
-      "format": "awsAccountId/folderId"
+      "format": "awsAccountId|folderId"
     },
     "pulumiTypes": [
       "aws-native:quicksight:Folder"
@@ -12703,7 +12703,7 @@
         "dataSetId",
         "schedule/ScheduleId"
       ],
-      "format": "awsAccountId/dataSetId/schedule/ScheduleId"
+      "format": "awsAccountId|dataSetId|schedule/ScheduleId"
     },
     "pulumiTypes": [
       "aws-native:quicksight:RefreshSchedule"
@@ -12716,7 +12716,7 @@
         "awsAccountId",
         "templateId"
       ],
-      "format": "awsAccountId/templateId"
+      "format": "awsAccountId|templateId"
     },
     "pulumiTypes": [
       "aws-native:quicksight:Template"
@@ -12729,7 +12729,7 @@
         "themeId",
         "awsAccountId"
       ],
-      "format": "themeId/awsAccountId"
+      "format": "themeId|awsAccountId"
     },
     "pulumiTypes": [
       "aws-native:quicksight:Theme"
@@ -12742,7 +12742,7 @@
         "awsAccountId",
         "topicId"
       ],
-      "format": "awsAccountId/topicId"
+      "format": "awsAccountId|topicId"
     },
     "pulumiTypes": [
       "aws-native:quicksight:Topic"
@@ -12755,7 +12755,7 @@
         "awsAccountId",
         "vpcConnectionId"
       ],
-      "format": "awsAccountId/vpcConnectionId"
+      "format": "awsAccountId|vpcConnectionId"
     },
     "pulumiTypes": [
       "aws-native:quicksight:VpcConnection"
@@ -12792,7 +12792,7 @@
         "engine",
         "engineVersion"
       ],
-      "format": "engine/engineVersion"
+      "format": "engine|engineVersion"
     },
     "pulumiTypes": [
       "aws-native:rds:CustomDbEngineVersion"
@@ -13069,7 +13069,7 @@
         "clusterIdentifier",
         "account"
       ],
-      "format": "clusterIdentifier/account"
+      "format": "clusterIdentifier|account"
     },
     "pulumiTypes": [
       "aws-native:redshift:EndpointAuthorization"
@@ -13154,7 +13154,7 @@
         "environmentIdentifier",
         "applicationIdentifier"
       ],
-      "format": "environmentIdentifier/applicationIdentifier"
+      "format": "environmentIdentifier|applicationIdentifier"
     },
     "pulumiTypes": [
       "aws-native:refactorspaces:Application"
@@ -13180,7 +13180,7 @@
         "applicationIdentifier",
         "routeIdentifier"
       ],
-      "format": "environmentIdentifier/applicationIdentifier/routeIdentifier"
+      "format": "environmentIdentifier|applicationIdentifier|routeIdentifier"
     },
     "pulumiTypes": [
       "aws-native:refactorspaces:Route"
@@ -13194,7 +13194,7 @@
         "applicationIdentifier",
         "serviceIdentifier"
       ],
-      "format": "environmentIdentifier/applicationIdentifier/serviceIdentifier"
+      "format": "environmentIdentifier|applicationIdentifier|serviceIdentifier"
     },
     "pulumiTypes": [
       "aws-native:refactorspaces:Service"
@@ -13483,7 +13483,7 @@
         "hostedZoneId",
         "name"
       ],
-      "format": "hostedZoneId/name"
+      "format": "hostedZoneId|name"
     },
     "pulumiTypes": [
       "aws-native:route53:KeySigningKey"
@@ -14014,7 +14014,7 @@
         "tableBucketArn",
         "namespace"
       ],
-      "format": "tableBucketArn/namespace"
+      "format": "tableBucketArn|namespace"
     },
     "pulumiTypes": [
       "aws-native:s3tables:Namespace"
@@ -14400,7 +14400,7 @@
         "isoCountryCode",
         "senderId"
       ],
-      "format": "isoCountryCode/senderId"
+      "format": "isoCountryCode|senderId"
     },
     "pulumiTypes": [
       "aws-native:smsvoice:SenderId"
@@ -14595,7 +14595,7 @@
         "policyId",
         "resourceArn"
       ],
-      "format": "policyId/resourceArn"
+      "format": "policyId|resourceArn"
     },
     "pulumiTypes": [
       "aws-native:ssm:ResourcePolicy"
@@ -14729,7 +14729,7 @@
         "principalType",
         "principalId"
       ],
-      "format": "applicationArn/principalType/principalId"
+      "format": "applicationArn|principalType|principalId"
     },
     "pulumiTypes": [
       "aws-native:sso:ApplicationAssignment"
@@ -14746,7 +14746,7 @@
         "principalType",
         "principalId"
       ],
-      "format": "instanceArn/targetId/targetType/permissionSetArn/principalType/principalId"
+      "format": "instanceArn|targetId|targetType|permissionSetArn|principalType|principalId"
     },
     "pulumiTypes": [
       "aws-native:sso:Assignment"
@@ -14783,7 +14783,7 @@
         "instanceArn",
         "permissionSetArn"
       ],
-      "format": "instanceArn/permissionSetArn"
+      "format": "instanceArn|permissionSetArn"
     },
     "pulumiTypes": [
       "aws-native:sso:PermissionSet"
@@ -14798,7 +14798,7 @@
         "domainId",
         "userProfileName"
       ],
-      "format": "appName/appType/domainId/userProfileName"
+      "format": "appName|appType|domainId|userProfileName"
     },
     "pulumiTypes": [
       "aws-native:sagemaker:App"
@@ -15159,7 +15159,7 @@
         "domainId",
         "spaceName"
       ],
-      "format": "domainId/spaceName"
+      "format": "domainId|spaceName"
     },
     "pulumiTypes": [
       "aws-native:sagemaker:Space"
@@ -15184,7 +15184,7 @@
         "userProfileName",
         "domainId"
       ],
-      "format": "userProfileName/domainId"
+      "format": "userProfileName|domainId"
     },
     "pulumiTypes": [
       "aws-native:sagemaker:UserProfile"
@@ -15449,7 +15449,7 @@
         "sourceName",
         "sourceVersion"
       ],
-      "format": "sourceName/sourceVersion"
+      "format": "sourceName|sourceVersion"
     },
     "pulumiTypes": [
       "aws-native:securitylake:AwsLogSource"
@@ -15571,7 +15571,7 @@
         "portfolioId",
         "principalArn"
       ],
-      "format": "portfolioId/principalArn"
+      "format": "portfolioId|principalArn"
     },
     "pulumiTypes": [
       "aws-native:servicecatalog:PortfolioPrincipalAssociation"
@@ -15584,7 +15584,7 @@
         "portfolioId",
         "productId"
       ],
-      "format": "portfolioId/productId"
+      "format": "portfolioId|productId"
     },
     "pulumiTypes": [
       "aws-native:servicecatalog:PortfolioProductAssociation"
@@ -15597,7 +15597,7 @@
         "portfolioId",
         "accountId"
       ],
-      "format": "portfolioId/accountId"
+      "format": "portfolioId|accountId"
     },
     "pulumiTypes": [
       "aws-native:servicecatalog:PortfolioShare"
@@ -15635,7 +15635,7 @@
         "provisioningArtifactId",
         "serviceActionId"
       ],
-      "format": "productId/provisioningArtifactId/serviceActionId"
+      "format": "productId|provisioningArtifactId|serviceActionId"
     },
     "pulumiTypes": [
       "aws-native:servicecatalog:ServiceActionAssociation"
@@ -15672,7 +15672,7 @@
         "tagOptionId",
         "resourceId"
       ],
-      "format": "tagOptionId/resourceId"
+      "format": "tagOptionId|resourceId"
     },
     "pulumiTypes": [
       "aws-native:servicecatalog:TagOptionAssociation"
@@ -15709,7 +15709,7 @@
         "applicationArn",
         "attributeGroupArn"
       ],
-      "format": "applicationArn/attributeGroupArn"
+      "format": "applicationArn|attributeGroupArn"
     },
     "pulumiTypes": [
       "aws-native:servicecatalogappregistry:AttributeGroupAssociation"
@@ -15723,7 +15723,7 @@
         "resourceArn",
         "resourceType"
       ],
-      "format": "applicationArn/resourceArn/resourceType"
+      "format": "applicationArn|resourceArn|resourceType"
     },
     "pulumiTypes": [
       "aws-native:servicecatalogappregistry:ResourceAssociation"
@@ -15844,7 +15844,7 @@
         "statementId",
         "profileName"
       ],
-      "format": "statementId/profileName"
+      "format": "statementId|profileName"
     },
     "pulumiTypes": [
       "aws-native:signer:ProfilePermission"
@@ -15941,7 +15941,7 @@
         "teamId",
         "channelId"
       ],
-      "format": "teamId/channelId"
+      "format": "teamId|channelId"
     },
     "pulumiTypes": [
       "aws-native:supportapp:SlackChannelConfiguration"
@@ -16038,7 +16038,7 @@
         "databaseName",
         "tableName"
       ],
-      "format": "databaseName/tableName"
+      "format": "databaseName|tableName"
     },
     "pulumiTypes": [
       "aws-native:timestream:Table"
@@ -16051,7 +16051,7 @@
         "agreementId",
         "serverId"
       ],
-      "format": "agreementId/serverId"
+      "format": "agreementId|serverId"
     },
     "pulumiTypes": [
       "aws-native:transfer:Agreement"
@@ -16148,7 +16148,7 @@
         "identitySourceId",
         "policyStoreId"
       ],
-      "format": "identitySourceId/policyStoreId"
+      "format": "identitySourceId|policyStoreId"
     },
     "pulumiTypes": [
       "aws-native:verifiedpermissions:IdentitySource"
@@ -16161,7 +16161,7 @@
         "policyId",
         "policyStoreId"
       ],
-      "format": "policyId/policyStoreId"
+      "format": "policyId|policyStoreId"
     },
     "pulumiTypes": [
       "aws-native:verifiedpermissions:Policy"
@@ -16186,7 +16186,7 @@
         "policyStoreId",
         "policyTemplateId"
       ],
-      "format": "policyStoreId/policyTemplateId"
+      "format": "policyStoreId|policyTemplateId"
     },
     "pulumiTypes": [
       "aws-native:verifiedpermissions:PolicyTemplate"
@@ -16368,7 +16368,7 @@
         "id",
         "scope"
       ],
-      "format": "name/id/scope"
+      "format": "name|id|scope"
     },
     "pulumiTypes": [
       "aws-native:wafv2:IpSet"
@@ -16394,7 +16394,7 @@
         "id",
         "scope"
       ],
-      "format": "name/id/scope"
+      "format": "name|id|scope"
     },
     "pulumiTypes": [
       "aws-native:wafv2:RegexPatternSet"
@@ -16408,7 +16408,7 @@
         "id",
         "scope"
       ],
-      "format": "name/id/scope"
+      "format": "name|id|scope"
     },
     "pulumiTypes": [
       "aws-native:wafv2:RuleGroup"
@@ -16422,7 +16422,7 @@
         "id",
         "scope"
       ],
-      "format": "name/id/scope"
+      "format": "name|id|scope"
     },
     "pulumiTypes": [
       "aws-native:wafv2:WebAcl"
@@ -16435,7 +16435,7 @@
         "resourceArn",
         "webAclArn"
       ],
-      "format": "resourceArn/webAclArn"
+      "format": "resourceArn|webAclArn"
     },
     "pulumiTypes": [
       "aws-native:wafv2:WebAclAssociation"
@@ -16448,7 +16448,7 @@
         "aiAgentId",
         "assistantId"
       ],
-      "format": "aiAgentId/assistantId"
+      "format": "aiAgentId|assistantId"
     },
     "pulumiTypes": [
       "aws-native:wisdom:AiAgent"
@@ -16462,7 +16462,7 @@
         "aiAgentId",
         "versionNumber"
       ],
-      "format": "assistantId/aiAgentId/versionNumber"
+      "format": "assistantId|aiAgentId|versionNumber"
     },
     "pulumiTypes": [
       "aws-native:wisdom:AiAgentVersion"
@@ -16475,7 +16475,7 @@
         "aiGuardrailId",
         "assistantId"
       ],
-      "format": "aiGuardrailId/assistantId"
+      "format": "aiGuardrailId|assistantId"
     },
     "pulumiTypes": [
       "aws-native:wisdom:AiGuardrail"
@@ -16489,7 +16489,7 @@
         "aiGuardrailId",
         "versionNumber"
       ],
-      "format": "assistantId/aiGuardrailId/versionNumber"
+      "format": "assistantId|aiGuardrailId|versionNumber"
     },
     "pulumiTypes": [
       "aws-native:wisdom:AiGuardrailVersion"
@@ -16502,7 +16502,7 @@
         "aiPromptId",
         "assistantId"
       ],
-      "format": "aiPromptId/assistantId"
+      "format": "aiPromptId|assistantId"
     },
     "pulumiTypes": [
       "aws-native:wisdom:AiPrompt"
@@ -16516,7 +16516,7 @@
         "aiPromptId",
         "versionNumber"
       ],
-      "format": "assistantId/aiPromptId/versionNumber"
+      "format": "assistantId|aiPromptId|versionNumber"
     },
     "pulumiTypes": [
       "aws-native:wisdom:AiPromptVersion"
@@ -16541,7 +16541,7 @@
         "assistantAssociationId",
         "assistantId"
       ],
-      "format": "assistantAssociationId/assistantId"
+      "format": "assistantAssociationId|assistantId"
     },
     "pulumiTypes": [
       "aws-native:wisdom:AssistantAssociation"
@@ -16783,7 +16783,7 @@
         "volumeId",
         "device"
       ],
-      "format": "workspaceInstanceId/volumeId/device"
+      "format": "workspaceInstanceId|volumeId|device"
     },
     "pulumiTypes": [
       "aws-native:workspacesinstances:VolumeAssociation"

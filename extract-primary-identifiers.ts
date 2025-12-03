@@ -51,7 +51,7 @@ for (const pulumiType in metadata.resources) {
       provider: 'aws-native',
       primaryIdentifier: {
         parts: resource.primaryIdentifier,
-        format: resource.primaryIdentifier.join('/'),
+        format: resource.primaryIdentifier.join('|'),
       },
       pulumiTypes: [pulumiType],
     };
@@ -91,22 +91,25 @@ for (const cfnType in awsPrimaryIds) {
   const fromAwsIds = awsPrimaryIds[cfnType];
   primaryIdentifiers[cfnType] = {
     provider: fromAwsIds.provider ?? 'aws',
-    primaryIdentifier:
-      fromAwsIds.primaryIdentifier ?? primaryIdentifiers[cfnType]?.primaryIdentifier ?? {
+    primaryIdentifier: fromAwsIds.primaryIdentifier ??
+      primaryIdentifiers[cfnType]?.primaryIdentifier ?? {
         parts: [],
         format: '',
       },
     pulumiTypes:
       fromAwsIds.provider === 'aws-native'
         ? [cfnType.replace('AWS::', 'aws-native:').replace(/::/g, ':')]
-        : fromAwsIds.awsTypes ?? fromAwsIds.pulumiTypes ?? [],
+        : (fromAwsIds.awsTypes ?? fromAwsIds.pulumiTypes ?? []),
     note: fromAwsIds.note,
   };
 }
 
 // Validate completeness.
 for (const [cfnType, info] of Object.entries(primaryIdentifiers)) {
-  if (!info.primaryIdentifier?.parts?.length || !info.primaryIdentifier.format) {
+  if (
+    !info.primaryIdentifier?.parts?.length ||
+    !info.primaryIdentifier.format
+  ) {
     throw new Error(`Missing primary identifier for ${cfnType}`);
   }
   if (!info.pulumiTypes || info.pulumiTypes.length === 0) {
