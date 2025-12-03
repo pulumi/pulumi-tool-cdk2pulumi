@@ -6,7 +6,7 @@ import { ConversionReportBuilder } from './conversion-report';
 import {
   IdLookupError,
   lookupIdentifier,
-  renderIdentifier,
+  renderIdentifiers,
 } from './identifier-help';
 import { postProcessProgramIr, PostProcessOptions } from './ir-post-processor';
 import { serializeProgramIr } from './ir-to-yaml';
@@ -279,12 +279,12 @@ export function runIdsWithOptions(
   logger: Pick<Console, 'log' | 'error'> = console,
 ): void {
   try {
-    const info = lookupIdentifier(options.type);
+    const infos = lookupIdentifier(options.type);
     if (options.json) {
-      logger.log(JSON.stringify(info, null, 2));
+      logger.log(JSON.stringify(infos, null, 2));
       return;
     }
-    logger.log(renderIdentifier(info, options.type));
+    logger.log(renderIdentifiers(infos, options.type));
   } catch (err) {
     if (err instanceof IdLookupError) {
       const message = err.suggestions?.length

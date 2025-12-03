@@ -93,6 +93,15 @@ function rewriteResources(
       continue;
     }
 
+    if (resource.cfnType === 'AWS::RDS::DBProxyTargetGroup') {
+      const converted = convertDbProxyTargetGroup(resource);
+      recordConversionArtifacts(collector, stack, resource, converted);
+      for (const res of converted) {
+        rewritten.push(res);
+      }
+      continue;
+    }
+
     if (resource.cfnType === 'AWS::IAM::Policy') {
       const converted = convertIamPolicy(resource, stack);
       recordConversionArtifacts(collector, stack, resource, converted);
@@ -475,6 +484,59 @@ function convertTags(tags: PropertyValue | undefined): PropertyMap | undefined {
     result[key] = value as PropertyValue;
   }
   return Object.keys(result).length > 0 ? result : undefined;
+}
+
+function convertDbProxyTargetGroup(resource: ResourceIR): ResourceIR[] {
+  const props = resource.cfnProperties;
+  const dbProxyName = props.DBProxyName;
+  const targetGroupName = props.TargetGroupName ?? 'default';
+
+  const converted: ResourceIR[] = [];
+
+  converted.push({
+    ...resource,
+    typeToken: 'aws:rds/proxyDefaultTargetGroup:ProxyDefaultTargetGroup',
+    props: removeUndefined({
+      connectionPoolConfiguration: props.ConnectionPoolConfigurationInfo,
+      dbProxyName,
+      sessionPinningFilters: props.SessionPinningFilters,
+      targetGroupName,
+    }),
+  });
+
+  const addTargets = (
+    ids: PropertyValue | undefined,
+    targetType: 'TRACKED_CLUSTER' | 'RDS_INSTANCE',
+  ) => {
+    if (!Array.isArray(ids)) {
+      return;
+    }
+    ids.forEach((id, idx) => {
+      if (typeof id !== 'string') {
+        return;
+      }
+      const logicalId =
+        idx === 0
+          ? `${resource.logicalId}-${targetType.toLowerCase()}`
+          : `${resource.logicalId}-${targetType.toLowerCase()}-${idx + 1}`;
+      converted.push({
+        ...resource,
+        logicalId,
+        typeToken: 'aws:rds/proxyTarget:ProxyTarget',
+        props: removeUndefined({
+          dbProxyName,
+          targetGroupName,
+          targetType,
+          targetResourceId: id,
+        }),
+      });
+    });
+  };
+
+  addTargets(props.DBClusterIdentifiers, 'TRACKED_CLUSTER');
+  addTargets(props.DBInstanceIdentifiers, 'RDS_INSTANCE');
+
+  return converted;
 }
 
 function convertServiceDiscoveryDnsConfig(

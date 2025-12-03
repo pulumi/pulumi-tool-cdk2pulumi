@@ -33,11 +33,21 @@ const awsPrimaryIdsPath = path.resolve(
   __dirname,
   './schemas/aws-primary-ids.json',
 );
-const awsPrimaryIds: Record<string, PrimaryIdentifierInfo> = JSON.parse(
-  fs.readFileSync(awsPrimaryIdsPath, 'utf-8'),
-);
+const awsPrimaryIdsRaw: Record<
+  string,
+  PrimaryIdentifierInfo | PrimaryIdentifierInfo[]
+> = JSON.parse(fs.readFileSync(awsPrimaryIdsPath, 'utf-8'));
 
-const primaryIdentifiers: { [cfnType: string]: PrimaryIdentifierInfo } = {};
+function normalizeEntries(
+  entries: PrimaryIdentifierInfo | PrimaryIdentifierInfo[] | undefined,
+): PrimaryIdentifierInfo[] {
+  if (!entries) {
+    return [];
+  }
+  return Array.isArray(entries) ? entries : [entries];
+}
+
+const primaryIdentifiers: { [cfnType: string]: PrimaryIdentifierInfo[] } = {};
 
 for (const pulumiType in metadata.resources) {
   const resource = metadata.resources[pulumiType];
@@ -47,14 +57,16 @@ for (const pulumiType in metadata.resources) {
     resource.primaryIdentifier.length > 0
   ) {
     const cfnType = resource.cf;
-    primaryIdentifiers[cfnType] = {
-      provider: 'aws-native',
-      primaryIdentifier: {
-        parts: resource.primaryIdentifier,
-        format: resource.primaryIdentifier.join('|'),
+    primaryIdentifiers[cfnType] = [
+      {
+        provider: 'aws-native',
+        primaryIdentifier: {
+          parts: resource.primaryIdentifier,
+          format: resource.primaryIdentifier.join('|'),
+        },
+        pulumiTypes: [pulumiType],
       },
-      pulumiTypes: [pulumiType],
-    };
+    ];
   }
 }
 
@@ -71,15 +83,22 @@ const unsupportedTypes = fs
 const unsupportedSet = new Set(unsupportedTypes);
 
 for (const cfnType of unsupportedTypes) {
-  if (!awsPrimaryIds[cfnType]) {
+  if (!awsPrimaryIdsRaw[cfnType]) {
     throw new Error(
       `Unsupported type ${cfnType} missing from aws-primary-ids.json`,
     );
   }
 }
 
-for (const cfnType in awsPrimaryIds) {
-  if (!unsupportedSet.has(cfnType)) {
+// Types where we intentionally overlay AWS Classic identifiers even though the
+// resource is supported natively. These should not be forced into
+// unsupported-types.txt, to avoid conflating "unsupported" with "overridden".
+const overlayOverrides = new Set<string>([
+  'AWS::RDS::DBProxyTargetGroup',
+]);
+
+for (const cfnType in awsPrimaryIdsRaw) {
+  if (!unsupportedSet.has(cfnType) && !overlayOverrides.has(cfnType)) {
     throw new Error(
       `aws-primary-ids.json entry ${cfnType} missing from unsupported-types.txt`,
     );
@@ -87,12 +106,12 @@ for (const cfnType in awsPrimaryIds) {
 }
 
 // Overlay manually maintained AWS identifiers, overriding any native entries.
-for (const cfnType in awsPrimaryIds) {
-  const fromAwsIds = awsPrimaryIds[cfnType];
-  primaryIdentifiers[cfnType] = {
+for (const cfnType in awsPrimaryIdsRaw) {
+  const entries = normalizeEntries(awsPrimaryIdsRaw[cfnType]);
+  primaryIdentifiers[cfnType] = entries.map((fromAwsIds) => ({
     provider: fromAwsIds.provider ?? 'aws',
     primaryIdentifier: fromAwsIds.primaryIdentifier ??
-      primaryIdentifiers[cfnType]?.primaryIdentifier ?? {
+      primaryIdentifiers[cfnType]?.[0]?.primaryIdentifier ?? {
         parts: [],
         format: '',
       },
@@ -101,22 +120,27 @@ for (const cfnType in awsPrimaryIds) {
         ? [cfnType.replace('AWS::', 'aws-native:').replace(/::/g, ':')]
         : (fromAwsIds.awsTypes ?? fromAwsIds.pulumiTypes ?? []),
     note: fromAwsIds.note,
-  };
+  }));
 }
 
 // Validate completeness.
-for (const [cfnType, info] of Object.entries(primaryIdentifiers)) {
-  if (
-    !info.primaryIdentifier?.parts?.length ||
-    !info.primaryIdentifier.format
-  ) {
+for (const [cfnType, entries] of Object.entries(primaryIdentifiers)) {
+  if (!entries.length) {
     throw new Error(`Missing primary identifier for ${cfnType}`);
   }
-  if (!info.pulumiTypes || info.pulumiTypes.length === 0) {
-    throw new Error(`Missing pulumiTypes for ${cfnType}`);
-  }
-  if (info.provider !== 'aws' && info.provider !== 'aws-native') {
-    throw new Error(`Unknown provider for ${cfnType}`);
+  for (const info of entries) {
+    if (
+      !info.primaryIdentifier?.parts?.length ||
+      !info.primaryIdentifier.format
+    ) {
+      throw new Error(`Missing primary identifier for ${cfnType}`);
+    }
+    if (!info.pulumiTypes || info.pulumiTypes.length === 0) {
+      throw new Error(`Missing pulumiTypes for ${cfnType}`);
+    }
+    if (info.provider !== 'aws' && info.provider !== 'aws-native') {
+      throw new Error(`Unknown provider for ${cfnType}`);
+    }
   }
 }
 
@@ -128,17 +152,15 @@ const sortedOutput = Object.fromEntries(
   Object.keys(primaryIdentifiers)
     .sort()
     .map((key) => {
-      const { provider, primaryIdentifier, pulumiTypes, note } =
-        primaryIdentifiers[key];
-      return [
-        key,
-        {
+      const entries = primaryIdentifiers[key].map(
+        ({ provider, primaryIdentifier, pulumiTypes, note }) => ({
           provider,
           primaryIdentifier,
           pulumiTypes,
           ...(note ? { note } : {}),
-        },
-      ];
+        }),
+      );
+      return [key, entries.length === 1 ? entries[0] : entries];
     }),
 );
 

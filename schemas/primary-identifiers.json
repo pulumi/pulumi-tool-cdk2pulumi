@@ -12870,18 +12870,37 @@
       "aws-native:rds:DbProxyEndpoint"
     ]
   },
-  "AWS::RDS::DBProxyTargetGroup": {
-    "provider": "aws-native",
-    "primaryIdentifier": {
-      "parts": [
-        "targetGroupArn"
+  "AWS::RDS::DBProxyTargetGroup": [
+    {
+      "provider": "aws",
+      "primaryIdentifier": {
+        "parts": [
+          "dbProxyName"
+        ],
+        "format": "dbProxyName"
+      },
+      "pulumiTypes": [
+        "aws:rds/proxyDefaultTargetGroup:ProxyDefaultTargetGroup"
       ],
-      "format": "targetGroupArn"
+      "note": "Default target group only; targets managed separately via aws.rds.ProxyTarget."
     },
-    "pulumiTypes": [
-      "aws-native:rds:DbProxyTargetGroup"
-    ]
-  },
+    {
+      "provider": "aws",
+      "primaryIdentifier": {
+        "parts": [
+          "dbProxyName",
+          "targetGroupName",
+          "targetType",
+          "targetResourceId"
+        ],
+        "format": "dbProxyName/targetGroupName/targetType/targetResourceId"
+      },
+      "pulumiTypes": [
+        "aws:rds/proxyTarget:ProxyTarget"
+      ],
+      "note": "Individual proxy targets derived from DBClusterIdentifiers/DBInstanceIdentifiers."
+    }
+  ],
   "AWS::RDS::DBShardGroup": {
     "provider": "aws-native",
     "primaryIdentifier": {
@@ -14260,6 +14279,18 @@
       "aws-native:ses:MailManagerTrafficPolicy"
     ]
   },
+  "AWS::SES::MultiRegionEndpoint": {
+    "provider": "aws-native",
+    "primaryIdentifier": {
+      "parts": [
+        "endpointName"
+      ],
+      "format": "endpointName"
+    },
+    "pulumiTypes": [
+      "aws-native:ses:MultiRegionEndpoint"
+    ]
+  },
   "AWS::SES::ReceiptFilter": {
     "provider": "aws",
     "primaryIdentifier": {
@@ -15504,6 +15535,18 @@
     ],
     "note": "Import using the portfolio share ID. For example: port-12344321:ACCOUNT:123456789012"
   },
+  "AWS::ServiceCatalog::CloudFormationProduct": {
+    "provider": "aws-native",
+    "primaryIdentifier": {
+      "parts": [
+        "id"
+      ],
+      "format": "id"
+    },
+    "pulumiTypes": [
+      "aws-native:servicecatalog:CloudFormationProduct"
+    ]
+  },
   "AWS::ServiceCatalog::CloudFormationProvisionedProduct": {
     "provider": "aws-native",
     "primaryIdentifier": {
@@ -15745,9 +15788,10 @@
     "provider": "aws",
     "primaryIdentifier": {
       "parts": [
-        "id"
+        "id",
+        "vpc"
       ],
-      "format": "id"
+      "format": "id:vpc"
     },
     "pulumiTypes": [
       "aws:servicediscovery/instance:Instance"

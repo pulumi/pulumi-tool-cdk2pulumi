@@ -39,7 +39,7 @@ jest.mock('../../src/core/analysis', () => ({
 
 jest.mock('../../src/cli/identifier-help', () => ({
   lookupIdentifier: jest.fn(),
-  renderIdentifier: jest.fn(),
+  renderIdentifiers: jest.fn(),
   IdLookupError: class extends Error {
     suggestions?: string[];
     constructor(message: string, suggestions?: string[]) {
@@ -69,7 +69,7 @@ const mockedAnalyzer = AssemblyAnalyzer as jest.MockedClass<
 >;
 const mockedIdentifier = jest.requireMock('../../src/cli/identifier-help') as {
   lookupIdentifier: jest.Mock;
-  renderIdentifier: jest.Mock;
+  renderIdentifiers: jest.Mock;
   IdLookupError: new (
     message: string,
     suggestions?: string[],
@@ -401,14 +401,16 @@ describe('runAnalyzeWithOptions', () => {
 
 describe('runIdsWithOptions', () => {
   test('renders identifier in text mode', () => {
-    mockedIdentifier.lookupIdentifier.mockReturnValue({
-      cfnType: 'AWS::ACMPCA::Certificate',
-      provider: 'aws-native',
-      pulumiTypes: ['aws-native:acmpca:Certificate'],
-      format: '{arn}/{certificateAuthorityArn}',
-      parts: [],
-    });
-    mockedIdentifier.renderIdentifier.mockReturnValue('rendered');
+    mockedIdentifier.lookupIdentifier.mockReturnValue([
+      {
+        cfnType: 'AWS::ACMPCA::Certificate',
+        provider: 'aws-native',
+        pulumiTypes: ['aws-native:acmpca:Certificate'],
+        format: '{arn}/{certificateAuthorityArn}',
+        parts: [],
+      },
+    ]);
+    mockedIdentifier.renderIdentifiers.mockReturnValue('rendered');
     const logger = { log: jest.fn(), error: jest.fn() };
 
     runIdsWithOptions(
@@ -419,18 +421,20 @@ describe('runIdsWithOptions', () => {
     expect(mockedIdentifier.lookupIdentifier).toHaveBeenCalledWith(
       'aws-native:acmpca:Certificate',
     );
-    expect(mockedIdentifier.renderIdentifier).toHaveBeenCalled();
+    expect(mockedIdentifier.renderIdentifiers).toHaveBeenCalled();
     expect(logger.log).toHaveBeenCalledWith('rendered');
   });
 
   test('renders identifier in json mode', () => {
-    mockedIdentifier.lookupIdentifier.mockReturnValue({
-      cfnType: 'AWS::ACMPCA::Certificate',
-      provider: 'aws-native',
-      pulumiTypes: ['aws-native:acmpca:Certificate'],
-      format: '{arn}/{certificateAuthorityArn}',
-      parts: [],
-    });
+    mockedIdentifier.lookupIdentifier.mockReturnValue([
+      {
+        cfnType: 'AWS::ACMPCA::Certificate',
+        provider: 'aws-native',
+        pulumiTypes: ['aws-native:acmpca:Certificate'],
+        format: '{arn}/{certificateAuthorityArn}',
+        parts: [],
+      },
+    ]);
     const logger = { log: jest.fn(), error: jest.fn() };
 
     runIdsWithOptions(
@@ -470,14 +474,16 @@ describe('runCli', () => {
   });
 
   test('invokes ids flow when subcommand specified', () => {
-    mockedIdentifier.lookupIdentifier.mockReturnValue({
-      cfnType: 'AWS::ACMPCA::Certificate',
-      provider: 'aws-native',
-      pulumiTypes: ['aws-native:acmpca:Certificate'],
-      format: '{arn}/{certificateAuthorityArn}',
-      parts: [],
-    });
-    mockedIdentifier.renderIdentifier.mockReturnValue('rendered');
+    mockedIdentifier.lookupIdentifier.mockReturnValue([
+      {
+        cfnType: 'AWS::ACMPCA::Certificate',
+        provider: 'aws-native',
+        pulumiTypes: ['aws-native:acmpca:Certificate'],
+        format: '{arn}/{certificateAuthorityArn}',
+        parts: [],
+      },
+    ]);
+    mockedIdentifier.renderIdentifiers.mockReturnValue('rendered');
     const logger = { log: jest.fn(), error: jest.fn() };
     const code = runCli(
       ['ids', 'aws-native:acmpca:Certificate'],

@@ -747,9 +747,10 @@
     "provider": "aws",
     "primaryIdentifier": {
       "parts": [
-        "id"
+        "id",
+        "vpc"
       ],
-      "format": "id"
+      "format": "id:vpc"
     },
     "awsTypes": [
       "aws:servicediscovery/instance:Instance"
@@ -1539,6 +1540,37 @@
       "aws:mediaconvert/queue:Queue"
     ]
   },
+  "AWS::RDS::DBProxyTargetGroup": [
+    {
+      "provider": "aws",
+      "primaryIdentifier": {
+        "parts": [
+          "dbProxyName"
+        ],
+        "format": "dbProxyName"
+      },
+      "awsTypes": [
+        "aws:rds/proxyDefaultTargetGroup:ProxyDefaultTargetGroup"
+      ],
+      "note": "Default target group only; targets managed separately via aws.rds.ProxyTarget."
+    },
+    {
+      "provider": "aws",
+      "primaryIdentifier": {
+        "parts": [
+          "dbProxyName",
+          "targetGroupName",
+          "targetType",
+          "targetResourceId"
+        ],
+        "format": "dbProxyName/targetGroupName/targetType/targetResourceId"
+      },
+      "awsTypes": [
+        "aws:rds/proxyTarget:ProxyTarget"
+      ],
+      "note": "Individual proxy targets derived from DBClusterIdentifiers/DBInstanceIdentifiers."
+    }
+  ],
   "AWS::Route53::RecordSet": {
     "provider": "aws",
     "primaryIdentifier": {

@@ -45,7 +45,9 @@ export class Metadata {
   }
 
   public primaryIdentifier(cfnType: string): string[] | undefined {
-    return this.primaryIdentifiers[cfnType]?.primaryIdentifier?.parts;
+    const entry = this.primaryIdentifiers[cfnType];
+    const resolved = Array.isArray(entry) ? entry[0] : entry;
+    return resolved?.primaryIdentifier?.parts;
   }
 }
 
