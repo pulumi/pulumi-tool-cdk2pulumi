@@ -8382,18 +8382,35 @@
       "aws-native:iam:OidcProvider"
     ]
   },
-  "AWS::IAM::Policy": {
-    "provider": "aws",
-    "primaryIdentifier": {
-      "parts": [
-        "arn"
+  "AWS::IAM::Policy": [
+    {
+      "provider": "aws",
+      "primaryIdentifier": {
+        "parts": [
+          "arn"
+        ],
+        "format": "arn"
+      },
+      "pulumiTypes": [
+        "aws:iam/policy:Policy"
       ],
-      "format": "arn"
+      "note": "Managed policy representation; retained for completeness."
     },
-    "pulumiTypes": [
-      "aws:iam/policy:Policy"
-    ]
-  },
+    {
+      "provider": "aws",
+      "primaryIdentifier": {
+        "parts": [
+          "role",
+          "name"
+        ],
+        "format": "role:name"
+      },
+      "pulumiTypes": [
+        "aws:iam/rolePolicy:RolePolicy"
+      ],
+      "note": "Inline role policies emitted by the IR post-processor (one per role when multiple are specified)."
+    }
+  ],
   "AWS::IAM::Role": {
     "provider": "aws-native",
     "primaryIdentifier": {
