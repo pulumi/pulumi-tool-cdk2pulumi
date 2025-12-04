@@ -2650,6 +2650,18 @@
       "aws-native:cloudfront:CloudFrontOriginAccessIdentity"
     ]
   },
+  "AWS::CloudFront::ConnectionFunction": {
+    "provider": "aws-native",
+    "primaryIdentifier": {
+      "parts": [
+        "id"
+      ],
+      "format": "id"
+    },
+    "pulumiTypes": [
+      "aws-native:cloudfront:ConnectionFunction"
+    ]
+  },
   "AWS::CloudFront::ConnectionGroup": {
     "provider": "aws-native",
     "primaryIdentifier": {
@@ -2804,6 +2816,18 @@
     },
     "pulumiTypes": [
       "aws-native:cloudfront:ResponseHeadersPolicy"
+    ]
+  },
+  "AWS::CloudFront::TrustStore": {
+    "provider": "aws-native",
+    "primaryIdentifier": {
+      "parts": [
+        "id"
+      ],
+      "format": "id"
+    },
+    "pulumiTypes": [
+      "aws-native:cloudfront:TrustStore"
     ]
   },
   "AWS::CloudFront::VpcOrigin": {
@@ -6040,6 +6064,31 @@
       "aws-native:ec2:TransitGatewayConnectPeer"
     ]
   },
+  "AWS::EC2::TransitGatewayMeteringPolicy": {
+    "provider": "aws-native",
+    "primaryIdentifier": {
+      "parts": [
+        "transitGatewayMeteringPolicyId"
+      ],
+      "format": "transitGatewayMeteringPolicyId"
+    },
+    "pulumiTypes": [
+      "aws-native:ec2:TransitGatewayMeteringPolicy"
+    ]
+  },
+  "AWS::EC2::TransitGatewayMeteringPolicyEntry": {
+    "provider": "aws-native",
+    "primaryIdentifier": {
+      "parts": [
+        "transitGatewayMeteringPolicyId",
+        "policyRuleNumber"
+      ],
+      "format": "transitGatewayMeteringPolicyId|policyRuleNumber"
+    },
+    "pulumiTypes": [
+      "aws-native:ec2:TransitGatewayMeteringPolicyEntry"
+    ]
+  },
   "AWS::EC2::TransitGatewayMulticastDomain": {
     "provider": "aws-native",
     "primaryIdentifier": {
@@ -6231,6 +6280,18 @@
       "aws-native:ec2:VpcdhcpOptionsAssociation"
     ]
   },
+  "AWS::EC2::VPCEncryptionControl": {
+    "provider": "aws-native",
+    "primaryIdentifier": {
+      "parts": [
+        "vpcEncryptionControlId"
+      ],
+      "format": "vpcEncryptionControlId"
+    },
+    "pulumiTypes": [
+      "aws-native:ec2:VpcEncryptionControl"
+    ]
+  },
   "AWS::EC2::VPCEndpoint": {
     "provider": "aws-native",
     "primaryIdentifier": {
@@ -6302,6 +6363,18 @@
     },
     "pulumiTypes": [
       "aws-native:ec2:VpcPeeringConnection"
+    ]
+  },
+  "AWS::EC2::VPNConcentrator": {
+    "provider": "aws-native",
+    "primaryIdentifier": {
+      "parts": [
+        "vpnConcentratorId"
+      ],
+      "format": "vpnConcentratorId"
+    },
+    "pulumiTypes": [
+      "aws-native:ec2:VpnConcentrator"
     ]
   },
   "AWS::EC2::VPNConnection": {
@@ -6451,6 +6524,18 @@
       "aws-native:ecr:PullThroughCacheRule"
     ]
   },
+  "AWS::ECR::PullTimeUpdateExclusion": {
+    "provider": "aws-native",
+    "primaryIdentifier": {
+      "parts": [
+        "principalArn"
+      ],
+      "format": "principalArn"
+    },
+    "pulumiTypes": [
+      "aws-native:ecr:PullTimeUpdateExclusion"
+    ]
+  },
   "AWS::ECR::RegistryPolicy": {
     "provider": "aws-native",
     "primaryIdentifier": {
@@ -6511,6 +6596,18 @@
       "aws-native:ecr:RepositoryCreationTemplate"
     ]
   },
+  "AWS::ECR::SigningConfiguration": {
+    "provider": "aws-native",
+    "primaryIdentifier": {
+      "parts": [
+        "registryId"
+      ],
+      "format": "registryId"
+    },
+    "pulumiTypes": [
+      "aws-native:ecr:SigningConfiguration"
+    ]
+  },
   "AWS::ECS::CapacityProvider": {
     "provider": "aws-native",
     "primaryIdentifier": {
@@ -6545,6 +6642,18 @@
     },
     "pulumiTypes": [
       "aws-native:ecs:ClusterCapacityProviderAssociations"
+    ]
+  },
+  "AWS::ECS::ExpressGatewayService": {
+    "provider": "aws-native",
+    "primaryIdentifier": {
+      "parts": [
+        "serviceArn"
+      ],
+      "format": "serviceArn"
+    },
+    "pulumiTypes": [
+      "aws-native:ecs:ExpressGatewayService"
     ]
   },
   "AWS::ECS::PrimaryTaskSet": {
@@ -6659,6 +6768,18 @@
     },
     "pulumiTypes": [
       "aws-native:eks:Addon"
+    ]
+  },
+  "AWS::EKS::Capability": {
+    "provider": "aws-native",
+    "primaryIdentifier": {
+      "parts": [
+        "arn"
+      ],
+      "format": "arn"
+    },
+    "pulumiTypes": [
+      "aws-native:eks:Capability"
     ]
   },
   "AWS::EKS::Cluster": {
@@ -7917,6 +8038,31 @@
     },
     "pulumiTypes": [
       "aws:glue/devEndpoint:DevEndpoint"
+    ]
+  },
+  "AWS::Glue::IdentityCenterConfiguration": {
+    "provider": "aws-native",
+    "primaryIdentifier": {
+      "parts": [
+        "accountId"
+      ],
+      "format": "accountId"
+    },
+    "pulumiTypes": [
+      "aws-native:glue:IdentityCenterConfiguration"
+    ]
+  },
+  "AWS::Glue::Integration": {
+    "provider": "aws-native",
+    "primaryIdentifier": {
+      "parts": [
+        "integrationArn",
+        "integrationName"
+      ],
+      "format": "integrationArn|integrationName"
+    },
+    "pulumiTypes": [
+      "aws-native:glue:Integration"
     ]
   },
   "AWS::Glue::IntegrationResourceProperty": {
@@ -9995,6 +10141,18 @@
       "aws-native:lambda:Alias"
     ]
   },
+  "AWS::Lambda::CapacityProvider": {
+    "provider": "aws-native",
+    "primaryIdentifier": {
+      "parts": [
+        "capacityProviderName"
+      ],
+      "format": "capacityProviderName"
+    },
+    "pulumiTypes": [
+      "aws-native:lambda:CapacityProvider"
+    ]
+  },
   "AWS::Lambda::CodeSigningConfig": {
     "provider": "aws-native",
     "primaryIdentifier": {
@@ -10943,6 +11101,42 @@
     },
     "pulumiTypes": [
       "aws-native:mediaconnect:Gateway"
+    ]
+  },
+  "AWS::MediaConnect::RouterInput": {
+    "provider": "aws-native",
+    "primaryIdentifier": {
+      "parts": [
+        "arn"
+      ],
+      "format": "arn"
+    },
+    "pulumiTypes": [
+      "aws-native:mediaconnect:RouterInput"
+    ]
+  },
+  "AWS::MediaConnect::RouterNetworkInterface": {
+    "provider": "aws-native",
+    "primaryIdentifier": {
+      "parts": [
+        "arn"
+      ],
+      "format": "arn"
+    },
+    "pulumiTypes": [
+      "aws-native:mediaconnect:RouterNetworkInterface"
+    ]
+  },
+  "AWS::MediaConnect::RouterOutput": {
+    "provider": "aws-native",
+    "primaryIdentifier": {
+      "parts": [
+        "arn"
+      ],
+      "format": "arn"
+    },
+    "pulumiTypes": [
+      "aws-native:mediaconnect:RouterOutputResource"
     ]
   },
   "AWS::MediaConvert::JobTemplate": {
@@ -13004,6 +13198,18 @@
       "aws-native:rds:OptionGroup"
     ]
   },
+  "AWS::RTBFabric::InboundExternalLink": {
+    "provider": "aws-native",
+    "primaryIdentifier": {
+      "parts": [
+        "arn"
+      ],
+      "format": "arn"
+    },
+    "pulumiTypes": [
+      "aws-native:rtbfabric:InboundExternalLink"
+    ]
+  },
   "AWS::RTBFabric::Link": {
     "provider": "aws-native",
     "primaryIdentifier": {
@@ -13014,6 +13220,18 @@
     },
     "pulumiTypes": [
       "aws-native:rtbfabric:Link"
+    ]
+  },
+  "AWS::RTBFabric::OutboundExternalLink": {
+    "provider": "aws-native",
+    "primaryIdentifier": {
+      "parts": [
+        "arn"
+      ],
+      "format": "arn"
+    },
+    "pulumiTypes": [
+      "aws-native:rtbfabric:OutboundExternalLink"
     ]
   },
   "AWS::RTBFabric::RequesterGateway": {
@@ -16302,6 +16520,18 @@
     },
     "pulumiTypes": [
       "aws-native:vpclattice:AuthPolicy"
+    ]
+  },
+  "AWS::VpcLattice::DomainVerification": {
+    "provider": "aws-native",
+    "primaryIdentifier": {
+      "parts": [
+        "arn"
+      ],
+      "format": "arn"
+    },
+    "pulumiTypes": [
+      "aws-native:vpclattice:DomainVerification"
     ]
   },
   "AWS::VpcLattice::Listener": {

@@ -1,5 +1,9 @@
-import * as fs from 'fs';
-import * as path from 'path';
+// eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
+const awsImportDocs = require('../../schemas/aws-import-docs.json');
+// eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
+const pulumiMetadata = require('../../schemas/aws-native-metadata.json');
+// eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
+const primaryIdentifiers = require('../../schemas/primary-identifiers.json');
 
 type Provider = 'aws' | 'aws-native';
 
@@ -60,19 +64,6 @@ export class IdLookupError extends Error {
   }
 }
 
-const primaryIdentifiersPath = path.resolve(
-  __dirname,
-  '../../schemas/primary-identifiers.json',
-);
-const awsNativeMetadataPath = path.resolve(
-  __dirname,
-  '../../schemas/aws-native-metadata.json',
-);
-const awsImportDocsPath = path.resolve(
-  __dirname,
-  '../../schemas/aws-import-docs.json',
-);
-
 // Lazy-loaded caches to keep startup fast for other commands.
 let primaryIdentifiersCache:
   | {
@@ -83,12 +74,6 @@ let primaryIdentifiersCache:
       >;
     }
   | undefined;
-let awsNativeMetadataCache:
-  | {
-      resources: Record<string, AwsNativeResourceMetadata>;
-    }
-  | undefined;
-let awsImportDocsCache: Record<string, AwsImportDocEntry> | undefined;
 
 function normalizeEntries(
   entryOrList: PrimaryIdentifierEntryOrList,
@@ -100,9 +85,7 @@ function loadPrimaryIdentifiers() {
   if (primaryIdentifiersCache) {
     return primaryIdentifiersCache;
   }
-  const raw: Record<string, PrimaryIdentifierEntryOrList> = JSON.parse(
-    fs.readFileSync(primaryIdentifiersPath, 'utf-8'),
-  );
+  const raw: Record<string, PrimaryIdentifierEntryOrList> = primaryIdentifiers;
   const byCfn = new Map<string, PrimaryIdentifierEntry[]>();
   const byPulumi = new Map<
     string,
@@ -128,28 +111,11 @@ function loadPrimaryIdentifiers() {
 function loadAwsNativeMetadata(): {
   resources: Record<string, AwsNativeResourceMetadata>;
 } {
-  const metadata =
-    awsNativeMetadataCache ??
-    (awsNativeMetadataCache = JSON.parse(
-      fs.readFileSync(awsNativeMetadataPath, 'utf-8'),
-    ));
-  return metadata;
+  return pulumiMetadata;
 }
 
 function loadAwsImportDocs(): Record<string, AwsImportDocEntry> {
-  const docs: Record<string, AwsImportDocEntry> =
-    awsImportDocsCache ??
-    (() => {
-      try {
-        awsImportDocsCache = JSON.parse(
-          fs.readFileSync(awsImportDocsPath, 'utf-8'),
-        );
-      } catch {
-        awsImportDocsCache = {};
-      }
-      return awsImportDocsCache!;
-    })();
-  return docs;
+  return awsImportDocs;
 }
 
 export function lookupIdentifier(type: string): IdentifierInfo[] {
