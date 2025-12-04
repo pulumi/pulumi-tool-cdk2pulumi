@@ -45,7 +45,7 @@ project.release?.publisher.addGitHubPostPublishingSteps({
 const packageLinuxArm = project.addTask('package:linux:arm', {
   steps: [
     {
-      exec: 'bun build --compile --minify --sourcemap --target bun-linux-arm64 --outfile dist/bin/linux-arm64/pulumi-tool-cdk2pulumi src/cli/cli-runner.ts schemas/aws-native-metadata.json',
+      exec: 'bun build --compile --minify --sourcemap --target bun-linux-arm64 --outfile dist/bin/linux-arm64/pulumi-tool-cdk2pulumi src/cli/cli-runner.ts schemas/aws-native-metadata.json schemas/primary-identifiers.json',
     },
     {
       env: {
@@ -58,7 +58,7 @@ const packageLinuxArm = project.addTask('package:linux:arm', {
 const packageMacos = project.addTask('package:macos:arm', {
   steps: [
     {
-      exec: 'bun build --compile --minify --sourcemap --target bun-macos-arm64 --outfile dist/bin/macos-arm64/pulumi-tool-cdk2pulumi src/cli/cli-runner.ts schemas/aws-native-metadata.json',
+      exec: 'bun build --compile --minify --sourcemap --target bun-macos-arm64 --outfile dist/bin/macos-arm64/pulumi-tool-cdk2pulumi src/cli/cli-runner.ts schemas/aws-native-metadata.json schemas/primary-identifiers.json',
     },
     {
       env: {

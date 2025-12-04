@@ -490,6 +490,7 @@ function convertDbProxyTargetGroup(resource: ResourceIR): ResourceIR[] {
   const props = resource.cfnProperties;
   const dbProxyName = props.DBProxyName;
   const targetGroupName = props.TargetGroupName ?? 'default';
+  const connectionPoolConfig = props.ConnectionPoolConfigurationInfo;
 
   const converted: ResourceIR[] = [];
 
@@ -497,16 +498,14 @@ function convertDbProxyTargetGroup(resource: ResourceIR): ResourceIR[] {
     ...resource,
     typeToken: 'aws:rds/proxyDefaultTargetGroup:ProxyDefaultTargetGroup',
     props: removeUndefined({
-      connectionPoolConfiguration: props.ConnectionPoolConfigurationInfo,
+      connectionPoolConfig,
       dbProxyName,
-      sessionPinningFilters: props.SessionPinningFilters,
-      targetGroupName,
     }),
   });
 
   const addTargets = (
     ids: PropertyValue | undefined,
-    targetType: 'TRACKED_CLUSTER' | 'RDS_INSTANCE',
+    kind: 'cluster' | 'instance',
   ) => {
     if (!Array.isArray(ids)) {
       return;
@@ -517,8 +516,8 @@ function convertDbProxyTargetGroup(resource: ResourceIR): ResourceIR[] {
       }
       const logicalId =
         idx === 0
-          ? `${resource.logicalId}-${targetType.toLowerCase()}`
-          : `${resource.logicalId}-${targetType.toLowerCase()}-${idx + 1}`;
+          ? `${resource.logicalId}-${kind}`
+          : `${resource.logicalId}-${kind}-${idx + 1}`;
       converted.push({
         ...resource,
         logicalId,
@@ -526,15 +525,15 @@ function convertDbProxyTargetGroup(resource: ResourceIR): ResourceIR[] {
         props: removeUndefined({
           dbProxyName,
           targetGroupName,
-          targetType,
-          targetResourceId: id,
+          dbClusterIdentifier: kind === 'cluster' ? id : undefined,
+          dbInstanceIdentifier: kind === 'instance' ? id : undefined,
         }),
       });
     });
   };
 
-  addTargets(props.DBClusterIdentifiers, 'TRACKED_CLUSTER');
-  addTargets(props.DBInstanceIdentifiers, 'RDS_INSTANCE');
+  addTargets(props.DBClusterIdentifiers, 'cluster');
+  addTargets(props.DBInstanceIdentifiers, 'instance');
 
   return converted;
 }

@@ -548,18 +548,35 @@
       "aws:iam/accessKey:AccessKey"
     ]
   },
-  "AWS::IAM::Policy": {
-    "provider": "aws",
-    "primaryIdentifier": {
-      "parts": [
-        "arn"
+  "AWS::IAM::Policy": [
+    {
+      "provider": "aws",
+      "primaryIdentifier": {
+        "parts": [
+          "arn"
+        ],
+        "format": "arn"
+      },
+      "awsTypes": [
+        "aws:iam/policy:Policy"
       ],
-      "format": "arn"
+      "note": "Managed policy representation; retained for completeness."
     },
-    "awsTypes": [
-      "aws:iam/policy:Policy"
-    ]
-  },
+    {
+      "provider": "aws",
+      "primaryIdentifier": {
+        "parts": [
+          "role",
+          "name"
+        ],
+        "format": "role:name"
+      },
+      "awsTypes": [
+        "aws:iam/rolePolicy:RolePolicy"
+      ],
+      "note": "Inline role policies emitted by the IR post-processor (one per role when multiple are specified)."
+    }
+  ],
   "AWS::Lightsail::Distribution": {
     "provider": "aws",
     "primaryIdentifier": {
@@ -760,9 +777,10 @@
     "provider": "aws",
     "primaryIdentifier": {
       "parts": [
-        "id"
+        "id",
+        "vpc"
       ],
-      "format": "id"
+      "format": "id:vpc"
     },
     "awsTypes": [
       "aws:servicediscovery/privateDnsNamespace:PrivateDnsNamespace"
@@ -1560,15 +1578,29 @@
         "parts": [
           "dbProxyName",
           "targetGroupName",
-          "targetType",
-          "targetResourceId"
+          "dbInstanceIdentifier"
         ],
-        "format": "dbProxyName/targetGroupName/targetType/targetResourceId"
+        "format": "dbProxyName/targetGroupName/dbInstanceIdentifier"
       },
       "awsTypes": [
         "aws:rds/proxyTarget:ProxyTarget"
       ],
-      "note": "Individual proxy targets derived from DBClusterIdentifiers/DBInstanceIdentifiers."
+      "note": "Individual instance targets derived from DBInstanceIdentifiers."
+    },
+    {
+      "provider": "aws",
+      "primaryIdentifier": {
+        "parts": [
+          "dbProxyName",
+          "targetGroupName",
+          "dbClusterIdentifier"
+        ],
+        "format": "dbProxyName/targetGroupName/dbClusterIdentifier"
+      },
+      "awsTypes": [
+        "aws:rds/proxyTarget:ProxyTarget"
+      ],
+      "note": "Individual cluster targets derived from DBClusterIdentifiers."
     }
   ],
   "AWS::Route53::RecordSet": {
