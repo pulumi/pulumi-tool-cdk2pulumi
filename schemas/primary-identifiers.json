@@ -12907,15 +12907,29 @@
         "parts": [
           "dbProxyName",
           "targetGroupName",
-          "targetType",
-          "targetResourceId"
+          "dbInstanceIdentifier"
         ],
-        "format": "dbProxyName/targetGroupName/targetType/targetResourceId"
+        "format": "dbProxyName/targetGroupName/dbInstanceIdentifier"
       },
       "pulumiTypes": [
         "aws:rds/proxyTarget:ProxyTarget"
       ],
-      "note": "Individual proxy targets derived from DBClusterIdentifiers/DBInstanceIdentifiers."
+      "note": "Individual instance targets derived from DBInstanceIdentifiers."
+    },
+    {
+      "provider": "aws",
+      "primaryIdentifier": {
+        "parts": [
+          "dbProxyName",
+          "targetGroupName",
+          "dbClusterIdentifier"
+        ],
+        "format": "dbProxyName/targetGroupName/dbClusterIdentifier"
+      },
+      "pulumiTypes": [
+        "aws:rds/proxyTarget:ProxyTarget"
+      ],
+      "note": "Individual cluster targets derived from DBClusterIdentifiers."
     }
   ],
   "AWS::RDS::DBShardGroup": {
@@ -15818,9 +15832,10 @@
     "provider": "aws",
     "primaryIdentifier": {
       "parts": [
-        "id"
+        "id",
+        "vpc"
       ],
-      "format": "id"
+      "format": "id:vpc"
     },
     "pulumiTypes": [
       "aws:servicediscovery/privateDnsNamespace:PrivateDnsNamespace"
