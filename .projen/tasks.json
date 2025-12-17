@@ -155,15 +155,52 @@
           "exec": "npm pack --pack-destination dist/js"
         },
         {
-          "spawn": "package:linux:arm"
+          "spawn": "package:linux-arm64"
         },
         {
-          "spawn": "package:macos:arm"
+          "spawn": "package:darwin-arm64"
+        },
+        {
+          "spawn": "package:linux-x64"
+        },
+        {
+          "spawn": "package:windows-x64"
+        },
+        {
+          "spawn": "package:darwin-x64"
         }
       ]
     },
-    "package:linux:arm": {
-      "name": "package:linux:arm",
+    "package:darwin-arm64": {
+      "name": "package:darwin-arm64",
+      "steps": [
+        {
+          "exec": "bun build --compile --minify --sourcemap --target bun-darwin-arm64 --outfile dist/bin/darwin-arm64/pulumi-tool-cdk2pulumi src/cli/cli-runner.ts schemas/aws-native-metadata.json schemas/primary-identifiers.json"
+        },
+        {
+          "env": {
+            "VERSION": "$(jq -r '.version' package.json)"
+          },
+          "exec": "tar -czf dist/pulumi-tool-cdk2pulumi-v${VERSION}-darwin-arm64.tar.gz -C dist/bin/darwin-arm64 pulumi-tool-cdk2pulumi"
+        }
+      ]
+    },
+    "package:darwin-x64": {
+      "name": "package:darwin-x64",
+      "steps": [
+        {
+          "exec": "bun build --compile --minify --sourcemap --target bun-darwin-x64 --outfile dist/bin/darwin-x64/pulumi-tool-cdk2pulumi src/cli/cli-runner.ts schemas/aws-native-metadata.json schemas/primary-identifiers.json"
+        },
+        {
+          "env": {
+            "VERSION": "$(jq -r '.version' package.json)"
+          },
+          "exec": "tar -czf dist/pulumi-tool-cdk2pulumi-v${VERSION}-darwin-amd64.tar.gz -C dist/bin/darwin-x64 pulumi-tool-cdk2pulumi"
+        }
+      ]
+    },
+    "package:linux-arm64": {
+      "name": "package:linux-arm64",
       "steps": [
         {
           "exec": "bun build --compile --minify --sourcemap --target bun-linux-arm64 --outfile dist/bin/linux-arm64/pulumi-tool-cdk2pulumi src/cli/cli-runner.ts schemas/aws-native-metadata.json schemas/primary-identifiers.json"
@@ -176,17 +213,31 @@
         }
       ]
     },
-    "package:macos:arm": {
-      "name": "package:macos:arm",
+    "package:linux-x64": {
+      "name": "package:linux-x64",
       "steps": [
         {
-          "exec": "bun build --compile --minify --sourcemap --target bun-macos-arm64 --outfile dist/bin/macos-arm64/pulumi-tool-cdk2pulumi src/cli/cli-runner.ts schemas/aws-native-metadata.json schemas/primary-identifiers.json"
+          "exec": "bun build --compile --minify --sourcemap --target bun-linux-x64 --outfile dist/bin/linux-x64/pulumi-tool-cdk2pulumi src/cli/cli-runner.ts schemas/aws-native-metadata.json schemas/primary-identifiers.json"
         },
         {
           "env": {
             "VERSION": "$(jq -r '.version' package.json)"
           },
-          "exec": "tar -czf dist/pulumi-tool-cdk2pulumi-v${VERSION}-darwin-arm64.tar.gz -C dist/bin/macos-arm64 pulumi-tool-cdk2pulumi"
+          "exec": "tar -czf dist/pulumi-tool-cdk2pulumi-v${VERSION}-linux-amd64.tar.gz -C dist/bin/linux-x64 pulumi-tool-cdk2pulumi"
+        }
+      ]
+    },
+    "package:windows-x64": {
+      "name": "package:windows-x64",
+      "steps": [
+        {
+          "exec": "bun build --compile --minify --sourcemap --target bun-windows-x64 --outfile dist/bin/windows-x64/pulumi-tool-cdk2pulumi src/cli/cli-runner.ts schemas/aws-native-metadata.json schemas/primary-identifiers.json"
+        },
+        {
+          "env": {
+            "VERSION": "$(jq -r '.version' package.json)"
+          },
+          "exec": "tar -czf dist/pulumi-tool-cdk2pulumi-v${VERSION}-windows-amd64.tar.gz -C dist/bin/windows-x64 pulumi-tool-cdk2pulumi.exe"
         }
       ]
     },
