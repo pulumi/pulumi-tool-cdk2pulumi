@@ -42,34 +42,31 @@ project.release?.publisher.addGitHubPostPublishingSteps({
   run: 'gh release upload $(cat dist/releasetag.txt) dist/*.tar.gz -R $GITHUB_REPOSITORY',
 });
 
-const packageLinuxArm = project.addTask('package:linux:arm', {
-  steps: [
-    {
-      exec: 'bun build --compile --minify --sourcemap --target bun-linux-arm64 --outfile dist/bin/linux-arm64/pulumi-tool-cdk2pulumi src/cli/cli-runner.ts schemas/aws-native-metadata.json schemas/primary-identifiers.json',
-    },
-    {
-      env: {
-        VERSION: "$(jq -r '.version' package.json)",
+const architectures: string[] = [
+  'linux-arm64',
+  'darwin-arm64',
+  'linux-x64',
+  'windows-x64',
+  'darwin-x64',
+];
+
+architectures.forEach((arch) => {
+  const archName = arch.replace('x64', 'amd64');
+  const packageTask = project.addTask(`package:${arch}`, {
+    steps: [
+      {
+        exec: `bun build --compile --minify --sourcemap --target bun-${arch} --outfile dist/bin/${arch}/pulumi-tool-cdk2pulumi src/cli/cli-runner.ts schemas/aws-native-metadata.json schemas/primary-identifiers.json`,
       },
-      exec: 'tar -czf dist/pulumi-tool-cdk2pulumi-v${VERSION}-linux-arm64.tar.gz -C dist/bin/linux-arm64 pulumi-tool-cdk2pulumi',
-    },
-  ],
-});
-const packageMacos = project.addTask('package:macos:arm', {
-  steps: [
-    {
-      exec: 'bun build --compile --minify --sourcemap --target bun-macos-arm64 --outfile dist/bin/macos-arm64/pulumi-tool-cdk2pulumi src/cli/cli-runner.ts schemas/aws-native-metadata.json schemas/primary-identifiers.json',
-    },
-    {
-      env: {
-        VERSION: "$(jq -r '.version' package.json)",
+      {
+        env: {
+          VERSION: "$(jq -r '.version' package.json)",
+        },
+        exec: `tar -czf dist/pulumi-tool-cdk2pulumi-v\${VERSION}-${archName}.tar.gz -C dist/bin/${arch} pulumi-tool-cdk2pulumi${arch.startsWith('windows') ? '.exe' : ''}`,
       },
-      exec: 'tar -czf dist/pulumi-tool-cdk2pulumi-v${VERSION}-darwin-arm64.tar.gz -C dist/bin/macos-arm64 pulumi-tool-cdk2pulumi',
-    },
-  ],
+    ],
+  });
+  project.packageTask.spawn(packageTask);
 });
-project.packageTask.spawn(packageLinuxArm);
-project.packageTask.spawn(packageMacos);
 
 project.gitignore.include('AGENTS.md');
 project.gitignore.exclude(
