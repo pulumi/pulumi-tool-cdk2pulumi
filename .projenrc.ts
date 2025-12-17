@@ -70,6 +70,7 @@ architectures.forEach((arch) => {
 
 project.gitignore.include('AGENTS.md');
 project.gitignore.exclude(
+  '.claude/settings.local.json',
   'Pulumi.yaml',
   'Pulumi.yaml.report.json',
   'Pulumi.*.yaml',

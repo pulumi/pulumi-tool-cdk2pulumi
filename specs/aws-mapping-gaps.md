@@ -22,15 +22,15 @@ Source: generated from `schemas/primary-identifiers.json` entries with `provider
 - AWS::FSx::{FileSystem, Snapshot, StorageVirtualMachine, Volume}
 - AWS::Glue::{Classifier, Connection, DataCatalogEncryptionSettings, DataQualityRuleset, DevEndpoint, MLTransform, Partition, SecurityConfiguration, Table, Workflow}
 - AWS::IAM::AccessKey
-- AWS::Route53::{RecordSet, RecordSetGroup}
+- AWS::Route53::RecordSetGroup (RecordSet handled in ir-post-processor.ts)
 - AWS::SES::{ReceiptFilter, ReceiptRule, ReceiptRuleSet}
-- AWS::SQS::QueuePolicy
+- ~~AWS::SQS::QueuePolicy~~ (handled in ir-post-processor.ts)
 - AWS::SSM::{MaintenanceWindow, MaintenanceWindowTarget, MaintenanceWindowTask}
 - AWS::SageMaker::{CodeRepository, EndpointConfig, Model, NotebookInstance, NotebookInstanceLifecycleConfig, Workteam}
-- AWS::ServiceDiscovery::{HttpNamespace, Instance, PrivateDnsNamespace, PublicDnsNamespace, Service}
+- AWS::ServiceDiscovery::{HttpNamespace, Instance, PublicDnsNamespace} (PrivateDnsNamespace, Service handled in ir-post-processor.ts)
 
 ### Medium
-- AWS::ApiGatewayV2::{ApiGatewayManagedOverrides, Stage}
+- AWS::ApiGatewayV2::ApiGatewayManagedOverrides (Stage handled in ir-post-processor.ts)
 - AWS::AppMesh::{GatewayRoute, Mesh, Route, VirtualGateway, VirtualNode, VirtualRouter, VirtualService}
 - AWS::AppSync::{ApiCache, ApiKey, GraphQLSchema}
 - AWS::AutoScalingPlans::ScalingPlan
