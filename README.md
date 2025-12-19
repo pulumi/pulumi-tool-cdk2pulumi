@@ -64,6 +64,21 @@ Each result now includes a “Finding the ID” hint: single-part IDs suggest us
 - Build: `npm run build`
 - Package standalone binary with Bun: `npm run package`
 
+## Testing
+
+```bash
+# Fast feedback (unit tests only)
+npm run test:unit
+
+# Integration + synth tests
+npm run test:integration
+
+# Full suite with coverage
+npm test
+```
+
+More details: `docs/testing.md`.
+
 Architecture and plans:
 - Core conversion/analysis logic lives in `src/core`; the CLI entrypoint is `src/cli/cli-runner.ts`.
 - Detailed implementation plans live in `specs/conversion.md` and `specs/analysis.md`.

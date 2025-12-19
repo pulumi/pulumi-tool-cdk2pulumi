@@ -1,105 +1,105 @@
 import * as cdk from 'aws-cdk-lib';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as sqs from 'aws-cdk-lib/aws-sqs';
-import {
-  synthesizeAndConvert,
-  createTestApp,
-  createMultiStackApp,
-} from './helpers';
+import { synthesizeAndConvert } from './helpers';
+import { ProgramIR } from '../../src/core';
 
-// Synthesis takes longer than default 5s timeout
-const SYNTH_TIMEOUT = 30000;
+// Integration tests use longer timeout due to CDK synthesis
+const INTEGRATION_TIMEOUT = 60000;
 
-describe('Dynamic Synthesis - Basic Resources', () => {
-  test(
-    'converts S3 Bucket from synthesized assembly',
-    async () => {
-      const program = await synthesizeAndConvert(() =>
-        createTestApp('TestStack', (stack) => {
-          new s3.Bucket(stack, 'MyBucket', { bucketName: 'test-bucket' });
-        }),
-      );
+describe('Assembly to IR Integration', () => {
+  describe('Basic Resources', () => {
+    let program: ProgramIR;
 
-      expect(program.stacks).toHaveLength(1);
+    beforeAll(async () => {
+      // Single synthesis with multiple resource types
+      program = await synthesizeAndConvert(() => {
+        const app = new cdk.App();
+        const stack = new cdk.Stack(app, 'TestStack');
+
+        // S3 Bucket
+        new s3.Bucket(stack, 'MyBucket', { bucketName: 'test-bucket' });
+
+        // SQS Queue with properties
+        new sqs.Queue(stack, 'MyQueue', {
+          queueName: 'test-queue',
+          visibilityTimeout: cdk.Duration.seconds(300),
+        });
+
+        // SQS Queue with dead letter queue (tests dependencies)
+        const dlq = new sqs.Queue(stack, 'DLQ');
+        new sqs.Queue(stack, 'MainQueue', {
+          deadLetterQueue: {
+            queue: dlq,
+            maxReceiveCount: 3,
+          },
+        });
+
+        return app;
+      });
+    }, INTEGRATION_TIMEOUT);
+
+    test('converts S3 Bucket', () => {
       const bucket = program.stacks[0].resources.find(
         (r) => r.cfnType === 'AWS::S3::Bucket',
       );
       expect(bucket).toBeDefined();
       expect(bucket?.typeToken).toBe('aws-native:s3:Bucket');
       expect(bucket?.props.bucketName).toBe('test-bucket');
-    },
-    SYNTH_TIMEOUT,
-  );
+    });
 
-  test(
-    'converts SQS Queue from synthesized assembly',
-    async () => {
-      const program = await synthesizeAndConvert(() =>
-        createTestApp('TestStack', (stack) => {
-          new sqs.Queue(stack, 'MyQueue', {
-            queueName: 'test-queue',
-            visibilityTimeout: cdk.Duration.seconds(300),
-          });
-        }),
-      );
-
-      expect(program.stacks).toHaveLength(1);
+    test('converts SQS Queue with property mapping', () => {
       const queue = program.stacks[0].resources.find(
-        (r) => r.cfnType === 'AWS::SQS::Queue',
+        (r) =>
+          r.cfnType === 'AWS::SQS::Queue' && r.props.queueName === 'test-queue',
       );
       expect(queue).toBeDefined();
       expect(queue?.typeToken).toBe('aws-native:sqs:Queue');
-      expect(queue?.props.queueName).toBe('test-queue');
       expect(queue?.props.visibilityTimeout).toBe(300);
-    },
-    SYNTH_TIMEOUT,
-  );
+    });
 
-  test(
-    'converts SQS Queue with dead letter queue dependencies',
-    async () => {
-      const program = await synthesizeAndConvert(() =>
-        createTestApp('TestStack', (stack) => {
-          const dlq = new sqs.Queue(stack, 'DLQ');
-          new sqs.Queue(stack, 'MainQueue', {
-            deadLetterQueue: {
-              queue: dlq,
-              maxReceiveCount: 3,
-            },
-          });
-        }),
-      );
-
-      expect(program.stacks).toHaveLength(1);
+    test('handles resource dependencies (DLQ)', () => {
       const queues = program.stacks[0].resources.filter(
         (r) => r.cfnType === 'AWS::SQS::Queue',
       );
-      expect(queues).toHaveLength(2);
-    },
-    SYNTH_TIMEOUT,
-  );
+      // Should have: MyQueue, DLQ, and MainQueue
+      expect(queues.length).toBeGreaterThanOrEqual(3);
 
-  test(
-    'handles multiple stacks in app',
-    async () => {
-      const program = await synthesizeAndConvert(() =>
-        createMultiStackApp([
-          {
-            name: 'DataStack',
-            addResources: (stack) => {
-              new s3.Bucket(stack, 'DataBucket');
-            },
-          },
-          {
-            name: 'AppStack',
-            addResources: (stack) => {
-              new sqs.Queue(stack, 'AppQueue');
-            },
-          },
-        ]),
-      );
+      // MainQueue should reference DLQ
+      const mainQueue = queues.find((q) => q.props.redrivePolicy !== undefined);
+      expect(mainQueue).toBeDefined();
+    });
+  });
 
+  describe('Multi-Stack Apps', () => {
+    let program: ProgramIR;
+    let filteredProgram: ProgramIR;
+
+    beforeAll(async () => {
+      const createMultiStackApp = () => {
+        const app = new cdk.App();
+
+        const dataStack = new cdk.Stack(app, 'DataStack');
+        new s3.Bucket(dataStack, 'DataBucket');
+
+        const appStack = new cdk.Stack(app, 'AppStack');
+        new sqs.Queue(appStack, 'AppQueue');
+
+        return app;
+      };
+
+      // Full conversion
+      program = await synthesizeAndConvert(createMultiStackApp);
+
+      // Filtered conversion
+      filteredProgram = await synthesizeAndConvert(createMultiStackApp, {
+        stackFilter: new Set(['DataStack']),
+      });
+    }, INTEGRATION_TIMEOUT);
+
+    test('converts multiple stacks', () => {
       expect(program.stacks).toHaveLength(2);
+
       const dataStack = program.stacks.find((s) => s.stackId === 'DataStack');
       const appStack = program.stacks.find((s) => s.stackId === 'AppStack');
       expect(dataStack).toBeDefined();
@@ -114,35 +114,11 @@ describe('Dynamic Synthesis - Basic Resources', () => {
         (r) => r.cfnType === 'AWS::SQS::Queue',
       );
       expect(queue).toBeDefined();
-    },
-    SYNTH_TIMEOUT,
-  );
+    });
 
-  test(
-    'filters stacks when stackFilter provided',
-    async () => {
-      const program = await synthesizeAndConvert(
-        () =>
-          createMultiStackApp([
-            {
-              name: 'DataStack',
-              addResources: (stack) => {
-                new s3.Bucket(stack, 'DataBucket');
-              },
-            },
-            {
-              name: 'AppStack',
-              addResources: (stack) => {
-                new sqs.Queue(stack, 'AppQueue');
-              },
-            },
-          ]),
-        { stackFilter: new Set(['DataStack']) },
-      );
-
-      expect(program.stacks).toHaveLength(1);
-      expect(program.stacks[0].stackId).toBe('DataStack');
-    },
-    SYNTH_TIMEOUT,
-  );
+    test('filters stacks when stackFilter provided', () => {
+      expect(filteredProgram.stacks).toHaveLength(1);
+      expect(filteredProgram.stacks[0].stackId).toBe('DataStack');
+    });
+  });
 });

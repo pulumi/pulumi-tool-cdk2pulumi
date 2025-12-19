@@ -25,6 +25,8 @@ The project involves:
 
 - **`specs/conversion.md`**: The master plan for the Conversion CLI. Check this for "Detailed TODOs" regarding Package Extraction, IR, CLI Prototype, and Stage Support.
 - **`specs/analysis.md`**: The master plan for the Assembly Analyzer. Check this for implementation tasks regarding Analysis Data Model, Language Detection, Construct Analysis, etc.
+- **`specs/testing.md`**: The testing strategy checklist (unit vs synth boundaries, fixture migration, and coverage gaps).
+- **`specs/dynamic-synthesis-tests.md`**: The synth migration plan and guardrails for when to replace fixtures.
 
 ## Workflows
 

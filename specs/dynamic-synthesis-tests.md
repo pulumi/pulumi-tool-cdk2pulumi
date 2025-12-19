@@ -3,15 +3,58 @@
 This document tracks the migration of static test fixtures to dynamically synthesized CDK tests using `@aws-cdk/toolkit-lib`.
 
 ## Goals
-- Replace static `test-data/` directories with inline CDK definitions
-- Improve test maintainability and coverage
-- Enable testing of real CDK construct behavior via realistic synthesis
+- Use synth tests to validate real CDK behavior and end-to-end conversion.
+- Keep unit tests as the primary place for edge cases and error handling.
+- Replace static fixtures only when synth tests provide equal or better signal.
+- Keep static fixtures for malformed inputs and asset-specific cases.
 
 ## Status Overview
 - [x] Phase 1: Infrastructure (helpers, setup)
-- [ ] Phase 2: Proof of concept tests
+- [x] Phase 2: Proof of concept tests
 - [ ] Phase 3: Migrate existing tests
 - [ ] Phase 4: Remove static test-data directories
+
+---
+
+## Test Strategy
+
+### Unit Tests vs Integration Tests (Scope and Guardrails)
+
+We maintain two layers of testing:
+
+1. **Unit tests** (e.g., `test/cli/ir-post-processor.test.ts`)
+   - Test functions in isolation with hand-crafted inputs
+   - Fast execution (~0.5s per test)
+   - Good for precise edge cases and specific transformations
+   - Keep these for fast feedback during development
+   - **Never replace unit tests with synth tests for error paths**
+
+2. **Integration tests** (e.g., `test/synth/ir-post-processor.synth.test.ts`)
+   - Synthesize real CDK apps using `@aws-cdk/toolkit-lib`
+   - Verify the full pipeline: CDK → synthesis → convert → post-process
+   - Slower (~10s for synthesis) but test realistic scenarios
+   - Use `beforeAll` to synthesize once, then run multiple fast assertions
+   - **Do not snapshot entire YAML**; assert on small, stable fragments
+   - **Avoid heavy fixtures**; prefer minimal apps that demonstrate behavior
+
+### Integration Test Pattern
+
+```typescript
+describe('Integration', () => {
+  let processed: ProgramIR;
+
+  beforeAll(async () => {
+    // Single synthesis for all tests in this suite
+    const program = await synthesizeAndConvert(() => createComprehensiveApp());
+    processed = postProcessProgramIr(program);
+  }, 60000);
+
+  test('converts X', () => {
+    // Fast assertion against pre-synthesized output
+    expect(findResource(processed, 'aws:x/y:Z')).toBeDefined();
+  });
+});
+```
 
 ---
 
@@ -25,39 +68,47 @@ This document tracks the migration of static test fixtures to dynamically synthe
 
 ## Phase 2: Proof of Concept Tests
 
-### Basic Resource Tests (`test/synth/basic-resources.synth.test.ts`)
+### `test/synth/basic-resources.synth.test.ts` ✓
+
+Integration tests for core assembly-to-IR conversion:
+
+**Basic Resources Suite** (single synthesis):
 - [x] S3 Bucket conversion
-- [x] SQS Queue conversion
-- [x] SQS Queue with dead letter queue dependencies
-- [x] Multi-stack app handling
-- [x] Stack filtering
+- [x] SQS Queue with property mapping
+- [x] Resource dependencies (DLQ)
+
+**Multi-Stack Apps Suite** (single synthesis, tests filtering):
+- [x] Multiple stacks in app
+- [x] Stack filtering with `stackFilter` option
 
 ---
 
 ## Phase 3: Test Migration
 
-### `test/cli/ir-post-processor.test.ts` (17 tests)
-- [ ] converts API Gateway V2 Stage to aws classic type
-- [ ] converts Service Discovery Service to aws classic type
-- [ ] converts Service Discovery Private DNS Namespace to aws classic type
-- [ ] converts IAM policies to RolePolicy resources instead of inlining
-- [ ] rewrites custom resources to emulator when staging bucket is present
-- [ ] rewrites custom resources to emulator using provided bucket name
-- [ ] replaces AWS::AccountId intrinsic in bootstrap bucket names
-- [ ] skips custom resources when option enabled
-- [ ] drops unsupported aws-native resources and reports them
-- [ ] does not drop classic fallbacks as unsupported
-- [ ] converts Route53 RecordSet to aws classic type
-- [ ] converts Route53 RecordSet TXT records
-- [ ] converts Route53 RecordSet with alias target
-- [ ] converts Route53 RecordSet with weighted routing policy
-- [ ] converts Route53 RecordSet with geolocation routing policy
-- [ ] converts Route53 RecordSet with failover routing policy
-- [ ] converts SQS QueuePolicy to classic and fans out per queue
+### `test/synth/ir-post-processor.synth.test.ts` ✓
 
-### `test/ir/stack-converter.test.ts` (2 tests)
-- [ ] converts resources with options and outputs
-- [ ] resolves joins, splits, conditionals, and dynamic references
+Integration tests using a comprehensive CDK app with all post-processed resource types:
+
+**Main Integration Suite** (single synthesis, ~15 assertions):
+- [x] API Gateway V2 Stage → `aws:apigatewayv2/stage:Stage`
+- [x] Service Discovery PrivateDnsNamespace → `aws:servicediscovery/privateDnsNamespace:PrivateDnsNamespace`
+- [x] Service Discovery Service → `aws:servicediscovery/service:Service`
+- [x] IAM Policy → `aws:iam/rolePolicy:RolePolicy`
+- [x] Route53 RecordSet (A, TXT, alias, weighted, geolocation, failover)
+- [x] SQS QueuePolicy fan-out per queue
+- [x] Custom Resource → `aws-native:cloudformation:CustomResourceEmulator`
+- [x] Unsupported resources dropped and reported
+- [x] Classic fallbacks not reported as unsupported
+
+**Options Suite** (separate syntheses for isolation):
+- [x] `skipCustomResources` removes custom resources
+- [x] `bootstrapBucketName` with `${AWS::AccountId}` intrinsic replacement
+- [x] `bootstrapBucketName` with literal value
+- [x] Staging bucket auto-detection from StagingStack
+
+### `test/ir/stack-converter.test.ts`
+- [x] converts resources with options and outputs
+- [x] resolves joins, splits, conditionals, and dynamic references
 
 ### `test/assembly/assembly-to-ir.test.ts` (5 tests)
 - [ ] converts root and nested stacks from manifest
@@ -67,13 +118,13 @@ This document tracks the migration of static test fixtures to dynamically synthe
 - [ ] Fn::ImportValue references resolve to stack output references
 
 ### `test/cli/ir-to-yaml.test.ts` (7 tests)
-- [ ] serializes resources, options, and parameter defaults
-- [ ] uses logical IDs as emitted resource names
-- [ ] lowercases logical IDs for resources that require it
-- [ ] inlines stack output references across stacks
-- [ ] replaces missing producer stack outputs with config.require
-- [ ] records external config requirements in report collector
-- [ ] escapes interpolation markers inside literal strings
+- [x] serializes resources, options, and parameter defaults
+- [x] uses logical IDs as emitted resource names
+- [x] lowercases logical IDs for resources that require it
+- [x] inlines stack output references across stacks
+- [x] replaces missing producer stack outputs with config.require
+- [x] records external config requirements in report collector
+- [x] escapes interpolation markers inside literal strings
 
 ---
 
@@ -89,12 +140,22 @@ This document tracks the migration of static test fixtures to dynamically synthe
 
 ---
 
-## Tests That Should Stay Static
+## Tests That Should Stay Static (Explicit)
 
-Some tests may be better served by static fixtures:
-- Tests for malformed manifests/templates (edge case error handling)
-- Tests for specific manifest.json structures
-- Tests for assets (Docker images, file assets)
+Keep static fixtures for:
+- Malformed manifests/templates (edge case error handling)
+- Specific `manifest.json` structures that are hard to synthesize
+- Asset workflows (Docker images, file assets) that require real files
+
+---
+
+## Migration Decision Checklist
+
+Before replacing a fixture with synthesis, confirm:
+- [ ] The behavior is not primarily an error path (if it is, keep unit tests).
+- [ ] A minimal CDK app can express the scenario.
+- [ ] Assertions can be made on stable fragments (not full snapshots).
+- [ ] The synth test runs in a single suite with one synthesis.
 
 ---
 
@@ -102,9 +163,14 @@ Some tests may be better served by static fixtures:
 
 ### toolkit-lib Configuration
 - Uses `clobberEnv: false` to allow parallel test execution without process.env conflicts
-- Each test gets its own temp directory for synthesis output
+- Synthesis output is managed by toolkit-lib (no manual temp directories needed)
 
 ### CDK Construct Behavior
 - CDK constructs create deterministic logical IDs based on construct path
 - Use `cfnType` matching for assertions instead of relying on specific logical IDs
 - Use `CfnXxx` escape hatches when precise CloudFormation control is needed
+
+### Performance Tips
+- Use `beforeAll` to synthesize once per test suite
+- Group related assertions under a single synthesis
+- Only create separate syntheses when testing options that affect the entire pipeline
