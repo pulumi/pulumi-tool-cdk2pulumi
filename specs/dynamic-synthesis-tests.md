@@ -111,11 +111,11 @@ Integration tests using a comprehensive CDK app with all post-processed resource
 - [x] resolves joins, splits, conditionals, and dynamic references
 
 ### `test/assembly/assembly-to-ir.test.ts` (5 tests)
-- [ ] converts root and nested stacks from manifest
-- [ ] convertAssemblyDirectoryToProgramIr loads manifest via reader
-- [ ] convertStageInAssemblyDirectoryToProgramIr loads nested manifest
-- [ ] convertAssemblyToProgramIr skips stacks outside filter set
-- [ ] Fn::ImportValue references resolve to stack output references
+- [x] converts root and nested stacks from manifest
+- [x] convertAssemblyDirectoryToProgramIr loads manifest via reader
+- [x] convertStageInAssemblyDirectoryToProgramIr loads nested manifest
+- [x] convertAssemblyToProgramIr skips stacks outside filter set
+- [x] Fn::ImportValue references resolve to stack output references
 
 ### `test/cli/ir-to-yaml.test.ts` (7 tests)
 - [x] serializes resources, options, and parameter defaults
