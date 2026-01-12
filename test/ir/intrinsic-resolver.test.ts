@@ -204,6 +204,93 @@ describe('IrIntrinsicResolver intrinsics', () => {
     ).toThrow('Fn::GetAZs is not supported in IR conversion yet');
   });
 
+  test('treats AWS::NoValue Ref as undefined', () => {
+    const resolver = createResolver();
+    expect(
+      resolver.resolveValue({
+        Ref: 'AWS::NoValue',
+      }),
+    ).toBeUndefined();
+  });
+
+  test('returns undefined for pseudo-parameter Refs', () => {
+    const resolver = createResolver();
+    expect(
+      resolver.resolveValue({
+        Ref: 'AWS::Region',
+      }),
+    ).toBeUndefined();
+    expect(
+      resolver.resolveValue({
+        Ref: 'AWS::AccountId',
+      }),
+    ).toBeUndefined();
+  });
+
+  test('resolves Ref to parameters', () => {
+    const resolver = createResolver({
+      Parameters: {
+        Stage: {
+          Type: 'String',
+          Default: 'dev',
+        },
+      },
+    });
+
+    expect(
+      resolver.resolveValue({
+        Ref: 'Stage',
+      }),
+    ).toEqual({
+      kind: 'parameter',
+      stackPath: 'App/Main',
+      parameterName: 'Stage',
+    });
+  });
+
+  test('resolves Ref to outputs', () => {
+    const resolver = createResolver({
+      Outputs: {
+        BucketArn: {
+          Value: { Ref: 'MyBucket' },
+        },
+      },
+    });
+
+    expect(
+      resolver.resolveValue({
+        Ref: 'BucketArn',
+      }),
+    ).toEqual({
+      kind: 'stackOutput',
+      stackPath: 'App/Main',
+      outputName: 'BucketArn',
+    });
+  });
+
+  test('returns undefined for missing Ref targets', () => {
+    const resolver = createResolver();
+    expect(
+      resolver.resolveValue({
+        Ref: 'DoesNotExist',
+      }),
+    ).toBeUndefined();
+  });
+
+  test('resolves Fn::GetAtt to resource attributes', () => {
+    const resolver = createResolver();
+    expect(
+      resolver.resolveValue({
+        'Fn::GetAtt': ['MyBucket', 'Arn'],
+      }),
+    ).toEqual({
+      kind: 'resourceAttribute',
+      resource: { stackPath: 'App/Main', id: 'MyBucket' },
+      attributeName: 'Arn',
+      propertyName: 'Arn',
+    });
+  });
+
   test('Refs point at resource id property when metadata is missing', () => {
     const resolver = createResolver(
       {},
@@ -262,5 +349,183 @@ describe('IrIntrinsicResolver intrinsics', () => {
     ).toThrow(
       'Ref intrinsic is not supported for the AWS::S3::Bucket resource type',
     );
+  });
+
+  test('resolves Fn::Split when the source is a string', () => {
+    const resolver = createResolver();
+    expect(
+      resolver.resolveValue({
+        'Fn::Split': [',', 'a,b,c'],
+      }),
+    ).toEqual(['a', 'b', 'c']);
+  });
+
+  test('returns undefined for Fn::Split when source is not a string', () => {
+    const resolver = createResolver();
+    expect(
+      resolver.resolveValue({
+        'Fn::Split': [',', { Ref: 'MyBucket' }],
+      }),
+    ).toBeUndefined();
+  });
+
+  test('resolves Fn::Join with mixed values into concat', () => {
+    const resolver = createResolver();
+    expect(
+      resolver.resolveValue({
+        'Fn::Join': ['-', ['prefix', { Ref: 'MyBucket' }]],
+      }),
+    ).toEqual({
+      kind: 'concat',
+      delimiter: '-',
+      values: [
+        'prefix',
+        {
+          kind: 'resourceAttribute',
+          resource: { stackPath: 'App/Main', id: 'MyBucket' },
+          attributeName: 'Ref',
+          propertyName: 'Ref',
+        },
+      ],
+    });
+  });
+
+  test('resolves Fn::Select with string index values', () => {
+    const resolver = createResolver();
+    expect(
+      resolver.resolveValue({
+        'Fn::Select': ['1', ['a', 'b', 'c']],
+      }),
+    ).toBe('b');
+  });
+
+  test('resolves Fn::Select out of range to undefined', () => {
+    const resolver = createResolver();
+    expect(
+      resolver.resolveValue({
+        'Fn::Select': [3, ['a', 'b']],
+      }),
+    ).toBeUndefined();
+  });
+
+  test('resolves Fn::FindInMap top-level key errors', () => {
+    const resolver = createResolver({
+      Mappings: {
+        RegionMap: {
+          dev: {
+            Ami: 'ami-123',
+          },
+        },
+      },
+    });
+    expect(() =>
+      resolver.resolveValue({
+        'Fn::FindInMap': ['RegionMap', 'prod', 'Ami'],
+      }),
+    ).toThrow('Key prod not found in mapping RegionMap');
+  });
+
+  test('resolves Fn::FindInMap second-level key errors', () => {
+    const resolver = createResolver({
+      Mappings: {
+        RegionMap: {
+          dev: {
+            Ami: 'ami-123',
+          },
+        },
+      },
+    });
+    expect(() =>
+      resolver.resolveValue({
+        'Fn::FindInMap': ['RegionMap', 'dev', 'Missing'],
+      }),
+    ).toThrow('Key Missing not found in mapping RegionMap.dev');
+  });
+
+  test('supports Fn::Sub literal escapes', () => {
+    const resolver = createResolver();
+    expect(
+      resolver.resolveValue({
+        'Fn::Sub': 'prefix-${!Literal}-suffix',
+      }),
+    ).toBe('prefix-${Literal}-suffix');
+  });
+
+  test('throws when Fn::FindInMap has no mappings', () => {
+    const resolver = createResolver();
+    expect(() =>
+      resolver.resolveValue({
+        'Fn::FindInMap': ['Missing', 'Key', 'Value'],
+      }),
+    ).toThrow('No mappings defined in template');
+  });
+
+  test('throws when Fn::FindInMap mapping name is missing', () => {
+    const resolver = createResolver({
+      Mappings: {
+        Present: {
+          Key: {
+            Value: 'ok',
+          },
+        },
+      },
+    });
+    expect(() =>
+      resolver.resolveValue({
+        'Fn::FindInMap': ['Missing', 'Key', 'Value'],
+      }),
+    ).toThrow('Mapping Missing not found in template mappings');
+  });
+
+  test('throws when Fn::If references missing condition', () => {
+    const resolver = createResolver();
+    expect(() =>
+      resolver.resolveValue({
+        'Fn::If': ['UnknownCondition', 'yes', 'no'],
+      }),
+    ).toThrow('Unable to find condition UnknownCondition');
+  });
+
+  test('evaluates condition functions', () => {
+    const resolver = createResolver();
+    expect(
+      resolver.resolveValue({
+        'Fn::Equals': ['a', 'a'],
+      }),
+    ).toBe(true);
+    expect(
+      resolver.resolveValue({
+        'Fn::And': [true, false],
+      }),
+    ).toBe(false);
+    expect(
+      resolver.resolveValue({
+        'Fn::Or': [false, true],
+      }),
+    ).toBe(true);
+    expect(
+      resolver.resolveValue({
+        'Fn::Not': [true],
+      }),
+    ).toBe(false);
+  });
+
+  test('validates condition function arity', () => {
+    const resolver = createResolver();
+    expect(() =>
+      resolver.resolveValue({
+        'Fn::And': [true],
+      }),
+    ).toThrow('Fn::And requires between 2 and 10 arguments');
+    expect(() =>
+      resolver.resolveValue({
+        'Fn::Or': [true],
+      }),
+    ).toThrow('Fn::Or requires between 2 and 10 arguments');
+    expect(() =>
+      resolver.resolveValue({
+        'Fn::Not': [true, false],
+      }),
+    ).toThrow('Fn::Not requires exactly 1 argument');
   });
 });

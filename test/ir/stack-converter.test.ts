@@ -96,6 +96,60 @@ describe('convertStackToIr', () => {
             }
         `);
   });
+
+  test('captures dependsOn arrays and output descriptions', () => {
+    const template: CloudFormationTemplate = {
+      Resources: {
+        Primary: {
+          Type: 'AWS::S3::Bucket',
+          Properties: {},
+          DependsOn: ['First', 'Second'],
+        },
+        First: {
+          Type: 'AWS::SQS::Queue',
+          Properties: {},
+        },
+        Second: {
+          Type: 'AWS::SNS::Topic',
+          Properties: {},
+        },
+      },
+      Outputs: {
+        BucketName: {
+          Description: 'Bucket name for consumers',
+          Value: { Ref: 'Primary' },
+        },
+        SkipMe: {
+          Value: { Ref: 'AWS::NoValue' },
+        },
+      },
+    };
+
+    const ir = convertStackToIr({
+      stackId: 'MyStack',
+      stackPath: 'My/Stack',
+      template,
+    });
+
+    const primary = ir.resources.find((resource) => resource.logicalId === 'Primary');
+    expect(primary?.options?.dependsOn).toEqual([
+      { id: 'First', stackPath: 'My/Stack' },
+      { id: 'Second', stackPath: 'My/Stack' },
+    ]);
+
+    expect(ir.outputs).toEqual([
+      {
+        name: 'BucketName',
+        description: 'Bucket name for consumers',
+        value: {
+          kind: 'resourceAttribute',
+          resource: { id: 'Primary', stackPath: 'My/Stack' },
+          attributeName: 'Ref',
+          propertyName: 'bucketName',
+        },
+      },
+    ]);
+  });
 });
 
 describe('convertStackToIr - intrinsics', () => {
@@ -185,5 +239,36 @@ describe('convertStackToIr - intrinsics', () => {
       parameterName: '/config/path',
       secure: true,
     });
+  });
+
+  test('resolves Fn::If true branch when condition matches', () => {
+    const template: CloudFormationTemplate = {
+      Conditions: {
+        IsProd: {
+          'Fn::Equals': ['prod', 'prod'],
+        },
+      },
+      Resources: {
+        MyBucket: {
+          Type: 'AWS::S3::Bucket',
+          Properties: {
+            Tags: [
+              {
+                Key: 'Stage',
+                Value: { 'Fn::If': ['IsProd', 'prod', 'non-prod'] },
+              },
+            ],
+          },
+        },
+      },
+    };
+
+    const ir = convertStackToIr({
+      stackId: 'MyStack',
+      stackPath: 'My/Stack',
+      template,
+    });
+
+    expect(ir.resources[0].props.tags[0].value).toBe('prod');
   });
 });
