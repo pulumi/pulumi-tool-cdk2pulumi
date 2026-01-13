@@ -242,4 +242,35 @@ describe('convertStackToIr - intrinsics', () => {
       secure: true,
     });
   });
+
+  test('resolves Fn::If true branch when condition matches', () => {
+    const template: CloudFormationTemplate = {
+      Conditions: {
+        IsProd: {
+          'Fn::Equals': ['prod', 'prod'],
+        },
+      },
+      Resources: {
+        MyBucket: {
+          Type: 'AWS::S3::Bucket',
+          Properties: {
+            Tags: [
+              {
+                Key: 'Stage',
+                Value: { 'Fn::If': ['IsProd', 'prod', 'non-prod'] },
+              },
+            ],
+          },
+        },
+      },
+    };
+
+    const ir = convertStackToIr({
+      stackId: 'MyStack',
+      stackPath: 'My/Stack',
+      template,
+    });
+
+    expect(ir.resources[0].props.tags[0].value).toBe('prod');
+  });
 });
