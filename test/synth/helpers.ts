@@ -1,5 +1,7 @@
-import { Toolkit } from '@aws-cdk/toolkit-lib';
+import * as path from 'path';
+import { MemoryContext, Toolkit } from '@aws-cdk/toolkit-lib';
 import * as cdk from 'aws-cdk-lib';
+import * as fs from 'fs-extra';
 import { ConversionReport } from '../../src/cli/conversion-report';
 import { ProgramIR } from '../../src/core';
 import { convertAssemblyDirectoryToProgramIr } from '../../src/core/assembly';
@@ -37,6 +39,34 @@ export async function synthesizeAndConvert(
       await (readable as any).dispose();
     }
   }
+}
+
+export async function assemblyFromApp(
+  dir: string,
+  initialContext?: Record<string, unknown>,
+): Promise<{ assemblyDir: string; dispose: () => Promise<void> }> {
+  const toolkit = new Toolkit({});
+  const cdkJson = JSON.parse(
+    fs.readFileSync(path.join(dir, 'cdk.json'), { encoding: 'utf-8' }),
+  );
+  const cx = await toolkit.fromCdkApp(cdkJson.app, {
+    lookups: false,
+    resolveDefaultEnvironment: false,
+    contextStore: new MemoryContext(initialContext),
+    workingDirectory: dir,
+  });
+
+  const readable = await cx.produce();
+  const cloudAssembly = readable.cloudAssembly;
+  const dispose = async () => {
+    if (typeof (readable as any)[Symbol.asyncDispose] === 'function') {
+      await (readable as any)[Symbol.asyncDispose]();
+    } else if (typeof (readable as any).dispose === 'function') {
+      await (readable as any).dispose();
+    }
+  };
+
+  return { assemblyDir: cloudAssembly.directory, dispose };
 }
 
 export async function synthesizeAssembly(
