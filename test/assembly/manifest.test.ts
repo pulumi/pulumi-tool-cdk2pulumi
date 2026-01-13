@@ -189,7 +189,107 @@ describe('cloud assembly manifest reader', () => {
   });
 
   describe('stage assemblies', () => {
-    const fixtureDir = path.join(__dirname, '../test-data/staged-assembly');
+    const fixtureDir = '/tmp/mock-staged-assembly';
+
+    beforeEach(() => {
+      mockfs({
+        node_modules: {
+          '@aws-cdk': {
+            'cloud-assembly-schema': mockfs.load(
+              path.resolve(
+                __dirname,
+                '../../node_modules/@aws-cdk/cloud-assembly-schema',
+              ),
+            ),
+          },
+          'aws-cdk-lib': mockfs.load(
+            path.resolve(__dirname, '../../node_modules/aws-cdk-lib'),
+          ),
+        },
+        [`${fixtureDir}/tree.json`]: JSON.stringify({
+          version: 'tree-0.1',
+          tree: {
+            id: 'App',
+            path: '',
+            children: {
+              DevStage: {
+                id: 'DevStage',
+                path: 'DevStage',
+                children: {
+                  DevStageAppStackABC123: {
+                    id: 'DevStageAppStackABC123',
+                    path: 'DevStage/AppStack',
+                  },
+                },
+              },
+            },
+          },
+        }),
+        [`${fixtureDir}/manifest.json`]: JSON.stringify({
+          version: '17.0.0',
+          artifacts: {
+            Tree: {
+              type: 'cdk:tree',
+              properties: {
+                file: 'tree.json',
+              },
+            },
+            'assembly-DevStage': {
+              type: 'cdk:cloud-assembly',
+              displayName: 'DevStage',
+              properties: {
+                directoryName: 'assembly-DevStage',
+              },
+            },
+          },
+        }),
+        [`${fixtureDir}/assembly-DevStage/manifest.json`]: JSON.stringify({
+          version: '17.0.0',
+          artifacts: {
+            Tree: {
+              type: 'cdk:tree',
+              properties: {
+                file: 'tree.json',
+              },
+            },
+            DevStageAppStackABC123: {
+              type: 'aws:cloudformation:stack',
+              displayName: 'DevStage/AppStack',
+              properties: {
+                templateFile: 'dev-stage-stack.template.json',
+                validateOnSynth: false,
+              },
+            },
+          },
+        }),
+        [`${fixtureDir}/assembly-DevStage/tree.json`]: JSON.stringify({
+          version: 'tree-0.1',
+          tree: {
+            id: 'DevStage',
+            path: 'DevStage',
+            children: {
+              DevStageAppStackABC123: {
+                id: 'DevStageAppStackABC123',
+                path: 'DevStage/AppStack',
+              },
+            },
+          },
+        }),
+        [`${fixtureDir}/assembly-DevStage/dev-stage-stack.template.json`]:
+          JSON.stringify({
+            Resources: {
+              Dummy: {
+                Type: 'AWS::S3::Bucket',
+                Properties: {},
+              },
+            },
+          }),
+      });
+    });
+
+    afterEach(() => {
+      mockfs.restore();
+    });
 
     test('loads nested assembly via display name', () => {
       const manifest = AssemblyManifestReader.fromDirectory(fixtureDir);
@@ -210,26 +310,101 @@ describe('cloud assembly manifest reader', () => {
   });
 
   describe('nested stacks', () => {
+    const fixtureDir = '/tmp/mock-nested-stack';
+
+    beforeEach(() => {
+      mockfs({
+        node_modules: {
+          '@aws-cdk': {
+            'cloud-assembly-schema': mockfs.load(
+              path.resolve(
+                __dirname,
+                '../../node_modules/@aws-cdk/cloud-assembly-schema',
+              ),
+            ),
+          },
+          'aws-cdk-lib': mockfs.load(
+            path.resolve(__dirname, '../../node_modules/aws-cdk-lib'),
+          ),
+        },
+        [`${fixtureDir}/tree.json`]: JSON.stringify({
+          version: 'tree-0.1',
+          tree: {
+            id: 'App',
+            path: '',
+            children: {
+              teststack: {
+                id: 'teststack',
+                path: 'teststack',
+              },
+            },
+          },
+        }),
+        [`${fixtureDir}/manifest.json`]: JSON.stringify({
+          version: '17.0.0',
+          artifacts: {
+            Tree: {
+              type: 'cdk:tree',
+              properties: {
+                file: 'tree.json',
+              },
+            },
+            teststack: {
+              type: 'aws:cloudformation:stack',
+              displayName: 'teststack',
+              properties: {
+                templateFile: 'teststack.template.json',
+                validateOnSynth: false,
+              },
+            },
+          },
+        }),
+        [`${fixtureDir}/teststack.template.json`]: JSON.stringify({
+          Resources: {
+            NestedStackResource: {
+              Type: 'AWS::CloudFormation::Stack',
+              Metadata: {
+                'aws:asset:path': 'nested.template.json',
+                'aws:cdk:path': 'teststack/Nesty.NestedStack/NestyResource',
+              },
+            },
+            RootBucket: {
+              Type: 'AWS::S3::Bucket',
+              Properties: {},
+            },
+          },
+        }),
+        [`${fixtureDir}/nested.template.json`]: JSON.stringify({
+          Resources: {
+            ChildBucket: {
+              Type: 'AWS::S3::Bucket',
+              Properties: {},
+            },
+          },
+        }),
+      });
+    });
+
     afterEach(() => {
       mockfs.restore();
     });
 
     test('can read manifest with nested stacks', () => {
-      const manifestDir = path.join(__dirname, '../test-data/nested-stack');
+      const manifestDir = fixtureDir;
       const manifests =
         AssemblyManifestReader.fromDirectory(manifestDir).stackManifests;
       expect(manifests.length).toEqual(1);
       const manifest = manifests[0];
       expect(Object.keys(manifest.stacks)).toEqual([
         'teststack',
-        'teststack/nesty',
+        'teststack/Nesty',
       ]);
       expect(
         Object.keys(manifest.stacks.teststack.Resources ?? {}).length,
-      ).toEqual(7);
+      ).toEqual(2);
       expect(
-        Object.keys(manifest.stacks['teststack/nesty'].Resources ?? {}).length,
-      ).toEqual(5);
+        Object.keys(manifest.stacks['teststack/Nesty'].Resources ?? {}).length,
+      ).toEqual(1);
     });
 
     test('throws if nested stack template is not found', () => {

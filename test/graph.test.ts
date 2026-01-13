@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import * as fs from 'fs';
-import * as path from 'path';
 import { createNestedStackManifest, createStackManifest } from './utils';
 import {
   ConstructTree,
@@ -1226,14 +1224,7 @@ test('pulumi resource type name fallsback when fqn not available', () => {
 });
 
 test('parses custom resources', () => {
-  const stackManifestPath = path.join(
-    __dirname,
-    'test-data/custom-resource-stack/stack-manifest.json',
-  );
-  const props: StackManifestProps = JSON.parse(
-    fs.readFileSync(stackManifestPath, 'utf-8'),
-  );
-  const stackManifest = new StackManifest(props);
+  const stackManifest = new StackManifest(createCustomResourceManifestProps());
   const graph = GraphBuilder.build(stackManifest);
 
   const deployWebsiteCR = graph.nodes.find(
@@ -1246,10 +1237,7 @@ test('parses custom resources', () => {
   const deployWebsiteCRResource = deployWebsiteCR!.resource!;
   expect(deployWebsiteCRResource.Type).toEqual('Custom::CDKBucketDeployment');
   expect(deployWebsiteCRResource.Properties.ServiceToken).toEqual({
-    'Fn::GetAtt': [
-      'CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536',
-      'Arn',
-    ],
+    'Fn::GetAtt': ['CustomResourceHandler', 'Arn'],
   });
   expect(deployWebsiteCRResource.Properties.SourceBucketNames).toEqual([
     'pulumi-cdk-stom-res-d817419f-staging-616138583583-us-west-2',
@@ -1285,15 +1273,9 @@ test('parses custom resources', () => {
 });
 
 test('validates that all resources are mapped', () => {
-  const stackManifestPath = path.join(
-    __dirname,
-    'test-data/custom-resource-stack/stack-manifest.json',
-  );
-  const props: StackManifestProps = JSON.parse(
-    fs.readFileSync(stackManifestPath, 'utf-8'),
-  );
+  const props = createCustomResourceManifestProps();
   const metadata = props.metadata;
-  const resourceToDelete = 's3deployment/WebsiteBucket/Resource';
+  const resourceToDelete = 'stack/CustomResourceRole/Resource';
   delete metadata[resourceToDelete];
 
   const deleteResourceFromTree = (
@@ -1320,10 +1302,122 @@ test('validates that all resources are mapped', () => {
   });
 
   expect(() => GraphBuilder.build(stackManifest)).toThrow(
-    '1 out of 11 CDK resources failed to map to Pulumi resources.',
+    '1 out of 2 CDK resources failed to map to Pulumi resources.',
   );
 });
 
 function edgesToArray(edges: Set<GraphNode>): string[] {
   return Array.from(edges).flatMap((value) => value.construct.path);
+}
+
+function createCustomResourceManifestProps(): StackManifestProps {
+  return {
+    id: 'stack',
+    templatePath: 'stack.template.json',
+    metadata: {
+      'stack/DeployWebsite/Default': {
+        stackPath: 'stack',
+        id: 'DeployWebsiteCustomResourceD116527B',
+      },
+      'stack/CustomResourceRole/Resource': {
+        stackPath: 'stack',
+        id: 'CustomResourceRoleAB1EF463',
+      },
+    },
+    tree: {
+      path: 'stack',
+      id: 'stack',
+      children: {
+        DeployWebsite: {
+          id: 'DeployWebsite',
+          path: 'stack/DeployWebsite',
+          constructInfo: {
+            fqn: 'aws-cdk-lib.CustomResource',
+            version: '2.149.0',
+          },
+          children: {
+            Default: {
+              id: 'Default',
+              path: 'stack/DeployWebsite/Default',
+              constructInfo: {
+                fqn: 'aws-cdk-lib.CfnResource',
+                version: '2.149.0',
+              },
+            },
+          },
+        },
+        CustomResourceRole: {
+          id: 'CustomResourceRole',
+          path: 'stack/CustomResourceRole',
+          constructInfo: {
+            fqn: 'aws-cdk-lib.aws_iam.Role',
+            version: '2.149.0',
+          },
+          children: {
+            Resource: {
+              id: 'Resource',
+              path: 'stack/CustomResourceRole/Resource',
+              attributes: {
+                'aws:cdk:cloudformation:type': 'AWS::IAM::Role',
+              },
+              constructInfo: {
+                fqn: 'aws-cdk-lib.aws_iam.CfnRole',
+                version: '2.149.0',
+              },
+            },
+          },
+        },
+      },
+    },
+    nestedStacks: {},
+    template: {
+      Resources: {
+        DeployWebsiteCustomResourceD116527B: {
+          Type: 'Custom::CDKBucketDeployment',
+          Properties: {
+            ServiceToken: {
+              'Fn::GetAtt': ['CustomResourceHandler', 'Arn'],
+            },
+            SourceBucketNames: [
+              'pulumi-cdk-stom-res-d817419f-staging-616138583583-us-west-2',
+            ],
+            SourceObjectKeys: [
+              'a386ba9b8c0d9b386083b2f6952db278a5a0ce88f497484eb5e62172219468fd.zip',
+            ],
+          },
+        },
+        CustomResourceRoleAB1EF463: {
+          Type: 'AWS::IAM::Role',
+          Properties: {
+            Policies: [
+              {
+                PolicyName: 'DeployPolicy',
+                PolicyDocument: {
+                  Statement: [
+                    {
+                      Resource: {
+                        'Fn::Join': [
+                          '',
+                          [
+                            {
+                              'Fn::GetAtt': [
+                                'DeployWebsiteCustomResourceD116527B',
+                                'DestinationBucketArn',
+                              ],
+                            },
+                            '/*',
+                          ],
+                        ],
+                      },
+                    },
+                  ],
+                },
+              },
+            ],
+          },
+        },
+      },
+    },
+    dependencies: [],
+  };
 }
