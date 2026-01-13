@@ -2,17 +2,13 @@ import { tryParseDynamicReference } from '../../src/core/resolvers/dynamic-refer
 
 describe('dynamic reference parsing', () => {
   test('parses SSM plaintext references', () => {
-    expect(
-      tryParseDynamicReference('{{resolve:ssm:MySecret}}'),
-    ).toEqual({
+    expect(tryParseDynamicReference('{{resolve:ssm:MySecret}}')).toEqual({
       kind: 'ssmDynamicReference',
       parameterName: 'MySecret',
       secure: false,
     });
 
-    expect(
-      tryParseDynamicReference('{{resolve:ssm:MySecret:1}}'),
-    ).toEqual({
+    expect(tryParseDynamicReference('{{resolve:ssm:MySecret:1}}')).toEqual({
       kind: 'ssmDynamicReference',
       parameterName: 'MySecret:1',
       secure: false,
@@ -20,13 +16,13 @@ describe('dynamic reference parsing', () => {
   });
 
   test('parses SSM secure references', () => {
-    expect(
-      tryParseDynamicReference('{{resolve:ssm-secure:MySecret}}'),
-    ).toEqual({
-      kind: 'ssmDynamicReference',
-      parameterName: 'MySecret',
-      secure: true,
-    });
+    expect(tryParseDynamicReference('{{resolve:ssm-secure:MySecret}}')).toEqual(
+      {
+        kind: 'ssmDynamicReference',
+        parameterName: 'MySecret',
+        secure: true,
+      },
+    );
   });
 
   test('parses Secrets Manager references', () => {

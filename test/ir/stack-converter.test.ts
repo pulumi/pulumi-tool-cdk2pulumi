@@ -131,7 +131,9 @@ describe('convertStackToIr', () => {
       template,
     });
 
-    const primary = ir.resources.find((resource) => resource.logicalId === 'Primary');
+    const primary = ir.resources.find(
+      (resource) => resource.logicalId === 'Primary',
+    );
     expect(primary?.options?.dependsOn).toEqual([
       { id: 'First', stackPath: 'My/Stack' },
       { id: 'Second', stackPath: 'My/Stack' },
