@@ -2,6 +2,8 @@
 
 This document guides agents working on the `cdk2pulumi` workspace.
 
+Read @INSTRUCTIONS.md for the base project instructions (projen usage).
+
 ## Context
 
 We are working in `pulumi-cdk-convert`, a repository extracted from the main `pulumi-cdk` project. This repo houses the standalone toolchain to convert AWS CDK applications to Pulumi.
@@ -32,8 +34,9 @@ Always check `spec.md` and `spec-cdk-analyze.md` before starting work. Update th
 
 ### Running Tests
 
-- **Unit Tests**: Run `npm test` to execute unit tests.
-- **Integration Tests**: Check `test/cli/` for CLI integration tests.
+- **Unit Tests**: Run `npx projen test:unit` for fast feedback (no coverage).
+- **Integration Tests**: Run `npx projen test:integration` for synth/integration checks.
+- **Full Suite**: Run `npx projen test` to include coverage.
 
 ## Todo List (High Level)
 
