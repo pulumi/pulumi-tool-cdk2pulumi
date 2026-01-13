@@ -1,6 +1,10 @@
 {
   "dependencies": [
     {
+      "name": "@aws-cdk/toolkit-lib",
+      "type": "build"
+    },
+    {
       "name": "@hallcor/pulumi-projen-project-types",
       "type": "build"
     },

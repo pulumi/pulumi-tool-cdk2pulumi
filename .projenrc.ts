@@ -8,6 +8,7 @@ const project = new TypeScriptProject({
     'projen',
     '@types/fs-extra',
     '@types/mock-fs',
+    '@aws-cdk/toolkit-lib',
   ],
   release: true,
   releaseToNpm: false,
@@ -26,6 +27,18 @@ const project = new TypeScriptProject({
       uses: 'oven-sh/setup-bun@v2',
     },
   ],
+  tsconfig: {
+    compilerOptions: {
+      target: 'es2022',
+      lib: ['es2022', 'esnext.disposable'],
+    },
+  },
+  tsconfigDev: {
+    compilerOptions: {
+      target: 'es2022',
+      lib: ['es2022', 'esnext.disposable'],
+    },
+  },
 
   // deps: [],                /* Runtime dependencies of this module. */
   // description: undefined,  /* The description is just a string that helps people understand the purpose of the package. */
@@ -35,6 +48,21 @@ const project = new TypeScriptProject({
 project.addTask('extract-identifiers', {
   exec: 'npx ts-node extract-primary-identifiers.ts',
   description: 'Extracts primary identifiers from aws-native-metadata.json',
+});
+
+project.addTask('test:unit', {
+  exec: 'npx jest --collectCoverage=false --testPathIgnorePatterns="\\.integration\\.test\\.ts$|\\.synth\\.test\\.ts$"',
+  description: 'Runs fast unit tests only (skips integration/synth tests).',
+});
+
+project.addTask('test:unit:watch', {
+  exec: 'npx jest --collectCoverage=false --watch --testPathIgnorePatterns="\\.integration\\.test\\.ts$|\\.synth\\.test\\.ts$"',
+  description: 'Watches fast unit tests only (skips integration/synth tests).',
+});
+
+project.addTask('test:integration', {
+  exec: 'npx jest --collectCoverage=false --testPathPatterns="(\\.integration|\\.synth)\\.test\\.ts$"',
+  description: 'Runs integration and synth tests only.',
 });
 
 project.release?.publisher.addGitHubPostPublishingSteps({
@@ -70,6 +98,7 @@ architectures.forEach((arch) => {
 
 project.gitignore.include('AGENTS.md');
 project.gitignore.exclude(
+  '.claude/settings.local.json',
   'Pulumi.yaml',
   'Pulumi.yaml.report.json',
   'Pulumi.*.yaml',
