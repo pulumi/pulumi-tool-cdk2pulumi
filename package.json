@@ -20,6 +20,9 @@
     "pre-compile": "npx projen pre-compile",
     "release": "npx projen release",
     "test": "npx projen test",
+    "test:integration": "npx projen test:integration",
+    "test:unit": "npx projen test:unit",
+    "test:unit:watch": "npx projen test:unit:watch",
     "test:watch": "npx projen test:watch",
     "unbump": "npx projen unbump",
     "upgrade": "npx projen upgrade",
@@ -27,6 +30,7 @@
     "projen": "npx projen"
   },
   "devDependencies": {
+    "@aws-cdk/toolkit-lib": "^1.12.2",
     "@hallcor/pulumi-projen-project-types": "^0.0.59",
     "@swc/core": "^1.15.2",
     "@swc/jest": "^0.2.39",

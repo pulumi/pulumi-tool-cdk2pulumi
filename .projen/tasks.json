@@ -290,6 +290,33 @@
         }
       ]
     },
+    "test:integration": {
+      "name": "test:integration",
+      "description": "Runs integration and synth tests only.",
+      "steps": [
+        {
+          "exec": "npx jest --collectCoverage=false --testPathPatterns=\"(\\.integration|\\.synth)\\.test\\.ts$\""
+        }
+      ]
+    },
+    "test:unit": {
+      "name": "test:unit",
+      "description": "Runs fast unit tests only (skips integration/synth tests).",
+      "steps": [
+        {
+          "exec": "npx jest --collectCoverage=false --testPathIgnorePatterns=\"\\.integration\\.test\\.ts$|\\.synth\\.test\\.ts$\""
+        }
+      ]
+    },
+    "test:unit:watch": {
+      "name": "test:unit:watch",
+      "description": "Watches fast unit tests only (skips integration/synth tests).",
+      "steps": [
+        {
+          "exec": "npx jest --collectCoverage=false --watch --testPathIgnorePatterns=\"\\.integration\\.test\\.ts$|\\.synth\\.test\\.ts$\""
+        }
+      ]
+    },
     "test:watch": {
       "name": "test:watch",
       "description": "Run jest in watch mode",
@@ -324,13 +351,13 @@
       },
       "steps": [
         {
-          "exec": "npx npm-check-updates@16 --upgrade --target=minor --peer --no-deprecated --dep=dev,peer,prod,optional --filter=@hallcor/pulumi-projen-project-types,@swc/core,@swc/jest,@types/fs-extra,@types/jest,@types/mock-fs,@types/node,eslint-config-prettier,eslint-import-resolver-typescript,eslint-plugin-import,eslint-plugin-prettier,jest,prettier,projen,ts-jest,ts-node,typescript,@aws-cdk/cdk-assets-lib,aws-cdk-lib,fs-extra,mock-fs,yaml"
+          "exec": "npx npm-check-updates@16 --upgrade --target=minor --peer --no-deprecated --dep=dev,peer,prod,optional --filter=@aws-cdk/toolkit-lib,@hallcor/pulumi-projen-project-types,@swc/core,@swc/jest,@types/fs-extra,@types/jest,@types/mock-fs,@types/node,eslint-config-prettier,eslint-import-resolver-typescript,eslint-plugin-import,eslint-plugin-prettier,jest,prettier,projen,ts-jest,ts-node,typescript,@aws-cdk/cdk-assets-lib,aws-cdk-lib,fs-extra,mock-fs,yaml"
         },
         {
           "exec": "npm install"
         },
         {
-          "exec": "npm update @hallcor/pulumi-projen-project-types @swc/core @swc/jest @types/fs-extra @types/jest @types/mock-fs @types/node @typescript-eslint/eslint-plugin @typescript-eslint/parser commit-and-tag-version constructs eslint-config-prettier eslint-import-resolver-typescript eslint-plugin-import eslint-plugin-prettier eslint jest jest-junit prettier projen ts-jest ts-node typescript @aws-cdk/cdk-assets-lib aws-cdk-lib fs-extra mock-fs yaml"
+          "exec": "npm update @aws-cdk/toolkit-lib @hallcor/pulumi-projen-project-types @swc/core @swc/jest @types/fs-extra @types/jest @types/mock-fs @types/node @typescript-eslint/eslint-plugin @typescript-eslint/parser commit-and-tag-version constructs eslint-config-prettier eslint-import-resolver-typescript eslint-plugin-import eslint-plugin-prettier eslint jest jest-junit prettier projen ts-jest ts-node typescript @aws-cdk/cdk-assets-lib aws-cdk-lib fs-extra mock-fs yaml"
         },
         {
           "exec": "npx projen"
