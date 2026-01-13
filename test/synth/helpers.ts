@@ -1,5 +1,6 @@
 import { Toolkit } from '@aws-cdk/toolkit-lib';
 import * as cdk from 'aws-cdk-lib';
+import { ConversionReport } from '../../src/cli/conversion-report';
 import { ProgramIR } from '../../src/core';
 import { convertAssemblyDirectoryToProgramIr } from '../../src/core/assembly';
 
@@ -61,4 +62,74 @@ export async function synthesizeAssembly(
   };
 
   return { assemblyDir: cloudAssembly.directory, dispose };
+}
+
+export interface ConversionReportSummary {
+  externalConfigRequirementCount: number;
+  stacks: Array<{
+    stackId: string;
+    originalResourceCount: number;
+    emittedResourceCount: number;
+    successTypes: string[];
+    unsupportedTypes: string[];
+    classicFallbackTypes: string[];
+    fanOutCount: number;
+    skippedReasons: Record<string, number>;
+  }>;
+}
+
+export function summarizeConversionReport(
+  report: ConversionReport,
+): ConversionReportSummary {
+  return {
+    externalConfigRequirementCount: report.externalConfigRequirements.length,
+    stacks: report.stacks.map((stack) => {
+      const successTypes = new Set<string>();
+      const unsupportedTypes = new Set<string>();
+      const classicFallbackTypes = new Set<string>();
+      let fanOutCount = 0;
+      const skippedReasons: Record<string, number> = {};
+
+      for (const entry of stack.entries) {
+        switch (entry.kind) {
+          case 'success':
+            successTypes.add(entry.typeToken);
+            break;
+          case 'unsupportedType':
+            unsupportedTypes.add(entry.cfnType);
+            break;
+          case 'classicFallback':
+            entry.targetTypeTokens.forEach((token) =>
+              classicFallbackTypes.add(token),
+            );
+            break;
+          case 'fanOut':
+            fanOutCount += 1;
+            break;
+          case 'skipped': {
+            const key = entry.reason;
+            skippedReasons[key] = (skippedReasons[key] ?? 0) + 1;
+            break;
+          }
+          default:
+            assertNever(entry);
+        }
+      }
+
+      return {
+        stackId: stack.stackId,
+        originalResourceCount: stack.originalResourceCount,
+        emittedResourceCount: stack.emittedResourceCount,
+        successTypes: Array.from(successTypes).sort(),
+        unsupportedTypes: Array.from(unsupportedTypes).sort(),
+        classicFallbackTypes: Array.from(classicFallbackTypes).sort(),
+        fanOutCount,
+        skippedReasons,
+      };
+    }),
+  };
+}
+
+function assertNever(value: never): never {
+  throw new Error(`Unhandled report entry: ${JSON.stringify(value)}`);
 }

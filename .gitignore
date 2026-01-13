@@ -50,6 +50,7 @@ junit.xml
 /lib
 /dist/
 !/.eslintrc.json
+!/INSTRUCTIONS.md
 !AGENTS.md
 .claude/settings.local.json
 Pulumi.yaml

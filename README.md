@@ -69,3 +69,18 @@ Architecture and plans:
 - Detailed implementation plans live in `specs/conversion.md` and `specs/analysis.md`.
 
 Custom resource emulation: CDK custom resources are rewritten to `aws-native:cloudformation:CustomResourceEmulator`. The tool tries to reuse the CDK bootstrap asset bucket when present; otherwise the bucket name is omitted, leaving bucket handling to later configuration.
+
+## Testing
+
+```bash
+# Fast feedback (unit tests only)
+npm run test:unit
+
+# Integration + synth tests
+npm run test:integration
+
+# Full suite with coverage
+npm test
+```
+
+More details: `docs/testing.md`.

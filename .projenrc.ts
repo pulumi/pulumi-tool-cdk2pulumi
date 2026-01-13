@@ -1,5 +1,5 @@
 import { TypeScriptProject } from '@hallcor/pulumi-projen-project-types';
-import { javascript } from 'projen';
+import { AiInstructions, javascript, Project, TextFile } from 'projen';
 
 const project = new TypeScriptProject({
   defaultReleaseBranch: 'main',
@@ -43,6 +43,14 @@ const project = new TypeScriptProject({
   // deps: [],                /* Runtime dependencies of this module. */
   // description: undefined,  /* The description is just a string that helps people understand the purpose of the package. */
   // packageName: undefined,  /* The "name" in package.json. */
+});
+
+const projenProject = Project.of(project);
+new TextFile(project, 'INSTRUCTIONS.md', {
+  lines: [
+    AiInstructions.projen(projenProject),
+    AiInstructions.bestPractices(projenProject),
+  ],
 });
 
 project.addTask('extract-identifiers', {
