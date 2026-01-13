@@ -76,21 +76,21 @@ integration tests (CDK synthesis) with minimal static fixtures.
 
 ---
 
-## Integration Tests (Synth)
-- [x] Basic resource synthesis coverage (`test/synth/basic-resources.synth.test.ts`).
-- [x] Post-processor synth coverage (`test/synth/ir-post-processor.synth.test.ts`).
-- [x] YAML serialization coverage for intrinsics using synthesized app.
-- [ ] Add synth test for `Fn::Sub` with `${AWS::Region}` / `${AWS::AccountId}` if supported.
-- [ ] Add synth test for `Fn::ImportValue` when cross-stack support is available.
+## End-to-End Smoke Tests (Synth)
+- [x] Basic pipeline smoke (`test/synth/basic-resources.synth.test.ts`).
+- [x] Post-processor pipeline smoke (`test/synth/ir-post-processor.synth.test.ts`).
+- [x] YAML serialization smoke for intrinsics using synthesized app.
+- [ ] Add smoke for `Fn::Sub` with `${AWS::Region}` / `${AWS::AccountId}` if supported.
+- [ ] Add smoke for `Fn::ImportValue` when cross-stack support is available.
 
 ---
 
 ## Fixture Migration
 - [ ] Replace `test/test-data/cdk-assembly.out` with synthesized fixture.
-- [ ] Replace `test/test-data/cdk-with-stages.out` with synthesized stage app.
-- [ ] Replace `test/test-data/staged-assembly` with synthesized fixtures.
-- [ ] Replace `test/test-data/nested-stack` with synthesized fixture.
-- [ ] Replace `test/test-data/custom-resource-stack` with synthesized fixture.
+- [x] Replace `test/test-data/cdk-with-stages.out` with synthesized stage app.
+- [x] Replace `test/test-data/staged-assembly` with synthesized fixtures.
+- [x] Replace `test/test-data/nested-stack` with synthesized fixture.
+- [x] Replace `test/test-data/custom-resource-stack` with synthesized fixture.
 - [ ] Keep `test/test-data/app` only if needed for Docker asset tests.
 
 ---
