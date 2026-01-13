@@ -56,4 +56,5 @@ junit.xml
 Pulumi.yaml
 Pulumi.yaml.report.json
 Pulumi.*.yaml
+test/**/cdk.out
 !/.projenrc.ts

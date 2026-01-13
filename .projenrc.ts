@@ -110,5 +110,6 @@ project.gitignore.exclude(
   'Pulumi.yaml',
   'Pulumi.yaml.report.json',
   'Pulumi.*.yaml',
+  'test/**/cdk.out',
 );
 project.synth();
