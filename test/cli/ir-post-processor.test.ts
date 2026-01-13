@@ -508,7 +508,7 @@ describe('postProcessProgramIr', () => {
       name: 'example.com',
       type: 'TXT',
       ttl: 300,
-      // Quotes removed and split values separated
+      // Quotes removed and split values separated into array elements
       records: ['simple-value', 'part1', 'part2'],
     });
   });
@@ -677,6 +677,135 @@ describe('postProcessProgramIr', () => {
       failoverRoutingPolicies: [{ type: 'PRIMARY' }],
       healthCheckId: 'hc-123',
     });
+  });
+
+  test('converts Route53 RecordSet with latency routing policy', () => {
+    const program: ProgramIR = {
+      stacks: [
+        {
+          stackId: 'AppStack',
+          stackPath: 'App/Stack',
+          resources: [
+            makeResource({
+              logicalId: 'LatencyRecord',
+              cfnType: 'AWS::Route53::RecordSet',
+              cfnProperties: {
+                HostedZoneId: 'Z123456',
+                Name: 'example.com',
+                Type: 'A',
+                TTL: 300,
+                ResourceRecords: ['1.2.3.4'],
+                SetIdentifier: 'us-east-1-record',
+                Region: 'us-east-1',
+              },
+            }),
+          ],
+        },
+      ],
+    } as any;
+
+    const processed = postProcessProgramIr(program);
+    const resource = processed.stacks[0].resources[0];
+    expect(resource.typeToken).toBe('aws:route53/record:Record');
+    expect(resource.props).toMatchObject({
+      zoneId: 'Z123456',
+      name: 'example.com',
+      type: 'A',
+      ttl: 300,
+      records: ['1.2.3.4'],
+      setIdentifier: 'us-east-1-record',
+      latencyRoutingPolicies: [{ region: 'us-east-1' }],
+    });
+  });
+
+  test('converts Route53 RecordSet with geoproximity routing policy and coordinates', () => {
+    const program: ProgramIR = {
+      stacks: [
+        {
+          stackId: 'AppStack',
+          stackPath: 'App/Stack',
+          resources: [
+            makeResource({
+              logicalId: 'GeoProximityRecord',
+              cfnType: 'AWS::Route53::RecordSet',
+              cfnProperties: {
+                HostedZoneId: 'Z123456',
+                Name: 'example.com',
+                Type: 'A',
+                TTL: 300,
+                ResourceRecords: ['1.2.3.4'],
+                SetIdentifier: 'datacenter-1',
+                GeoProximityLocation: {
+                  Bias: 10,
+                  Coordinates: {
+                    Latitude: '47.6062',
+                    Longitude: '-122.3321',
+                  },
+                },
+              },
+            }),
+          ],
+        },
+      ],
+    } as any;
+
+    const processed = postProcessProgramIr(program);
+    const resource = processed.stacks[0].resources[0];
+    expect(resource.typeToken).toBe('aws:route53/record:Record');
+    expect(resource.props).toMatchObject({
+      zoneId: 'Z123456',
+      name: 'example.com',
+      type: 'A',
+      setIdentifier: 'datacenter-1',
+      geoproximityRoutingPolicy: {
+        bias: 10,
+        coordinates: [
+          {
+            latitude: '47.6062',
+            longitude: '-122.3321',
+          },
+        ],
+      },
+    });
+  });
+
+  test('marks Route53 RecordSet as unsupported when only HostedZoneName is provided', () => {
+    const reportCollector = new ConversionReportBuilder();
+    const program: ProgramIR = {
+      stacks: [
+        {
+          stackId: 'AppStack',
+          stackPath: 'App/Stack',
+          resources: [
+            makeResource({
+              logicalId: 'RecordWithZoneName',
+              cfnType: 'AWS::Route53::RecordSet',
+              cfnProperties: {
+                HostedZoneName: 'example.com.',
+                Name: 'www.example.com',
+                Type: 'A',
+                TTL: 300,
+                ResourceRecords: ['1.2.3.4'],
+              },
+            }),
+          ],
+        },
+      ],
+    } as any;
+
+    postProcessProgramIr(program, { reportCollector });
+    const report = reportCollector.build();
+    const stackReport = report.stacks[0];
+
+    // Should be marked as unsupported due to missing HostedZoneId
+    const unsupportedEntry = stackReport.entries.find(
+      (e) =>
+        e.logicalId === 'RecordWithZoneName' && e.kind === 'unsupportedType',
+    );
+    expect(unsupportedEntry).toBeDefined();
+    expect(
+      unsupportedEntry?.kind === 'unsupportedType' && unsupportedEntry.reason,
+    ).toContain('HostedZoneName');
   });
 
   test('converts SQS QueuePolicy to classic and fans out per queue', () => {

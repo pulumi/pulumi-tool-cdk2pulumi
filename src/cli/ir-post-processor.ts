@@ -94,6 +94,19 @@ function rewriteResources(
     }
 
     if (resource.cfnType === 'AWS::Route53::RecordSet') {
+      // Pulumi requires zoneId; if only HostedZoneName is provided, we cannot convert
+      if (
+        !resource.cfnProperties.HostedZoneId &&
+        resource.cfnProperties.HostedZoneName
+      ) {
+        collector?.unsupportedType(
+          stack,
+          resource,
+          'HostedZoneName without HostedZoneId is not supported; Pulumi requires zoneId',
+        );
+        rewritten.push(resource);
+        continue;
+      }
       const converted = convertRoute53RecordSet(resource);
       recordConversionArtifacts(collector, stack, resource, [converted]);
       rewritten.push(converted);
@@ -249,15 +262,21 @@ function convertServiceDiscoveryPrivateDnsNamespace(
 function convertRoute53RecordSet(resource: ResourceIR): ResourceIR {
   const props = resource.cfnProperties;
 
-  // Handle TXT records: CDK wraps values in double quotes and splits at 255 chars
-  // We need to undo this since Terraform/Pulumi does its own quoting
+  // Handle TXT records: CDK has special handling that conflicts with Terraform/Pulumi.
+  // 1. CDK wraps values in double quotes, which Terraform also does. We need to remove
+  //    CDK's quotes to avoid double quoting.
+  // 2. CDK splits values exceeding 255 chars using "". Terraform does NOT do this
+  //    splitting, so we need to split them into separate array elements.
+  //
+  //         (user)                 (cdk)                (terraform)
+  //  e.g. "hello...hello" => '"hello...""hello"'    ["hello...", "hello"]
   let records = props.ResourceRecords;
   if (props.Type === 'TXT' && Array.isArray(records)) {
     records = records.flatMap((r: PropertyValue) => {
       if (typeof r !== 'string') {
         return r;
       }
-      // Split on "" (CDK's way of joining split records) and remove quotes
+      // Split on "" and remove all quotes
       return r.split('""').map((record) => record.replace(/"/g, ''));
     });
   }
@@ -277,6 +296,9 @@ function convertRoute53RecordSet(resource: ResourceIR): ResourceIR {
       : undefined,
     weightedRoutingPolicies:
       props.Weight !== undefined ? [{ weight: props.Weight }] : undefined,
+    latencyRoutingPolicies: props.Region
+      ? [{ region: props.Region }]
+      : undefined,
     geoproximityRoutingPolicy: convertRoute53GeoProximityLocation(
       props.GeoProximityLocation,
     ),
@@ -302,7 +324,7 @@ function convertRoute53AliasTarget(
     removeUndefined({
       name: target.DNSName,
       zoneId: target.HostedZoneId,
-      evaluateTargetHealth: target.EvaluateTargetHealth ?? false,
+      evaluateTargetHealth: target.EvaluateTargetHealth,
     }),
   ];
 }
@@ -336,7 +358,12 @@ function convertRoute53GeoProximityLocation(
       coordinates &&
       typeof coordinates === 'object' &&
       !Array.isArray(coordinates)
-        ? [coordinates]
+        ? [
+            {
+              latitude: (coordinates as PropertyMap).Latitude,
+              longitude: (coordinates as PropertyMap).Longitude,
+            },
+          ]
         : undefined,
   });
 }
