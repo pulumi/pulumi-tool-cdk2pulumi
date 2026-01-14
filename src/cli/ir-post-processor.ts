@@ -93,6 +93,26 @@ function rewriteResources(
       continue;
     }
 
+    if (resource.cfnType === 'AWS::Route53::RecordSet') {
+      // Pulumi requires zoneId; if only HostedZoneName is provided, we cannot convert
+      if (
+        !resource.cfnProperties.HostedZoneId &&
+        resource.cfnProperties.HostedZoneName
+      ) {
+        collector?.unsupportedType(
+          stack,
+          resource,
+          'HostedZoneName without HostedZoneId is not supported; Pulumi requires zoneId',
+        );
+        rewritten.push(resource);
+        continue;
+      }
+      const converted = convertRoute53RecordSet(resource);
+      recordConversionArtifacts(collector, stack, resource, [converted]);
+      rewritten.push(converted);
+      continue;
+    }
+
     if (resource.cfnType === 'AWS::RDS::DBProxyTargetGroup') {
       const converted = convertDbProxyTargetGroup(resource);
       recordConversionArtifacts(collector, stack, resource, converted);
@@ -237,6 +257,131 @@ function convertServiceDiscoveryPrivateDnsNamespace(
     typeToken: 'aws:servicediscovery/privateDnsNamespace:PrivateDnsNamespace',
     props: namespaceProps,
   };
+}
+
+function convertRoute53RecordSet(resource: ResourceIR): ResourceIR {
+  const props = resource.cfnProperties;
+
+  // Handle TXT records: CDK has special handling that conflicts with Terraform/Pulumi.
+  // 1. CDK wraps values in double quotes, which Terraform also does. We need to remove
+  //    CDK's quotes to avoid double quoting.
+  // 2. CDK splits values exceeding 255 chars using "". Terraform does NOT do this
+  //    splitting, so we need to split them into separate array elements.
+  //
+  //         (user)                 (cdk)                (terraform)
+  //  e.g. "hello...hello" => '"hello...""hello"'    ["hello...", "hello"]
+  let records = props.ResourceRecords;
+  if (props.Type === 'TXT' && Array.isArray(records)) {
+    records = records.flatMap((r: PropertyValue) => {
+      if (typeof r !== 'string') {
+        return r;
+      }
+      // Split on "" and remove all quotes
+      return r.split('""').map((record) => record.replace(/"/g, ''));
+    });
+  }
+
+  const recordProps = removeUndefined({
+    zoneId: props.HostedZoneId,
+    name: props.Name,
+    type: props.Type,
+    records,
+    ttl: props.TTL,
+    aliases: convertRoute53AliasTarget(props.AliasTarget),
+    healthCheckId: props.HealthCheckId,
+    setIdentifier: props.SetIdentifier,
+    cidrRoutingPolicy: convertRoute53CidrRoutingConfig(props.CidrRoutingConfig),
+    failoverRoutingPolicies: props.Failover
+      ? [{ type: props.Failover }]
+      : undefined,
+    weightedRoutingPolicies:
+      props.Weight !== undefined ? [{ weight: props.Weight }] : undefined,
+    latencyRoutingPolicies: props.Region
+      ? [{ region: props.Region }]
+      : undefined,
+    geoproximityRoutingPolicy: convertRoute53GeoProximityLocation(
+      props.GeoProximityLocation,
+    ),
+    geolocationRoutingPolicies: convertRoute53GeoLocation(props.GeoLocation),
+    multivalueAnswerRoutingPolicy: props.MultiValueAnswer,
+  });
+
+  return {
+    ...resource,
+    typeToken: 'aws:route53/record:Record',
+    props: recordProps,
+  };
+}
+
+function convertRoute53AliasTarget(
+  value: PropertyValue | undefined,
+): PropertyValue | undefined {
+  if (typeof value !== 'object' || value === null || Array.isArray(value)) {
+    return undefined;
+  }
+  const target = value as PropertyMap;
+  return [
+    removeUndefined({
+      name: target.DNSName,
+      zoneId: target.HostedZoneId,
+      evaluateTargetHealth: target.EvaluateTargetHealth,
+    }),
+  ];
+}
+
+function convertRoute53CidrRoutingConfig(
+  value: PropertyValue | undefined,
+): PropertyValue | undefined {
+  if (typeof value !== 'object' || value === null || Array.isArray(value)) {
+    return undefined;
+  }
+  const config = value as PropertyMap;
+  return removeUndefined({
+    collectionId: config.CollectionId,
+    locationName: config.LocationName,
+  });
+}
+
+function convertRoute53GeoProximityLocation(
+  value: PropertyValue | undefined,
+): PropertyMap | undefined {
+  if (typeof value !== 'object' || value === null || Array.isArray(value)) {
+    return undefined;
+  }
+  const location = value as PropertyMap;
+  const coordinates = location.Coordinates;
+  return removeUndefined({
+    bias: location.Bias,
+    awsRegion: location.AWSRegion,
+    localZoneGroup: location.LocalZoneGroup,
+    coordinates:
+      coordinates &&
+      typeof coordinates === 'object' &&
+      !Array.isArray(coordinates)
+        ? [
+            {
+              latitude: (coordinates as PropertyMap).Latitude,
+              longitude: (coordinates as PropertyMap).Longitude,
+            },
+          ]
+        : undefined,
+  });
+}
+
+function convertRoute53GeoLocation(
+  value: PropertyValue | undefined,
+): PropertyValue | undefined {
+  if (typeof value !== 'object' || value === null || Array.isArray(value)) {
+    return undefined;
+  }
+  const geo = value as PropertyMap;
+  return [
+    removeUndefined({
+      country: geo.CountryCode,
+      continent: geo.ContinentCode,
+      subdivision: geo.SubdivisionCode,
+    }),
+  ];
 }
 
 function convertCustomResource(
