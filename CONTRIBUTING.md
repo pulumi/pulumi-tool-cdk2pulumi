@@ -40,6 +40,12 @@ npx projen compile
 npx projen test:unit
 ```
 
+Non-mutating AI/CI loop:
+
+```bash
+npx projen verify:ai
+```
+
 When CLI conversion/analyzer behavior changes:
 
 ```bash
@@ -51,6 +57,17 @@ Before merge (recommended):
 ```bash
 npx projen build
 ```
+
+## Schema / Metadata Regeneration
+
+When you change identifier datasets or metadata inputs in `schemas/`:
+
+```bash
+npx projen extract-identifiers
+npx projen build
+```
+
+Commit regenerated outputs with the source change in the same PR.
 
 ## AI-Assisted Contributions
 

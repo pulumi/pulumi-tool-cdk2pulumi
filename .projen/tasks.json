@@ -144,6 +144,15 @@
         }
       ]
     },
+    "lint:check": {
+      "name": "lint:check",
+      "description": "Runs eslint without applying fixes.",
+      "steps": [
+        {
+          "exec": "ESLINT_USE_FLAT_CONFIG=false eslint --ext .ts,.tsx --no-error-on-unmatched-pattern src test build-tools projenrc .projenrc.ts"
+        }
+      ]
+    },
     "package": {
       "name": "package",
       "description": "Creates the distribution package",
@@ -308,6 +317,15 @@
         }
       ]
     },
+    "test:unit:ci": {
+      "name": "test:unit:ci",
+      "description": "Runs non-mutating unit tests for CI/PR validation.",
+      "steps": [
+        {
+          "exec": "npx jest --ci --collectCoverage=false --testPathIgnorePatterns=\"\\.integration\\.test\\.ts$|\\.synth\\.test\\.ts$\""
+        }
+      ]
+    },
     "test:unit:watch": {
       "name": "test:unit:watch",
       "description": "Watches fast unit tests only (skips integration/synth tests).",
@@ -351,19 +369,34 @@
       },
       "steps": [
         {
-          "exec": "npx npm-check-updates@16 --upgrade --target=minor --peer --no-deprecated --dep=dev,peer,prod,optional --filter=@aws-cdk/toolkit-lib,@hallcor/pulumi-projen-project-types,@swc/core,@swc/jest,@types/fs-extra,@types/jest,@types/mock-fs,@types/node,eslint-config-prettier,eslint-import-resolver-typescript,eslint-plugin-import,eslint-plugin-prettier,jest,prettier,projen,ts-jest,ts-node,typescript,@aws-cdk/cdk-assets-lib,aws-cdk-lib,fs-extra,mock-fs,yaml"
+          "exec": "npx npm-check-updates@16 --upgrade --target=minor --peer --no-deprecated --dep=dev,peer,prod,optional --filter=@aws-cdk/toolkit-lib,@hallcor/pulumi-projen-project-types,@swc/core,@swc/jest,@types/fs-extra,@types/jest,@types/mock-fs,@types/node,eslint-config-prettier,eslint-import-resolver-typescript,eslint-plugin-import,eslint-plugin-prettier,jest,mock-fs,prettier,projen,ts-jest,ts-node,typescript,@aws-cdk/cdk-assets-lib,aws-cdk-lib,fs-extra,yaml"
         },
         {
           "exec": "npm install"
         },
         {
-          "exec": "npm update @aws-cdk/toolkit-lib @hallcor/pulumi-projen-project-types @swc/core @swc/jest @types/fs-extra @types/jest @types/mock-fs @types/node @typescript-eslint/eslint-plugin @typescript-eslint/parser commit-and-tag-version constructs eslint-config-prettier eslint-import-resolver-typescript eslint-plugin-import eslint-plugin-prettier eslint jest jest-junit prettier projen ts-jest ts-node typescript @aws-cdk/cdk-assets-lib aws-cdk-lib fs-extra mock-fs yaml"
+          "exec": "npm update @aws-cdk/toolkit-lib @hallcor/pulumi-projen-project-types @swc/core @swc/jest @types/fs-extra @types/jest @types/mock-fs @types/node @typescript-eslint/eslint-plugin @typescript-eslint/parser commit-and-tag-version constructs eslint-config-prettier eslint-import-resolver-typescript eslint-plugin-import eslint-plugin-prettier eslint jest jest-junit mock-fs prettier projen ts-jest ts-node typescript @aws-cdk/cdk-assets-lib aws-cdk-lib fs-extra yaml"
         },
         {
           "exec": "npx projen"
         },
         {
           "spawn": "post-upgrade"
+        }
+      ]
+    },
+    "verify:ai": {
+      "name": "verify:ai",
+      "description": "Runs non-mutating checks for AI-assisted contributions.",
+      "steps": [
+        {
+          "spawn": "compile"
+        },
+        {
+          "spawn": "lint:check"
+        },
+        {
+          "spawn": "test:unit:ci"
         }
       ]
     },

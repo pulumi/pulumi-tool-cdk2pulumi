@@ -20,6 +20,7 @@ Major areas:
 - `specs/analysis.md` for analyzer backlog and status.
 - `docs/testing.md` for test strategy.
 - `docs/intrinsics.md` for intrinsic pipeline details.
+- `docs/architecture.md` for module boundaries and change targeting.
 
 ## Command Canon
 
@@ -28,10 +29,14 @@ Run all project tasks through Projen:
 - Install deps: `npm ci`
 - Compile: `npx projen compile`
 - Unit tests (fast): `npx projen test:unit`
+- Unit tests (CI/non-mutating): `npx projen test:unit:ci`
 - Integration/synth tests: `npx projen test:integration`
 - Full test suite: `npx projen test`
+- Lint (non-mutating): `npx projen lint:check`
+- AI verification bundle: `npx projen verify:ai`
 - Full build: `npx projen build`
 - Regenerate project files after `.projenrc.ts` changes: `npx projen`
+- Regenerate primary identifiers from metadata: `npx projen extract-identifiers`
 
 CLI local execution:
 
@@ -68,6 +73,7 @@ Escalate before proceeding when:
 - `src/core/**` or `src/cli/**`: run `npx projen compile` and `npx projen test:unit`.
 - CLI output/serialization/analyzer behavior: also run `npx projen test:integration`.
 - `.projenrc.ts`: run `npx projen` then `npx projen build`.
+- `schemas/aws-native-metadata.json` or identifier datasets: run `npx projen extract-identifiers`, then `npx projen build`.
 - Specs/docs: update related checklists and command/path references in the same PR.
 
 ## High-Level TODOs
