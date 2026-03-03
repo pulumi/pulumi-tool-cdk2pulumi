@@ -83,6 +83,10 @@
       "type": "build"
     },
     {
+      "name": "mock-fs",
+      "type": "build"
+    },
+    {
       "name": "prettier",
       "type": "build"
     },
@@ -112,10 +116,6 @@
     },
     {
       "name": "fs-extra",
-      "type": "runtime"
-    },
-    {
-      "name": "mock-fs",
       "type": "runtime"
     },
     {

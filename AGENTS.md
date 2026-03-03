@@ -1,59 +1,98 @@
 # Agent Guide: Pulumi CDK Conversion
 
-This document guides agents working on the `cdk2pulumi` workspace.
+This is the repository-specific operating contract for contributors and AI agents.
 
-Read @INSTRUCTIONS.md for the base project instructions (projen usage).
+Read `INSTRUCTIONS.md` first for Projen rules.
 
 ## Context
 
-We are working in `pulumi-cdk-convert`, a repository extracted from the main `pulumi-cdk` project. This repo houses the standalone toolchain to convert AWS CDK applications to Pulumi.
+We are working in `pulumi-cdk-convert`, a repository extracted from the main `pulumi-cdk` project. The long-term goal is reintegration, so avoid changes that permanently bifurcate architecture or APIs.
 
-**Long-term Goal:** While we develop here for velocity and separation of concerns, the ultimate goal is to reintegrate these tools back into `pulumi-cdk`. Avoid decisions that would permanently bifurcate the codebases or make reintegration difficult.
+Major areas:
+1. Conversion core (`src/core`) for assembly parsing, intrinsics, and IR conversion.
+2. CLI (`src/cli/cli-runner.ts`) for conversion/analyzer commands.
+3. Analyzer (`src/core/analysis`) for migration planning reports.
 
-The project involves:
-1.  **Conversion Core**: A neutral Intermediate Representation (IR) for CDK constructs/resources.
-2.  **CLI**: A tool to drive conversion and analysis without needing the full Pulumi CLI runtime for execution.
-3.  **Analyzer**: A tool to inspect CDK assemblies and report on their structure/complexity to aid migration planning.
+## Start Here
 
-## Current Status
+- `README.md` for user-facing behavior and quickstart.
+- `specs/conversion.md` for conversion backlog and status.
+- `specs/analysis.md` for analyzer backlog and status.
+- `docs/testing.md` for test strategy.
+- `docs/intrinsics.md` for intrinsic pipeline details.
+- `docs/architecture.md` for module boundaries and change targeting.
 
-- **Core Package**: `src/core` contains the reusable logic (assembly, graph, cfn, sub, stack-map).
-- **CLI**: `src/cli/cli-runner.ts` is the CLI entrypoint.
-- **Analyzer**: Scaffolding exists for `cdk-to-pulumi analyze` within `src/cli`.
+## Command Canon
 
-## Key Documents
+Run all project tasks through Projen:
 
-- **`specs/conversion.md`**: The master plan for the Conversion CLI. Check this for "Detailed TODOs" regarding Package Extraction, IR, CLI Prototype, and Stage Support.
-- **`specs/analysis.md`**: The master plan for the Assembly Analyzer. Check this for implementation tasks regarding Analysis Data Model, Language Detection, Construct Analysis, etc.
+- Install deps: `npm ci`
+- Compile: `npx projen compile`
+- Unit tests (fast): `npx projen test:unit`
+- Unit tests (CI/non-mutating): `npx projen test:unit:ci`
+- Integration/synth tests: `npx projen test:integration`
+- Full test suite: `npx projen test`
+- Lint (non-mutating): `npx projen lint:check`
+- AI verification bundle: `npx projen verify:ai`
+- Full build: `npx projen build`
+- Regenerate project files after `.projenrc.ts` changes: `npx projen`
+- Regenerate primary identifiers from metadata: `npx projen extract-identifiers`
 
-## Workflows
+CLI local execution:
 
-### Updating the Implementation Plans
+- `bun src/cli/cli-runner.ts --assembly <path-to-cdk.out>`
 
-Always check `spec.md` and `spec-cdk-analyze.md` before starting work. Update the checkboxes in these files as you complete tasks.
+Bun packaging wrappers:
 
-### Running Tests
+- `npm run package:linux-arm64`
+- `npm run package:darwin-arm64`
 
-- **Unit Tests**: Run `npx projen test:unit` for fast feedback (no coverage).
-- **Integration Tests**: Run `npx projen test:integration` for synth/integration checks.
-- **Full Suite**: Run `npx projen test` to include coverage.
+## Workflow Requirements
 
-## Todo List (High Level)
+1. Before implementation, check `specs/conversion.md` and `specs/analysis.md`.
+2. Keep spec checkboxes in sync with completed work.
+3. If you change `.projenrc.ts`, run `npx projen` and commit generated outputs.
+4. If you change behavior in `src/`, run at least `npx projen test:unit`; run `npx projen test:integration` for CLI/serialization/analyzer behavior changes.
+
+## Safety Rails
+
+Forbidden without explicit approval:
+
+- Destructive git operations (`git reset --hard`, force-push, deleting branches/history).
+- Manual edits to Projen-generated files.
+- Declaring tests passed when not executed.
+
+Escalate before proceeding when:
+
+- Instructions/docs disagree with code reality.
+- A change alters IR shape, stack/resource naming, or cross-stack reference semantics.
+- Behavior touches custom resources, stage handling, or asset handling semantics.
+
+## If You Change...
+
+- `src/core/**` or `src/cli/**`: run `npx projen compile` and `npx projen test:unit`.
+- CLI output/serialization/analyzer behavior: also run `npx projen test:integration`.
+- `.projenrc.ts`: run `npx projen` then `npx projen build`.
+- `schemas/aws-native-metadata.json` or identifier datasets: run `npx projen extract-identifiers`, then `npx projen build`.
+- Specs/docs: update related checklists and command/path references in the same PR.
+
+## High-Level TODOs
 
 ### Conversion CLI (`specs/conversion.md`)
 
+- [ ] Provide minimal CLI usage docs in README.
+- [ ] Finish import flattening serializer test coverage and stage-wide import flow.
+- [ ] Emit top-level Pulumi outputs from stack outputs.
+- [ ] Unify runtime conversion on shared IR path.
 
 ### Analyzer (`specs/analysis.md`)
-- [ ] **Resource Inventory**: Determine which resources rely on assets.
-- [ ] **Custom Resource Details**: Identify custom resources, trace back to Lambda handlers.
-- [ ] **Asset Usage**: List file/docker assets and highlight usage.
-- [ ] **Testing**: Add unit and golden snapshot tests for the analyzer.
 
-## Developer Notes
+- [ ] Resource inventory asset correlation.
+- [ ] Custom resource service token + Lambda handler tracing.
+- [ ] Asset usage reporting (file/docker asset mapping).
+- [ ] Unit + snapshot + CLI integration test coverage.
 
-- **Execution**: Use `bun src/cli/cli-runner.ts` to run the CLI locally.
-- **Bun Builds**: We use Bun for standalone binary builds (`npm run package`). Keep using Node for local dev.
-- **Asset Handling**: Currently, asset uploads might be skipped or stubbed in the CLI prototype.
-- **Intrinsics**: We are moving towards a shared IR intrinsic resolver.
+## Notes
 
-Refer to the specific spec files for the most up-to-date granular tasks.
+- `CLAUDE.md` should be a symlink to this file (`AGENTS.md`).
+- Keep `src/core` runtime-agnostic; avoid coupling it to CLI-only concerns.

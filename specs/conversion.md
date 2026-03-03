@@ -15,8 +15,8 @@ Develop a reusable conversion pipeline that takes an existing AWS CDK applicatio
 3.  **Reintegration Ready**: Keep the API surface clean and documented to facilitate future reintegration into `pulumi-cdk`.
 
 ## Bun Executable Builds
-- Install [Bun](https://bun.sh) locally and run `npm run package:linux:arm` or `npm run package:macos:arm` to emit standalone binaries at `dist/bin/linux-arm64/cdk2pulumi` and `dist/bin/macos-arm64/cdk2pulumi` respectively (the script enables `--minify` and `--sourcemap` by default).
-- Run `npm run package` to build both platform binaries.
+- Install [Bun](https://bun.sh) locally and run `npm run package:linux-arm64` or `npm run package:darwin-arm64` to emit standalone binaries at `dist/bin/linux-arm64/pulumi-tool-cdk2pulumi` and `dist/bin/darwin-arm64/pulumi-tool-cdk2pulumi` respectively (the script enables `--minify` and `--sourcemap` by default).
+- Run `npm run package` to build binaries for all supported platform/architecture targets (currently Linux and macOS for x64/arm64, plus Windows x64).
 - These binaries embed the Bun runtime; keep using the Node-based workflow for local development/tests and reserve Bun builds for packaging/distribution experiments.
 
 ## Detailed TODOs
@@ -85,7 +85,7 @@ Develop a reusable conversion pipeline that takes an existing AWS CDK applicatio
 - [ ] Add tests:
 - [x] Unit tests in `src/core` covering the intrinsic resolver’s import handling (happy path + missing export).
   - [ ] CLI serializer tests proving cross-stack imports get flattened to the underlying resource properties.
-  - [ ] Update the stage integration test to run without `--stacks` once imports are supported (i.e., convert the entire Dev stage). _(Currently blocked by the unresolved `Fn::GetAZs` intrinsic; see `tests/cli/stage.integration.test.ts` for the regression test that captures the failure case.)_
+  - [ ] Update the stage integration test to run without `--stacks` once imports are supported (i.e., convert the entire Dev stage). _(Currently blocked by the unresolved `Fn::GetAZs` intrinsic; see `test/cli/stage.integration.test.ts` for the regression test that captures the failure case.)_
 
 ### Partial Stack Conversion / External Stack Outputs
 - [x] Build the export/stack-output index from the entire assembly before stack filtering so we can identify references to skipped stacks/outputs.
@@ -130,7 +130,7 @@ Develop a reusable conversion pipeline that takes an existing AWS CDK applicatio
 ### Pulumi Runtime Integration
 - [ ] **Unify Stack conversion paths** – Refactor `StackConverter` to call `convertStackToIr` for every stack (even when running inside Pulumi) by providing a Pulumi-flavored `IntrinsicValueAdapter`/`ResourceEmitter`. The emitter should translate `StackAddress` references in `IrResourceOptions` into actual Pulumi dependencies/parents, while the adapter converts resolved `PropertyValue` structures (refs, dynamic references, parameters) into `pulumi.Input` values using the runtime `Mapping` tables.
 - [ ] **Bridge nested-stack + parameter handling** – Replace the bespoke `processIntrinsics`/`IntrinsicContext` logic with helpers that consume the IR output. Ensure nested stack parameters, stack outputs, and `OutputMap` wiring continue to function by feeding IR-evaluated parameter defaults and outputs back into the existing `StackMap` structures.
-- [ ] **Remove legacy intrinsic implementation** – After the runtime successfully emits resources from IR, delete `src/converters/intrinsics.ts`, `processIntrinsics`, and other now-redundant evaluators. Port the relevant tests to exercise the shared IR resolver (e.g., reuse `tests/ir/intrinsic-resolver.test.ts` plus a Pulumi integration test that provisions a representative stack via the runtime).
+- [ ] **Remove legacy intrinsic implementation** – After the runtime successfully emits resources from IR, delete `src/converters/intrinsics.ts`, `processIntrinsics`, and other now-redundant evaluators. Port the relevant tests to exercise the shared IR resolver (e.g., reuse `test/ir/intrinsic-resolver.test.ts` plus a Pulumi integration test that provisions a representative stack via the runtime).
 - [ ] **Regression testing** – Re-run the current unit/integration suites plus at least one end-to-end example (`examples/simple/` or similar) to verify both the CLI and `@pulumi/cdk` paths keep emitting identical resource graphs.
 
 ### Testing & Validation

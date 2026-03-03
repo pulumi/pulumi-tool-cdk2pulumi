@@ -119,7 +119,7 @@ Introduce a new CLI command that inspects an AWS CDK Cloud Assembly (the same `c
 - [ ] CLI integration tests invoking `cdk-to-pulumi analyze` to ensure output generation.
 
 ### 10. Documentation & Spec Updates
-- [ ] Update `spec.md` + `AGENTS.md` to reference the analyzer work and cross-link with this spec.
+- [ ] Update `specs/conversion.md` + `AGENTS.md` to reference the analyzer work and cross-link with this spec.
 - [ ] Document CLI usage in `README.md`.
 - [ ] Note limitations (unsupported macros, etc.).
 
