@@ -107,7 +107,8 @@ project.addTask('test:integration', {
 });
 
 project.addTask('lint:check', {
-  exec: 'ESLINT_USE_FLAT_CONFIG=false eslint --ext .ts,.tsx --no-error-on-unmatched-pattern src test build-tools projenrc .projenrc.ts',
+  env: { ESLINT_USE_FLAT_CONFIG: 'false' },
+  exec: 'eslint --ext .ts,.tsx --no-error-on-unmatched-pattern src test build-tools projenrc .projenrc.ts',
   description: 'Runs eslint without applying fixes.',
 });
 

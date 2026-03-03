@@ -16,7 +16,7 @@ Develop a reusable conversion pipeline that takes an existing AWS CDK applicatio
 
 ## Bun Executable Builds
 - Install [Bun](https://bun.sh) locally and run `npm run package:linux-arm64` or `npm run package:darwin-arm64` to emit standalone binaries at `dist/bin/linux-arm64/pulumi-tool-cdk2pulumi` and `dist/bin/darwin-arm64/pulumi-tool-cdk2pulumi` respectively (the script enables `--minify` and `--sourcemap` by default).
-- Run `npm run package` to build both platform binaries.
+- Run `npm run package` to build binaries for all supported platform/architecture targets (currently Linux and macOS for x64/arm64, plus Windows x64).
 - These binaries embed the Bun runtime; keep using the Node-based workflow for local development/tests and reserve Bun builds for packaging/distribution experiments.
 
 ## Detailed TODOs

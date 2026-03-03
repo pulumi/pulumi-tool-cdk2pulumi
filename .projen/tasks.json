@@ -147,9 +147,12 @@
     "lint:check": {
       "name": "lint:check",
       "description": "Runs eslint without applying fixes.",
+      "env": {
+        "ESLINT_USE_FLAT_CONFIG": "false"
+      },
       "steps": [
         {
-          "exec": "ESLINT_USE_FLAT_CONFIG=false eslint --ext .ts,.tsx --no-error-on-unmatched-pattern src test build-tools projenrc .projenrc.ts"
+          "exec": "eslint --ext .ts,.tsx --no-error-on-unmatched-pattern src test build-tools projenrc .projenrc.ts"
         }
       ]
     },
