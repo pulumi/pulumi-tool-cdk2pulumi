@@ -158,6 +158,11 @@ architectures.forEach((arch) => {
 });
 
 project.gitignore.include('AGENTS.md');
+project.gitattributes.addAttributes(
+  '.github/workflows/*.lock.yml',
+  'linguist-generated=true',
+  'merge=ours',
+);
 project.gitignore.exclude(
   '.claude/settings.local.json',
   'Pulumi.yaml',
