@@ -1,6 +1,7 @@
 import {
+  CidrValue,
   ConcatValue,
-  InvokeValue,
+  GetAzsValue,
   ParameterReference,
   PropertyMap,
   PropertyValue,
@@ -60,8 +61,10 @@ export function serializePropertyValue(
       return serializeParameterReference(value, ctx);
     case 'concat':
       return serializeConcatValue(value, ctx);
-    case 'invoke':
-      return serializeInvokeValue(value, ctx);
+    case 'cidr':
+      return serializeCidrValue(value, ctx);
+    case 'getAzs':
+      return serializeGetAzsValue(value, ctx);
     case 'select':
       return serializeSelectValue(value, ctx);
     case 'ssmDynamicReference':
@@ -119,6 +122,14 @@ function serializeParameterReference(
   value: ParameterReference,
   ctx: PropertySerializationContext,
 ): any {
+  return serializeParameterReferenceDefault(value, ctx);
+}
+
+function serializeParameterReferenceDefault(
+  value: ParameterReference,
+  ctx: PropertySerializationContext,
+  options?: { coerceNumber?: boolean },
+): any {
   const defaultValue = ctx.getParameterDefault(
     value.stackPath,
     value.parameterName,
@@ -130,13 +141,14 @@ function serializeParameterReference(
   }
 
   const serializedDefault = serializePropertyValue(defaultValue, ctx);
-  const parameterType = ctx.getParameterType?.(
-    value.stackPath,
-    value.parameterName,
+  if (!options?.coerceNumber) {
+    return serializedDefault;
+  }
+
+  return coerceParameterValue(
+    ctx.getParameterType?.(value.stackPath, value.parameterName),
+    serializedDefault,
   );
-  // CloudFormation Number parameters often arrive as string defaults, but provider invokes
-  // such as aws-native:cidr expect numeric YAML arguments.
-  return coerceParameterValue(parameterType, serializedDefault);
 }
 
 // Preserve Pulumi YAML typing for Number-typed parameters when they are inlined.
@@ -170,21 +182,35 @@ function serializeConcatValue(
   };
 }
 
-// Emit provider helper calls in the same fn::invoke shape used for dynamic references.
-function serializeInvokeValue(
-  value: InvokeValue,
+// Map the provider-agnostic CIDR node to the AWS Native helper at YAML serialization time.
+function serializeCidrValue(value: CidrValue, ctx: PropertySerializationContext) {
+  return {
+    'fn::invoke': {
+      function: 'aws-native:cidr',
+      arguments: {
+        ipBlock: serializePropertyValue(value.ipBlock, ctx),
+        count: serializeNumericPropertyValue(value.count, ctx),
+        cidrBits: serializeNumericPropertyValue(value.cidrBits, ctx),
+      },
+      return: 'subnets',
+    },
+  };
+}
+
+// Map the provider-agnostic GetAZs node to the AWS Native helper at YAML serialization time.
+function serializeGetAzsValue(
+  value: GetAzsValue,
   ctx: PropertySerializationContext,
 ) {
   const invokeExpression: Record<string, any> = {
-    function: value.functionToken,
+    function: 'aws-native:getAzs',
+    return: 'azs',
   };
 
-  if (Object.keys(value.arguments).length > 0) {
-    invokeExpression.arguments = serializePropertyValue(value.arguments, ctx);
-  }
-
-  if (value.return) {
-    invokeExpression.return = value.return;
+  if (value.region !== undefined) {
+    invokeExpression.arguments = {
+      region: serializePropertyValue(value.region, ctx),
+    };
   }
 
   return {
@@ -203,6 +229,36 @@ function serializeSelectValue(
       serializePropertyValue(value.values, ctx),
     ],
   };
+}
+
+function serializeNumericPropertyValue(
+  value: PropertyValue,
+  ctx: PropertySerializationContext,
+) {
+  if (isParameterReference(value)) {
+    return serializeParameterReferenceDefault(value, ctx, { coerceNumber: true });
+  }
+
+  return coerceNumericScalar(serializePropertyValue(value, ctx));
+}
+
+function coerceNumericScalar(value: any): any {
+  if (typeof value !== 'string') {
+    return value;
+  }
+
+  const parsed = Number(value);
+  return Number.isNaN(parsed) ? value : parsed;
+}
+
+function isParameterReference(value: PropertyValue): value is ParameterReference {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    !Array.isArray(value) &&
+    'kind' in value &&
+    value.kind === 'parameter'
+  );
 }
 
 function serializeSsmDynamicReference(value: SsmDynamicReferenceValue) {

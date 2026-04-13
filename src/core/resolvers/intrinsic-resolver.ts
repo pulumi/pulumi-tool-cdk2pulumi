@@ -8,7 +8,8 @@ import {
   StackOutputReference,
   ParameterReference,
   ConcatValue,
-  InvokeValue,
+  CidrValue,
+  GetAzsValue,
   SelectValue,
 } from '../ir';
 import { parseSub } from '../sub';
@@ -298,8 +299,7 @@ export class IrIntrinsicResolver {
     };
   }
 
-  // Lower Fn::Cidr directly to the aws-native helper invoke so we do not need to reimplement
-  // CIDR math in the converter.
+  // Keep the IR semantic here and let the CLI/runtime layer decide how to materialize CIDR math.
   private resolveCidr(params: [any, any, any]): PropertyValue | undefined {
     if (!Array.isArray(params) || params.length !== 3) {
       throw new Error(
@@ -315,31 +315,23 @@ export class IrIntrinsicResolver {
       return undefined;
     }
 
-    return <InvokeValue>{
-      kind: 'invoke',
-      functionToken: 'aws-native:cidr',
-      arguments: {
-        ipBlock: normalizeNumberLikeValue(ipBlock),
-        count: normalizeNumberLikeValue(count),
-        cidrBits: normalizeNumberLikeValue(cidrBits),
-      },
-      return: 'subnets',
+    return <CidrValue>{
+      kind: 'cidr',
+      ipBlock,
+      count: normalizeNumberLikeValue(count),
+      cidrBits: normalizeNumberLikeValue(cidrBits),
     };
   }
 
-  // Fn::GetAZs maps to the aws-native helper. We only default the region for the CloudFormation
-  // forms that mean "current region"; unresolved custom expressions should fail instead.
+  // Keep the CloudFormation semantics in IR; serialization/runtime can choose the provider helper.
   private resolveGetAzs(regionExpr: any): PropertyValue | undefined {
     if (
       regionExpr === '' ||
       regionExpr === undefined ||
       isAwsRegionPseudoParameterRef(regionExpr)
     ) {
-      return <InvokeValue>{
-        kind: 'invoke',
-        functionToken: 'aws-native:getAzs',
-        arguments: {},
-        return: 'azs',
+      return <GetAzsValue>{
+        kind: 'getAzs',
       };
     }
 
@@ -351,13 +343,15 @@ export class IrIntrinsicResolver {
       );
     }
 
-    return <InvokeValue>{
-      kind: 'invoke',
-      functionToken: 'aws-native:getAzs',
-      arguments: {
-        region,
-      },
-      return: 'azs',
+    if (!isStringLikeValue(region)) {
+      throw new Error(
+        'Fn::GetAZs region must resolve to a string-compatible value',
+      );
+    }
+
+    return <GetAzsValue>{
+      kind: 'getAzs',
+      region,
     };
   }
 
@@ -781,8 +775,12 @@ function canSelectFromValue(value: PropertyValue): boolean {
     case 'resourceAttribute':
     case 'stackOutput':
     case 'parameter':
-    case 'invoke':
+    case 'cidr':
+    case 'getAzs':
     case 'select':
+    case 'concat':
+    case 'ssmDynamicReference':
+    case 'secretsManagerDynamicReference':
       return true;
     default:
       return false;
@@ -804,6 +802,29 @@ function isAwsRegionPseudoParameterRef(
   value: any,
 ): value is { Ref: 'AWS::Region' } {
   return typeof value === 'object' && value !== null && value.Ref === 'AWS::Region';
+}
+
+function isStringLikeValue(value: PropertyValue): boolean {
+  if (typeof value === 'string') {
+    return true;
+  }
+
+  if (typeof value !== 'object' || value === null || Array.isArray(value)) {
+    return false;
+  }
+
+  switch (value.kind) {
+    case 'resourceAttribute':
+    case 'stackOutput':
+    case 'parameter':
+    case 'concat':
+    case 'select':
+    case 'ssmDynamicReference':
+    case 'secretsManagerDynamicReference':
+      return true;
+    default:
+      return false;
+  }
 }
 
 function makeMapping(

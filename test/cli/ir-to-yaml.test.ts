@@ -361,24 +361,17 @@ describe('serializeProgramIr', () => {
                   kind: 'select',
                   index: 0,
                   values: {
-                    kind: 'invoke',
-                    functionToken: 'aws-native:getAzs',
-                    arguments: {},
-                    return: 'azs',
+                    kind: 'getAzs',
                   },
                 },
                 ipv6CidrBlock: {
                   kind: 'select',
                   index: 0,
                   values: {
-                    kind: 'invoke',
-                    functionToken: 'aws-native:cidr',
-                    arguments: {
-                      ipBlock: '${existingVpcIpv6Block}',
-                      count: 256,
-                      cidrBits: 64,
-                    },
-                    return: 'subnets',
+                    kind: 'cidr',
+                    ipBlock: '${existingVpcIpv6Block}',
+                    count: 256,
+                    cidrBits: 64,
                   },
                 },
               },
@@ -437,22 +430,18 @@ describe('serializeProgramIr', () => {
                   kind: 'select',
                   index: 0,
                   values: {
-                    kind: 'invoke',
-                    functionToken: 'aws-native:cidr',
-                    arguments: {
-                      ipBlock: '10.0.0.0/16',
-                      count: {
-                        kind: 'parameter',
-                        stackPath: 'App/Network',
-                        parameterName: 'CidrCount',
-                      },
-                      cidrBits: {
-                        kind: 'parameter',
-                        stackPath: 'App/Network',
-                        parameterName: 'CidrBits',
-                      },
+                    kind: 'cidr',
+                    ipBlock: '10.0.0.0/16',
+                    count: {
+                      kind: 'parameter',
+                      stackPath: 'App/Network',
+                      parameterName: 'CidrCount',
                     },
-                    return: 'subnets',
+                    cidrBits: {
+                      kind: 'parameter',
+                      stackPath: 'App/Network',
+                      parameterName: 'CidrBits',
+                    },
                   },
                 },
               },
@@ -496,12 +485,8 @@ describe('serializeProgramIr', () => {
             {
               name: 'Azs',
               value: {
-                kind: 'invoke',
-                functionToken: 'aws-native:getAzs',
-                arguments: {
-                  region: 'us-east-1',
-                },
-                return: 'azs',
+                kind: 'getAzs',
+                region: 'us-east-1',
               },
             },
             {
@@ -534,18 +519,14 @@ describe('serializeProgramIr', () => {
                   kind: 'select',
                   index: 0,
                   values: {
-                    kind: 'invoke',
-                    functionToken: 'aws-native:cidr',
-                    arguments: {
-                      ipBlock: {
-                        kind: 'stackOutput',
-                        stackPath: 'Stacks/Producer',
-                        outputName: 'Ipv6Block',
-                      },
-                      count: 256,
-                      cidrBits: 64,
+                    kind: 'cidr',
+                    ipBlock: {
+                      kind: 'stackOutput',
+                      stackPath: 'Stacks/Producer',
+                      outputName: 'Ipv6Block',
                     },
-                    return: 'subnets',
+                    count: 256,
+                    cidrBits: 64,
                   },
                 },
               },

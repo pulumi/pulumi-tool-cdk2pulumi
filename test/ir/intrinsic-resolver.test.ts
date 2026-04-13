@@ -1,7 +1,8 @@
 import {
+  CidrValue,
   CloudFormationTemplate,
   ConcatValue,
-  InvokeValue,
+  GetAzsValue,
   PropertyValue,
   ResourceAttributeReference,
   CfRefBehavior,
@@ -188,55 +189,44 @@ describe('IrIntrinsicResolver intrinsics', () => {
     );
   });
 
-  test('lowers Fn::Cidr to aws-native:cidr invoke', () => {
+  test('lowers Fn::Cidr to semantic cidr IR', () => {
     const resolver = createResolver();
     expect(
       resolver.resolveValue({
         'Fn::Cidr': ['10.0.0.0/16', 4, 8],
       }),
     ).toEqual({
-      kind: 'invoke',
-      functionToken: 'aws-native:cidr',
-      arguments: {
-        ipBlock: '10.0.0.0/16',
-        count: 4,
-        cidrBits: 8,
-      },
-      return: 'subnets',
-    } satisfies InvokeValue);
+      kind: 'cidr',
+      ipBlock: '10.0.0.0/16',
+      count: 4,
+      cidrBits: 8,
+    } satisfies CidrValue);
   });
 
-  test('lowers Fn::GetAZs to aws-native:getAzs invoke', () => {
+  test('lowers Fn::GetAZs to semantic getAzs IR', () => {
     const resolver = createResolver();
     expect(
       resolver.resolveValue({
         'Fn::GetAZs': '',
       }),
     ).toEqual({
-      kind: 'invoke',
-      functionToken: 'aws-native:getAzs',
-      arguments: {},
-      return: 'azs',
-    } satisfies InvokeValue);
+      kind: 'getAzs',
+    } satisfies GetAzsValue);
   });
 
-  test('lowers Fn::GetAZs with explicit region to aws-native:getAzs invoke', () => {
+  test('lowers Fn::GetAZs with explicit region to semantic getAzs IR', () => {
     const resolver = createResolver();
     expect(
       resolver.resolveValue({
         'Fn::GetAZs': 'us-west-2',
       }),
     ).toEqual({
-      kind: 'invoke',
-      functionToken: 'aws-native:getAzs',
-      arguments: {
-        region: 'us-west-2',
-      },
-      return: 'azs',
-    } satisfies InvokeValue);
+      kind: 'getAzs',
+      region: 'us-west-2',
+    } satisfies GetAzsValue);
   });
 
-  test('lowers Fn::GetAZs with parameter region to aws-native:getAzs invoke', () => {
+  test('lowers Fn::GetAZs with parameter region to semantic getAzs IR', () => {
     const resolver = createResolver({
       Parameters: {
         TargetRegion: {
@@ -253,17 +243,13 @@ describe('IrIntrinsicResolver intrinsics', () => {
         },
       }),
     ).toEqual({
-      kind: 'invoke',
-      functionToken: 'aws-native:getAzs',
-      arguments: {
-        region: {
-          kind: 'parameter',
-          stackPath: 'App/Main',
-          parameterName: 'TargetRegion',
-        },
+      kind: 'getAzs',
+      region: {
+        kind: 'parameter',
+        stackPath: 'App/Main',
+        parameterName: 'TargetRegion',
       },
-      return: 'azs',
-    } satisfies InvokeValue);
+    } satisfies GetAzsValue);
   });
 
   test('throws when Fn::GetAZs region cannot be resolved', () => {
@@ -279,6 +265,15 @@ describe('IrIntrinsicResolver intrinsics', () => {
     );
   });
 
+  test('throws when Fn::GetAZs region resolves to a non-string-like value', () => {
+    const resolver = createResolver();
+    expect(() =>
+      resolver.resolveValue({
+        'Fn::GetAZs': 42,
+      }),
+    ).toThrow('Fn::GetAZs region must resolve to a string-compatible value');
+  });
+
   test('preserves Fn::Select over symbolic lists', () => {
     const resolver = createResolver();
     expect(
@@ -289,10 +284,7 @@ describe('IrIntrinsicResolver intrinsics', () => {
       kind: 'select',
       index: 1,
       values: {
-        kind: 'invoke',
-        functionToken: 'aws-native:getAzs',
-        arguments: {},
-        return: 'azs',
+        kind: 'getAzs',
       },
     } satisfies SelectValue);
   });
@@ -326,28 +318,24 @@ describe('IrIntrinsicResolver intrinsics', () => {
       kind: 'select',
       index: 0,
       values: {
-        kind: 'invoke',
-        functionToken: 'aws-native:cidr',
-        arguments: {
-          ipBlock: {
-            kind: 'select',
-            index: 0,
-            values: {
-              kind: 'resourceAttribute',
-              resource: { stackPath: 'App/Main', id: 'Vpc' },
-              attributeName: 'Ipv6CidrBlocks',
-              propertyName: 'Ipv6CidrBlocks',
-            },
+        kind: 'cidr',
+        ipBlock: {
+          kind: 'select',
+          index: 0,
+          values: {
+            kind: 'resourceAttribute',
+            resource: { stackPath: 'App/Main', id: 'Vpc' },
+            attributeName: 'Ipv6CidrBlocks',
+            propertyName: 'Ipv6CidrBlocks',
           },
-          count: 256,
-          cidrBits: 64,
         },
-        return: 'subnets',
+        count: 256,
+        cidrBits: 64,
       },
     } satisfies SelectValue);
   });
 
-  test('normalizes numeric-string parameter defaults for Fn::Cidr arguments during serialization', () => {
+  test('keeps parameter-backed Fn::Cidr arguments symbolic in IR', () => {
     const resolver = createResolver({
       Parameters: {
         CidrCount: {
@@ -374,23 +362,19 @@ describe('IrIntrinsicResolver intrinsics', () => {
         ],
       }),
     ).toEqual({
-      kind: 'invoke',
-      functionToken: 'aws-native:cidr',
-      arguments: {
-        ipBlock: '10.0.0.0/16',
-        count: {
-          kind: 'parameter',
-          stackPath: 'App/Main',
-          parameterName: 'CidrCount',
-        },
-        cidrBits: {
-          kind: 'parameter',
-          stackPath: 'App/Main',
-          parameterName: 'CidrBits',
-        },
+      kind: 'cidr',
+      ipBlock: '10.0.0.0/16',
+      count: {
+        kind: 'parameter',
+        stackPath: 'App/Main',
+        parameterName: 'CidrCount',
       },
-      return: 'subnets',
-    } satisfies InvokeValue);
+      cidrBits: {
+        kind: 'parameter',
+        stackPath: 'App/Main',
+        parameterName: 'CidrBits',
+      },
+    } satisfies CidrValue);
   });
 
   test('treats AWS::NoValue Ref as undefined', () => {

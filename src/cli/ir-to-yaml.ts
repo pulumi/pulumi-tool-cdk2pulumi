@@ -297,8 +297,8 @@ function collectParameterDefaults(
   return defaults;
 }
 
-// Parameter defaults and types are collected separately so serialization can preserve
-// YAML number types when parameter references are inlined into invoke arguments.
+// Track parameter types alongside defaults so serializer code can make targeted coercions
+// for numeric-only helper arguments without changing general Ref serialization semantics.
 function collectParameterTypes(program: ProgramIR): Map<string, string> {
   const parameterTypes = new Map<string, string>();
   for (const stack of program.stacks) {
@@ -407,17 +407,25 @@ function resolveStackOutputReferences(
           resolveStackOutputReferences(item, options, seen, path),
         ),
       };
-    case 'invoke':
+    case 'cidr':
       return {
-        kind: 'invoke',
-        functionToken: value.functionToken,
-        arguments: resolveStackOutputReferences(
-          value.arguments,
+        kind: 'cidr',
+        ipBlock: resolveStackOutputReferences(value.ipBlock, options, seen, path),
+        count: resolveStackOutputReferences(value.count, options, seen, path),
+        cidrBits: resolveStackOutputReferences(
+          value.cidrBits,
           options,
           seen,
           path,
-        ) as PropertyMap,
-        return: value.return,
+        ),
+      };
+    case 'getAzs':
+      return {
+        kind: 'getAzs',
+        region:
+          value.region === undefined
+            ? undefined
+            : resolveStackOutputReferences(value.region, options, seen, path),
       };
     case 'select': {
       // If stack-output flattening resolves the list all the way to an array, reduce the

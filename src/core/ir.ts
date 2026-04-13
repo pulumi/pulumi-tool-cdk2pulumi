@@ -110,7 +110,8 @@ export type PropertyValue =
   | ParameterReference
   | DynamicReferenceValue
   | ConcatValue
-  | InvokeValue
+  | CidrValue
+  | GetAzsValue
   | SelectValue;
 
 export type PrimitiveValue = string | number | boolean | null;
@@ -159,11 +160,16 @@ export interface ConcatValue {
   values: PropertyValue[];
 }
 
-export interface InvokeValue {
-  kind: 'invoke';
-  functionToken: string;
-  arguments: PropertyMap;
-  return?: string;
+export interface CidrValue {
+  kind: 'cidr';
+  ipBlock: PropertyValue;
+  count: PropertyValue;
+  cidrBits: PropertyValue;
+}
+
+export interface GetAzsValue {
+  kind: 'getAzs';
+  region?: PropertyValue;
 }
 
 export interface SelectValue {

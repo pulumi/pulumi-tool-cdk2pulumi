@@ -3,8 +3,9 @@ import {
   serializePropertyValue,
 } from '../../src/cli/property-serializer';
 import {
+  CidrValue,
   ConcatValue,
-  InvokeValue,
+  GetAzsValue,
   ResourceAttributeReference,
   SelectValue,
   SsmDynamicReferenceValue,
@@ -77,24 +78,6 @@ describe('serializePropertyValue', () => {
     });
   });
 
-  test('coerces Number parameter defaults when serializing parameter references', () => {
-    const ctx = makeCtx({
-      getParameterDefault: () => '4',
-      getParameterType: () => 'Number',
-    });
-
-    const result = serializePropertyValue(
-      {
-        kind: 'parameter',
-        stackPath: 'Stacks/Main',
-        parameterName: 'CidrCount',
-      },
-      ctx,
-    );
-
-    expect(result).toBe(4);
-  });
-
   test('serializes concat values into fn::join', () => {
     const ctx = makeCtx();
     const concat: ConcatValue = {
@@ -115,20 +98,23 @@ describe('serializePropertyValue', () => {
     });
   });
 
-  test('serializes invoke values into fn::invoke', () => {
-    const ctx = makeCtx();
-    const invoke: InvokeValue = {
-      kind: 'invoke',
-      functionToken: 'aws-native:cidr',
-      arguments: {
-        ipBlock: '10.0.0.0/16',
-        count: 4,
-        cidrBits: 8,
+  test('serializes cidr values into fn::invoke', () => {
+    const ctx = makeCtx({
+      getParameterDefault: () => '4',
+      getParameterType: () => 'Number',
+    });
+    const cidr: CidrValue = {
+      kind: 'cidr',
+      ipBlock: '10.0.0.0/16',
+      count: {
+        kind: 'parameter',
+        stackPath: 'Stacks/Main',
+        parameterName: 'CidrCount',
       },
-      return: 'subnets',
+      cidrBits: 8,
     };
 
-    expect(serializePropertyValue(invoke, ctx)).toEqual({
+    expect(serializePropertyValue(cidr, ctx)).toEqual({
       'fn::invoke': {
         function: 'aws-native:cidr',
         arguments: {
@@ -141,17 +127,15 @@ describe('serializePropertyValue', () => {
     });
   });
 
-  test('serializes select values into fn::select', () => {
+  test('serializes getAzs and select values into fn::select', () => {
     const ctx = makeCtx();
+    const getAzs: GetAzsValue = {
+      kind: 'getAzs',
+    };
     const select: SelectValue = {
       kind: 'select',
       index: 0,
-      values: {
-        kind: 'invoke',
-        functionToken: 'aws-native:getAzs',
-        arguments: {},
-        return: 'azs',
-      },
+      values: getAzs,
     };
 
     expect(serializePropertyValue(select, ctx)).toEqual({
