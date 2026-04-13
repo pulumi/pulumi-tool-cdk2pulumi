@@ -410,7 +410,12 @@ function resolveStackOutputReferences(
     case 'cidr':
       return {
         kind: 'cidr',
-        ipBlock: resolveStackOutputReferences(value.ipBlock, options, seen, path),
+        ipBlock: resolveStackOutputReferences(
+          value.ipBlock,
+          options,
+          seen,
+          path,
+        ),
         count: resolveStackOutputReferences(value.count, options, seen, path),
         cidrBits: resolveStackOutputReferences(
           value.cidrBits,

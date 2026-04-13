@@ -311,7 +311,11 @@ export class IrIntrinsicResolver {
     const ipBlock = this.resolveValue(ipBlockExpr);
     const count = this.resolveValue(countExpr);
     const cidrBits = this.resolveValue(cidrBitsExpr);
-    if (ipBlock === undefined || count === undefined || cidrBits === undefined) {
+    if (
+      ipBlock === undefined ||
+      count === undefined ||
+      cidrBits === undefined
+    ) {
       return undefined;
     }
 
@@ -801,7 +805,9 @@ function normalizeNumberLikeValue(value: PropertyValue): PropertyValue {
 function isAwsRegionPseudoParameterRef(
   value: any,
 ): value is { Ref: 'AWS::Region' } {
-  return typeof value === 'object' && value !== null && value.Ref === 'AWS::Region';
+  return (
+    typeof value === 'object' && value !== null && value.Ref === 'AWS::Region'
+  );
 }
 
 function isStringLikeValue(value: PropertyValue): boolean {

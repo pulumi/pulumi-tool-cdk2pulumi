@@ -20,7 +20,10 @@ export interface PropertySerializationContext {
     stackPath: string,
     parameterName: string,
   ): PropertyValue | undefined;
-  getParameterType?(stackPath: string, parameterName: string): string | undefined;
+  getParameterType?(
+    stackPath: string,
+    parameterName: string,
+  ): string | undefined;
 }
 
 export function serializePropertyValue(
@@ -183,7 +186,10 @@ function serializeConcatValue(
 }
 
 // Map the provider-agnostic CIDR node to the AWS Native helper at YAML serialization time.
-function serializeCidrValue(value: CidrValue, ctx: PropertySerializationContext) {
+function serializeCidrValue(
+  value: CidrValue,
+  ctx: PropertySerializationContext,
+) {
   return {
     'fn::invoke': {
       function: 'aws-native:cidr',
@@ -224,10 +230,7 @@ function serializeSelectValue(
   ctx: PropertySerializationContext,
 ) {
   return {
-    'fn::select': [
-      value.index,
-      serializePropertyValue(value.values, ctx),
-    ],
+    'fn::select': [value.index, serializePropertyValue(value.values, ctx)],
   };
 }
 
@@ -236,7 +239,9 @@ function serializeNumericPropertyValue(
   ctx: PropertySerializationContext,
 ) {
   if (isParameterReference(value)) {
-    return serializeParameterReferenceDefault(value, ctx, { coerceNumber: true });
+    return serializeParameterReferenceDefault(value, ctx, {
+      coerceNumber: true,
+    });
   }
 
   return coerceNumericScalar(serializePropertyValue(value, ctx));
@@ -251,7 +256,9 @@ function coerceNumericScalar(value: any): any {
   return Number.isNaN(parsed) ? value : parsed;
 }
 
-function isParameterReference(value: PropertyValue): value is ParameterReference {
+function isParameterReference(
+  value: PropertyValue,
+): value is ParameterReference {
   return (
     typeof value === 'object' &&
     value !== null &&
