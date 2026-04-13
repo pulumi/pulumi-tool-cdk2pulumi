@@ -2,6 +2,7 @@ import * as os from 'os';
 import * as path from 'path';
 import * as cdk from 'aws-cdk-lib';
 import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
+import * as ssm from 'aws-cdk-lib/aws-ssm';
 import * as fs from 'fs-extra';
 import { runCliWithOptions } from '../../src/cli/cli-runner';
 import { AssemblyManifestReader } from '../../src/core/assembly';
@@ -34,7 +35,9 @@ describe('cli stage integration', () => {
           type: 'AWS::S3::Bucket',
           properties: {},
         });
-        new cdk.CfnOutput(monitoringStack, 'MonitoringGetAzsOutput', {
+        new ssm.CfnParameter(monitoringStack, 'MonitoringAzParameter', {
+          name: '/monitoring/az',
+          type: 'String',
           value: cdk.Fn.select(0, cdk.Fn.getAzs()),
         });
 
@@ -60,7 +63,7 @@ describe('cli stage integration', () => {
 
         const yaml = fs.readFileSync(outFile, 'utf8');
         expect(yaml).toContain('PostsTable');
-        expect(yaml).not.toContain('MonitoringGetAzsOutput');
+        expect(yaml).not.toContain('aws-native:getAzs');
       } finally {
         fs.removeSync(tmpDir);
         await dispose();
@@ -70,7 +73,7 @@ describe('cli stage integration', () => {
   );
 
   test(
-    'surfaces fn::GetAZs limitation when converting all DevStage stacks',
+    'converts all DevStage stacks when Fn::GetAZs outputs are present',
     async () => {
       const tmpDir = fs.mkdtempSync(
         path.join(os.tmpdir(), 'pulumi-stage-all-'),
@@ -92,22 +95,28 @@ describe('cli stage integration', () => {
           type: 'AWS::S3::Bucket',
           properties: {},
         });
-        new cdk.CfnOutput(monitoringStack, 'MonitoringGetAzsOutput', {
+        new ssm.CfnParameter(monitoringStack, 'MonitoringAzParameter', {
+          name: '/monitoring/az',
+          type: 'String',
           value: cdk.Fn.select(0, cdk.Fn.getAzs()),
         });
 
         return app;
       });
       try {
-        expect(() =>
-          runCliWithOptions({
-            assemblyDir,
-            outFile,
-            skipCustomResources: true,
-            stackFilters: [],
-            stage: 'DevStage',
-          }),
-        ).toThrow('Fn::GetAZs is not supported in IR conversion yet');
+        runCliWithOptions({
+          assemblyDir,
+          outFile,
+          skipCustomResources: true,
+          stackFilters: [],
+          stage: 'DevStage',
+        });
+
+        const yaml = fs.readFileSync(outFile, 'utf8');
+        expect(yaml).toContain('PostsTable');
+        expect(yaml).toContain('monitoringbucket');
+        expect(yaml).toContain('fn::select');
+        expect(yaml).toContain('function: aws-native:getAzs');
       } finally {
         fs.removeSync(tmpDir);
         await dispose();

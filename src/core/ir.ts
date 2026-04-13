@@ -109,7 +109,9 @@ export type PropertyValue =
   | StackOutputReference
   | ParameterReference
   | DynamicReferenceValue
-  | ConcatValue;
+  | ConcatValue
+  | InvokeValue
+  | SelectValue;
 
 export type PrimitiveValue = string | number | boolean | null;
 
@@ -155,4 +157,17 @@ export interface ConcatValue {
   kind: 'concat';
   delimiter: string;
   values: PropertyValue[];
+}
+
+export interface InvokeValue {
+  kind: 'invoke';
+  functionToken: string;
+  arguments: PropertyMap;
+  return?: string;
+}
+
+export interface SelectValue {
+  kind: 'select';
+  index: number;
+  values: PropertyValue;
 }

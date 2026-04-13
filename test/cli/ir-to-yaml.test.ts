@@ -343,4 +343,250 @@ describe('serializeProgramIr', () => {
     const yaml = serializeProgramIr(program);
     expect(yaml).toContain('console.log($${JSON.stringify("test")});');
   });
+
+  test('serializes nested select and invoke expressions', () => {
+    const program: ProgramIR = {
+      stacks: [
+        {
+          stackId: 'Network',
+          stackPath: 'App/Network',
+          resources: [
+            {
+              logicalId: 'Subnet',
+              cfnType: 'AWS::EC2::Subnet',
+              cfnProperties: {},
+              typeToken: 'aws-native:ec2:Subnet',
+              props: {
+                availabilityZone: {
+                  kind: 'select',
+                  index: 0,
+                  values: {
+                    kind: 'invoke',
+                    functionToken: 'aws-native:getAzs',
+                    arguments: {},
+                    return: 'azs',
+                  },
+                },
+                ipv6CidrBlock: {
+                  kind: 'select',
+                  index: 0,
+                  values: {
+                    kind: 'invoke',
+                    functionToken: 'aws-native:cidr',
+                    arguments: {
+                      ipBlock: '${existingVpcIpv6Block}',
+                      count: 256,
+                      cidrBits: 64,
+                    },
+                    return: 'subnets',
+                  },
+                },
+              },
+            },
+          ],
+        },
+      ],
+    };
+
+    const parsed = parse(serializeProgramIr(program));
+    expect(parsed.resources.Subnet.properties).toEqual({
+      availabilityZone: {
+        'fn::select': [
+          0,
+          {
+            'fn::invoke': {
+              function: 'aws-native:getAzs',
+              return: 'azs',
+            },
+          },
+        ],
+      },
+      ipv6CidrBlock: {
+        'fn::select': [
+          0,
+          {
+            'fn::invoke': {
+              function: 'aws-native:cidr',
+              arguments: {
+                ipBlock: '$${existingVpcIpv6Block}',
+                count: 256,
+                cidrBits: 64,
+              },
+              return: 'subnets',
+            },
+          },
+        ],
+      },
+    });
+  });
+
+  test('coerces Number parameter defaults inside invoke arguments', () => {
+    const program: ProgramIR = {
+      stacks: [
+        {
+          stackId: 'Network',
+          stackPath: 'App/Network',
+          resources: [
+            {
+              logicalId: 'Subnet',
+              cfnType: 'AWS::EC2::Subnet',
+              cfnProperties: {},
+              typeToken: 'aws-native:ec2:Subnet',
+              props: {
+                ipv6CidrBlock: {
+                  kind: 'select',
+                  index: 0,
+                  values: {
+                    kind: 'invoke',
+                    functionToken: 'aws-native:cidr',
+                    arguments: {
+                      ipBlock: '10.0.0.0/16',
+                      count: {
+                        kind: 'parameter',
+                        stackPath: 'App/Network',
+                        parameterName: 'CidrCount',
+                      },
+                      cidrBits: {
+                        kind: 'parameter',
+                        stackPath: 'App/Network',
+                        parameterName: 'CidrBits',
+                      },
+                    },
+                    return: 'subnets',
+                  },
+                },
+              },
+            },
+          ],
+          parameters: [
+            {
+              name: 'CidrCount',
+              type: 'Number',
+              default: '256',
+            },
+            {
+              name: 'CidrBits',
+              type: 'Number',
+              default: '64',
+            },
+          ],
+        },
+      ],
+    };
+
+    const parsed = parse(serializeProgramIr(program));
+    expect(
+      parsed.resources.Subnet.properties.ipv6CidrBlock['fn::select'][1][
+        'fn::invoke'
+      ].arguments,
+    ).toEqual({
+      ipBlock: '10.0.0.0/16',
+      count: 256,
+      cidrBits: 64,
+    });
+  });
+
+  test('resolves stack outputs nested inside invoke and select expressions', () => {
+    const program: ProgramIR = {
+      stacks: [
+        {
+          stackId: 'Producer',
+          stackPath: 'Stacks/Producer',
+          outputs: [
+            {
+              name: 'Azs',
+              value: {
+                kind: 'invoke',
+                functionToken: 'aws-native:getAzs',
+                arguments: {
+                  region: 'us-east-1',
+                },
+                return: 'azs',
+              },
+            },
+            {
+              name: 'Ipv6Block',
+              value: '2001:db8::/56',
+            },
+          ],
+          resources: [],
+        },
+        {
+          stackId: 'Consumer',
+          stackPath: 'Stacks/Consumer',
+          resources: [
+            {
+              logicalId: 'Subnet',
+              cfnType: 'AWS::EC2::Subnet',
+              cfnProperties: {},
+              typeToken: 'aws-native:ec2:Subnet',
+              props: {
+                availabilityZone: {
+                  kind: 'select',
+                  index: 0,
+                  values: {
+                    kind: 'stackOutput',
+                    stackPath: 'Stacks/Producer',
+                    outputName: 'Azs',
+                  },
+                },
+                ipv6CidrBlock: {
+                  kind: 'select',
+                  index: 0,
+                  values: {
+                    kind: 'invoke',
+                    functionToken: 'aws-native:cidr',
+                    arguments: {
+                      ipBlock: {
+                        kind: 'stackOutput',
+                        stackPath: 'Stacks/Producer',
+                        outputName: 'Ipv6Block',
+                      },
+                      count: 256,
+                      cidrBits: 64,
+                    },
+                    return: 'subnets',
+                  },
+                },
+              },
+            },
+          ],
+        },
+      ],
+    };
+
+    const parsed = parse(serializeProgramIr(program));
+    expect(parsed.resources.Subnet.properties).toEqual({
+      availabilityZone: {
+        'fn::select': [
+          0,
+          {
+            'fn::invoke': {
+              function: 'aws-native:getAzs',
+              arguments: {
+                region: 'us-east-1',
+              },
+              return: 'azs',
+            },
+          },
+        ],
+      },
+      ipv6CidrBlock: {
+        'fn::select': [
+          0,
+          {
+            'fn::invoke': {
+              function: 'aws-native:cidr',
+              arguments: {
+                ipBlock: '2001:db8::/56',
+                count: 256,
+                cidrBits: 64,
+              },
+              return: 'subnets',
+            },
+          },
+        ],
+      },
+    });
+  });
 });

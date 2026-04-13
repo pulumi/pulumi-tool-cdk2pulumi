@@ -1,4 +1,5 @@
 import * as cdk from 'aws-cdk-lib';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import { parse } from 'yaml';
 import { synthesizeAndConvert } from './helpers';
@@ -74,4 +75,57 @@ describe('Synthesis intrinsics to YAML', () => {
       value: 'dev',
     });
   });
+
+  test(
+    'serializes dual-stack IPv6 cidr flows through invoke and select',
+    async () => {
+      const program = await synthesizeAndConvert(() => {
+        const app = new cdk.App();
+        const stack = new cdk.Stack(app, 'DualStack');
+
+        const vpc = new ec2.CfnVPC(stack, 'Vpc', {
+          cidrBlock: '10.0.0.0/16',
+        });
+
+        const ipv6Cidr = new ec2.CfnVPCCidrBlock(stack, 'VpcIpv6Cidr', {
+          amazonProvidedIpv6CidrBlock: true,
+          vpcId: vpc.ref,
+        });
+
+        const subnet = new ec2.CfnSubnet(stack, 'Subnet', {
+          vpcId: vpc.ref,
+          cidrBlock: '10.0.0.0/24',
+          availabilityZone: 'us-east-1a',
+          ipv6CidrBlock: cdk.Fn.select(
+            0,
+            cdk.Fn.cidr(cdk.Fn.select(0, vpc.attrIpv6CidrBlocks), 256, '64'),
+          ),
+        });
+        subnet.addDependency(ipv6Cidr);
+
+        return app;
+      });
+
+      const dualStackYaml = parse(serializeProgramIr(program));
+      expect(dualStackYaml.resources.Subnet.properties.ipv6CidrBlock).toEqual({
+        'fn::select': [
+          0,
+          {
+            'fn::invoke': {
+              function: 'aws-native:cidr',
+              arguments: {
+                ipBlock: {
+                  'fn::select': [0, '${Vpc.ipv6CidrBlocks}'],
+                },
+                count: 256,
+                cidrBits: 64,
+              },
+              return: 'subnets',
+            },
+          },
+        ],
+      });
+    },
+    INTEGRATION_TIMEOUT,
+  );
 });

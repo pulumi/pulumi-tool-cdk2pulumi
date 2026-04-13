@@ -123,8 +123,8 @@ Develop a reusable conversion pipeline that takes an existing AWS CDK applicatio
 - [x] `Fn::FindInMap` – reuse StackConverter logic to pull values from template mappings.
 - [x] `Fn::ImportValue` – throw with a descriptive error until we wire export resolution.
 - [x] `Fn::Transform` – throw (macros unsupported).
-- [x] `Fn::Cidr` – throw unsupported for now (needs AWS-native helper parity).
-- [x] `Fn::GetAZs` – throw unsupported for now (needs AWS-native helper parity).
+- [x] `Fn::Cidr` – lower to `aws-native:cidr` and preserve symbolic selections for YAML serialization.
+- [x] `Fn::GetAZs` – lower to `aws-native:getAzs` and preserve symbolic selections for YAML serialization.
 - [x] `Ref` parity – use cfRef metadata (or fall back to `.id`) so IR/YAML references match Pulumi runtime behavior.
 
 ### Pulumi Runtime Integration

@@ -44,6 +44,7 @@ export function serializeProgramIr(
 ): string {
   const resourceNames = new ResourceNameAllocator(program);
   const parameterDefaults = collectParameterDefaults(program);
+  const parameterTypes = collectParameterTypes(program);
   const stackOutputs = collectStackOutputs(program);
   const includedStackPaths = new Set(
     program.stacks.map((stack) => stack.stackPath),
@@ -59,6 +60,8 @@ export function serializeProgramIr(
       externalStackOutputName(stackPath, outputName),
     getParameterDefault: (stackPath, parameterName) =>
       parameterDefaults.get(parameterKey(stackPath, parameterName)),
+    getParameterType: (stackPath, parameterName) =>
+      parameterTypes.get(parameterKey(stackPath, parameterName)),
   };
 
   const document: PulumiYamlDocument = {
@@ -294,6 +297,24 @@ function collectParameterDefaults(
   return defaults;
 }
 
+// Parameter defaults and types are collected separately so serialization can preserve
+// YAML number types when parameter references are inlined into invoke arguments.
+function collectParameterTypes(program: ProgramIR): Map<string, string> {
+  const parameterTypes = new Map<string, string>();
+  for (const stack of program.stacks) {
+    if (!stack.parameters) {
+      continue;
+    }
+    for (const parameter of stack.parameters) {
+      parameterTypes.set(
+        parameterKey(stack.stackPath, parameter.name),
+        parameter.type,
+      );
+    }
+  }
+  return parameterTypes;
+}
+
 function parameterKey(stackPath: string, parameterName: string): string {
   return `${stackPath}::${parameterName}`;
 }
@@ -386,6 +407,40 @@ function resolveStackOutputReferences(
           resolveStackOutputReferences(item, options, seen, path),
         ),
       };
+    case 'invoke':
+      return {
+        kind: 'invoke',
+        functionToken: value.functionToken,
+        arguments: resolveStackOutputReferences(
+          value.arguments,
+          options,
+          seen,
+          path,
+        ) as PropertyMap,
+        return: value.return,
+      };
+    case 'select': {
+      // If stack-output flattening resolves the list all the way to an array, reduce the
+      // select eagerly; otherwise keep the symbolic select so YAML can evaluate it later.
+      const resolvedValues = resolveStackOutputReferences(
+        value.values,
+        options,
+        seen,
+        path,
+      );
+      if (
+        Array.isArray(resolvedValues) &&
+        value.index >= 0 &&
+        value.index < resolvedValues.length
+      ) {
+        return resolvedValues[value.index] as PropertyValue;
+      }
+      return {
+        kind: 'select',
+        index: value.index,
+        values: resolvedValues,
+      };
+    }
     default:
       return value;
   }

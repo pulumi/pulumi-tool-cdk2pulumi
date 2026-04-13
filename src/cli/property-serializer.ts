@@ -1,9 +1,11 @@
 import {
   ConcatValue,
+  InvokeValue,
   ParameterReference,
   PropertyMap,
   PropertyValue,
   ResourceAttributeReference,
+  SelectValue,
   SecretsManagerDynamicReferenceValue,
   StackAddress,
   StackOutputReference,
@@ -17,6 +19,7 @@ export interface PropertySerializationContext {
     stackPath: string,
     parameterName: string,
   ): PropertyValue | undefined;
+  getParameterType?(stackPath: string, parameterName: string): string | undefined;
 }
 
 export function serializePropertyValue(
@@ -57,6 +60,10 @@ export function serializePropertyValue(
       return serializeParameterReference(value, ctx);
     case 'concat':
       return serializeConcatValue(value, ctx);
+    case 'invoke':
+      return serializeInvokeValue(value, ctx);
+    case 'select':
+      return serializeSelectValue(value, ctx);
     case 'ssmDynamicReference':
       return serializeSsmDynamicReference(value);
     case 'secretsManagerDynamicReference':
@@ -121,7 +128,25 @@ function serializeParameterReference(
       `Cannot serialize reference to parameter ${value.parameterName} in stack ${value.stackPath} because it does not have a default value`,
     );
   }
-  return serializePropertyValue(defaultValue, ctx);
+
+  const serializedDefault = serializePropertyValue(defaultValue, ctx);
+  const parameterType = ctx.getParameterType?.(
+    value.stackPath,
+    value.parameterName,
+  );
+  // CloudFormation Number parameters often arrive as string defaults, but provider invokes
+  // such as aws-native:cidr expect numeric YAML arguments.
+  return coerceParameterValue(parameterType, serializedDefault);
+}
+
+// Preserve Pulumi YAML typing for Number-typed parameters when they are inlined.
+function coerceParameterValue(type: string | undefined, value: any): any {
+  if (type !== 'Number' || typeof value !== 'string') {
+    return value;
+  }
+
+  const parsed = Number(value);
+  return Number.isNaN(parsed) ? value : parsed;
 }
 
 function serializeConcatValue(
@@ -141,6 +166,41 @@ function serializeConcatValue(
     'fn::join': [
       value.delimiter,
       value.values.map((item) => serializePropertyValue(item, ctx)),
+    ],
+  };
+}
+
+// Emit provider helper calls in the same fn::invoke shape used for dynamic references.
+function serializeInvokeValue(
+  value: InvokeValue,
+  ctx: PropertySerializationContext,
+) {
+  const invokeExpression: Record<string, any> = {
+    function: value.functionToken,
+  };
+
+  if (Object.keys(value.arguments).length > 0) {
+    invokeExpression.arguments = serializePropertyValue(value.arguments, ctx);
+  }
+
+  if (value.return) {
+    invokeExpression.return = value.return;
+  }
+
+  return {
+    'fn::invoke': invokeExpression,
+  };
+}
+
+// Keep symbolic list indexing intact for invoke results and unresolved attribute lists.
+function serializeSelectValue(
+  value: SelectValue,
+  ctx: PropertySerializationContext,
+) {
+  return {
+    'fn::select': [
+      value.index,
+      serializePropertyValue(value.values, ctx),
     ],
   };
 }

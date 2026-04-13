@@ -8,6 +8,8 @@ import {
   StackOutputReference,
   ParameterReference,
   ConcatValue,
+  InvokeValue,
+  SelectValue,
 } from '../ir';
 import { parseSub } from '../sub';
 import { tryParseDynamicReference } from './dynamic-references';
@@ -130,11 +132,11 @@ export class IrIntrinsicResolver {
     }
 
     if (isCidr(value)) {
-      throw new Error('Fn::Cidr is not supported in IR conversion yet');
+      return this.resolveCidr(value['Fn::Cidr']);
     }
 
     if (isGetAzs(value)) {
-      throw new Error('Fn::GetAZs is not supported in IR conversion yet');
+      return this.resolveGetAzs(value['Fn::GetAZs']);
     }
 
     if (isConditionFunction(value)) {
@@ -265,17 +267,98 @@ export class IrIntrinsicResolver {
   private resolveSelect(params: [any, any]): PropertyValue | undefined {
     const [indexExpr, listExpr] = params;
     const list = this.resolveValue(listExpr);
-    if (!Array.isArray(list)) {
+    if (list === undefined) {
       return undefined;
     }
 
     const indexValue = this.resolveValue(indexExpr);
     const index = this.parseIndex(indexValue);
-    if (index === undefined || index < 0 || index >= list.length) {
+    if (index === undefined || index < 0) {
       return undefined;
     }
 
-    return list[index];
+    if (Array.isArray(list)) {
+      if (index >= list.length) {
+        return undefined;
+      }
+
+      return list[index];
+    }
+
+    if (!canSelectFromValue(list)) {
+      return undefined;
+    }
+
+    // Preserve symbolic selections when the list comes from another intrinsic or resource
+    // attribute so the YAML serializer can lower it to fn::select later.
+    return <SelectValue>{
+      kind: 'select',
+      index,
+      values: list,
+    };
+  }
+
+  // Lower Fn::Cidr directly to the aws-native helper invoke so we do not need to reimplement
+  // CIDR math in the converter.
+  private resolveCidr(params: [any, any, any]): PropertyValue | undefined {
+    if (!Array.isArray(params) || params.length !== 3) {
+      throw new Error(
+        `Fn::Cidr requires exactly 3 parameters, got ${params.length}`,
+      );
+    }
+
+    const [ipBlockExpr, countExpr, cidrBitsExpr] = params;
+    const ipBlock = this.resolveValue(ipBlockExpr);
+    const count = this.resolveValue(countExpr);
+    const cidrBits = this.resolveValue(cidrBitsExpr);
+    if (ipBlock === undefined || count === undefined || cidrBits === undefined) {
+      return undefined;
+    }
+
+    return <InvokeValue>{
+      kind: 'invoke',
+      functionToken: 'aws-native:cidr',
+      arguments: {
+        ipBlock: normalizeNumberLikeValue(ipBlock),
+        count: normalizeNumberLikeValue(count),
+        cidrBits: normalizeNumberLikeValue(cidrBits),
+      },
+      return: 'subnets',
+    };
+  }
+
+  // Fn::GetAZs maps to the aws-native helper. We only default the region for the CloudFormation
+  // forms that mean "current region"; unresolved custom expressions should fail instead.
+  private resolveGetAzs(regionExpr: any): PropertyValue | undefined {
+    if (
+      regionExpr === '' ||
+      regionExpr === undefined ||
+      isAwsRegionPseudoParameterRef(regionExpr)
+    ) {
+      return <InvokeValue>{
+        kind: 'invoke',
+        functionToken: 'aws-native:getAzs',
+        arguments: {},
+        return: 'azs',
+      };
+    }
+
+    const region = this.resolveValue(regionExpr);
+    if (region === undefined) {
+      // Dropping an explicit region expression would silently change semantics to "current region".
+      throw new Error(
+        'Fn::GetAZs region must resolve to a string, parameter, stack output, or resource attribute',
+      );
+    }
+
+    return <InvokeValue>{
+      kind: 'invoke',
+      functionToken: 'aws-native:getAzs',
+      arguments: {
+        region,
+      },
+      return: 'azs',
+    };
   }
 
   private resolveSub(params: any): PropertyValue | undefined {
@@ -682,6 +765,45 @@ function isNoValueIntrinsic(value: any): boolean {
   return (
     typeof value === 'object' && value !== null && value.Ref === 'AWS::NoValue'
   );
+}
+
+// Only preserve symbolic selects for values we know how to serialize back into Pulumi YAML.
+function canSelectFromValue(value: PropertyValue): boolean {
+  if (Array.isArray(value)) {
+    return true;
+  }
+
+  if (typeof value !== 'object' || value === null) {
+    return false;
+  }
+
+  switch (value.kind) {
+    case 'resourceAttribute':
+    case 'stackOutput':
+    case 'parameter':
+    case 'invoke':
+    case 'select':
+      return true;
+    default:
+      return false;
+  }
+}
+
+// CloudFormation often represents numeric intrinsic inputs as strings; normalize the literal
+// cases early so invoke arguments keep the expected numeric types.
+function normalizeNumberLikeValue(value: PropertyValue): PropertyValue {
+  if (typeof value === 'string' && /^-?\d+$/.test(value)) {
+    return parseInt(value, 10);
+  }
+
+  return value;
+}
+
+// Fn::GetAZs treats Ref AWS::Region the same as an omitted/empty region.
+function isAwsRegionPseudoParameterRef(
+  value: any,
+): value is { Ref: 'AWS::Region' } {
+  return typeof value === 'object' && value !== null && value.Ref === 'AWS::Region';
 }
 
 function makeMapping(
