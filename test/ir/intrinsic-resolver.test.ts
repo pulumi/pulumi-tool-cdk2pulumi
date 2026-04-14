@@ -298,6 +298,58 @@ describe('IrIntrinsicResolver intrinsics', () => {
     } satisfies SelectValue);
   });
 
+  test('preserves Fn::Select with parameter index over symbolic lists', () => {
+    const resolver = createResolver({
+      Parameters: {
+        AzIndex: {
+          Type: 'Number',
+          Default: '1',
+        },
+      },
+    });
+
+    expect(
+      resolver.resolveValue({
+        'Fn::Select': [{ Ref: 'AzIndex' }, { 'Fn::GetAZs': '' }],
+      }),
+    ).toEqual({
+      kind: 'select',
+      index: {
+        kind: 'parameter',
+        stackPath: 'App/Main',
+        parameterName: 'AzIndex',
+      },
+      values: {
+        kind: 'getAzs',
+      },
+    } satisfies SelectValue);
+  });
+
+  test('preserves Fn::Select with parameter index over concrete lists', () => {
+    const resolver = createResolver({
+      Parameters: {
+        ItemIndex: {
+          Type: 'Number',
+          Default: '1',
+        },
+      },
+    });
+
+    expect(
+      resolver.resolveValue({
+        'Fn::Select': [{ Ref: 'ItemIndex' }, ['a', 'b', 'c']],
+      }),
+    ).toEqual({
+      kind: 'select',
+      index: {
+        kind: 'parameter',
+        stackPath: 'App/Main',
+        parameterName: 'ItemIndex',
+      },
+      values: ['a', 'b', 'c'],
+    } satisfies SelectValue);
+  });
+
   test('resolves nested Fn::Select and Fn::Cidr for symbolic IPv6 cidr flows', () => {
     const resolver = createResolver({
       Resources: {

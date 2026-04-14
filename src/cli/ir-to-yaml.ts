@@ -433,6 +433,12 @@ function resolveStackOutputReferences(
             : resolveStackOutputReferences(value.region, options, seen, path),
       };
     case 'select': {
+      const resolvedIndex = resolveStackOutputReferences(
+        value.index,
+        options,
+        seen,
+        path,
+      );
       // If stack-output flattening resolves the list all the way to an array, reduce the
       // select eagerly; otherwise keep the symbolic select so YAML can evaluate it later.
       const resolvedValues = resolveStackOutputReferences(
@@ -441,12 +447,20 @@ function resolveStackOutputReferences(
         seen,
         path,
       );
+      const concreteIndex = parseSelectIndex(resolvedIndex);
       if (
         Array.isArray(resolvedValues) &&
-        value.index >= 0 &&
-        value.index < resolvedValues.length
+        concreteIndex !== undefined &&
+        concreteIndex >= 0 &&
+        concreteIndex < resolvedValues.length
       ) {
-        return resolvedValues[value.index] as PropertyValue;
+        return resolvedValues[concreteIndex];
+      }
+
+      if (!canSelectWithIndexValue(resolvedIndex)) {
+        throw new Error(
+          `Fn::Select index at ${formatPropertyPath(path)} must resolve to a number or string-compatible value`,
+        );
       }
 
       if (!canSelectFromValue(resolvedValues)) {
@@ -457,7 +471,7 @@ function resolveStackOutputReferences(
 
       return {
         kind: 'select',
-        index: value.index,
+        index: resolvedIndex,
         values: resolvedValues,
       };
     }
@@ -523,4 +537,40 @@ function canSelectFromValue(value: PropertyValue): boolean {
     default:
       return false;
   }
+}
+
+function canSelectWithIndexValue(value: PropertyValue): boolean {
+  if (typeof value === 'number' || typeof value === 'string') {
+    return true;
+  }
+
+  if (typeof value !== 'object' || value === null || Array.isArray(value)) {
+    return false;
+  }
+
+  switch (value.kind) {
+    case 'resourceAttribute':
+    case 'stackOutput':
+    case 'parameter':
+    case 'concat':
+    case 'select':
+    case 'ssmDynamicReference':
+    case 'secretsManagerDynamicReference':
+      return true;
+    default:
+      return false;
+  }
+}
+
+function parseSelectIndex(value: PropertyValue): number | undefined {
+  if (typeof value === 'number') {
+    return value;
+  }
+
+  if (typeof value !== 'string') {
+    return undefined;
+  }
+
+  const parsed = parseInt(value, 10);
+  return Number.isNaN(parsed) ? undefined : parsed;
 }

@@ -230,9 +230,17 @@ function serializeSelectValue(
   if (!canSelectFromValue(value.values)) {
     throw new Error('Fn::Select values must be a list or symbolic list value');
   }
+  if (!canSelectWithIndexValue(value.index)) {
+    throw new Error(
+      'Fn::Select index must resolve to a number or string-compatible value',
+    );
+  }
 
   return {
-    'fn::select': [value.index, serializePropertyValue(value.values, ctx)],
+    'fn::select': [
+      serializeNumericPropertyValue(value.index, ctx),
+      serializePropertyValue(value.values, ctx),
+    ],
   };
 }
 
@@ -256,6 +264,29 @@ function coerceNumericScalar(value: any): any {
 
   const parsed = Number(value);
   return Number.isNaN(parsed) ? value : parsed;
+}
+
+function canSelectWithIndexValue(value: PropertyValue): boolean {
+  if (typeof value === 'number' || typeof value === 'string') {
+    return true;
+  }
+
+  if (typeof value !== 'object' || value === null || Array.isArray(value)) {
+    return false;
+  }
+
+  switch (value.kind) {
+    case 'resourceAttribute':
+    case 'stackOutput':
+    case 'parameter':
+    case 'concat':
+    case 'select':
+    case 'ssmDynamicReference':
+    case 'secretsManagerDynamicReference':
+      return true;
+    default:
+      return false;
+  }
 }
 
 function isParameterReference(

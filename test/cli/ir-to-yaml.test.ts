@@ -476,6 +476,59 @@ describe('serializeProgramIr', () => {
     });
   });
 
+  test('preserves parameter-backed select indices until YAML serialization', () => {
+    const program: ProgramIR = {
+      stacks: [
+        {
+          stackId: 'Network',
+          stackPath: 'App/Network',
+          resources: [
+            {
+              logicalId: 'Subnet',
+              cfnType: 'AWS::EC2::Subnet',
+              cfnProperties: {},
+              typeToken: 'aws-native:ec2:Subnet',
+              props: {
+                availabilityZone: {
+                  kind: 'select',
+                  index: {
+                    kind: 'parameter',
+                    stackPath: 'App/Network',
+                    parameterName: 'AzIndex',
+                  },
+                  values: {
+                    kind: 'getAzs',
+                  },
+                },
+              },
+            },
+          ],
+          parameters: [
+            {
+              name: 'AzIndex',
+              type: 'Number',
+              default: '1',
+            },
+          ],
+        },
+      ],
+    };
+
+    const parsed = parse(serializeProgramIr(program));
+    expect(parsed.resources.Subnet.properties.availabilityZone).toEqual({
+      'fn::select': [
+        1,
+        {
+          'fn::invoke': {
+            function: 'aws-native:getAzs',
+            arguments: {},
+            return: 'azs',
+          },
+        },
+      ],
+    });
+  });
+
   test('resolves stack outputs nested inside invoke and select expressions', () => {
     const program: ProgramIR = {
       stacks: [

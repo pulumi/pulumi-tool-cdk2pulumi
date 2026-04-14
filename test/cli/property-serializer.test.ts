@@ -152,6 +152,26 @@ describe('serializePropertyValue', () => {
     });
   });
 
+  test('serializes parameter-backed select indices using Number defaults', () => {
+    const ctx = makeCtx({
+      getParameterDefault: () => '1',
+      getParameterType: () => 'Number',
+    });
+    const select: SelectValue = {
+      kind: 'select',
+      index: {
+        kind: 'parameter',
+        stackPath: 'Stacks/Main',
+        parameterName: 'ItemIndex',
+      },
+      values: ['a', 'b', 'c'],
+    };
+
+    expect(serializePropertyValue(select, ctx)).toEqual({
+      'fn::select': [1, ['a', 'b', 'c']],
+    });
+  });
+
   test('serializes SSM dynamic references', () => {
     const ctx = makeCtx();
     const ssm: SsmDynamicReferenceValue = {

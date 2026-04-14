@@ -273,20 +273,41 @@ export class IrIntrinsicResolver {
     }
 
     const indexValue = this.resolveValue(indexExpr);
-    const index = this.parseIndex(indexValue);
-    if (index === undefined || index < 0) {
+    if (indexValue === undefined) {
       return undefined;
     }
 
+    const normalizedIndex = normalizeNumberLikeValue(indexValue);
+    const index = this.parseIndex(normalizedIndex);
+
     if (Array.isArray(list)) {
-      if (index >= list.length) {
+      if (index !== undefined) {
+        if (index < 0 || index >= list.length) {
+          return undefined;
+        }
+
+        return list[index];
+      }
+
+      if (!canSelectWithIndexValue(normalizedIndex)) {
         return undefined;
       }
 
-      return list[index];
+      return <SelectValue>{
+        kind: 'select',
+        index: normalizedIndex,
+        values: list,
+      };
     }
 
-    if (!canSelectFromValue(list)) {
+    if (
+      !canSelectFromValue(list) ||
+      !canSelectWithIndexValue(normalizedIndex)
+    ) {
+      return undefined;
+    }
+
+    if (index !== undefined && index < 0) {
       return undefined;
     }
 
@@ -294,7 +315,7 @@ export class IrIntrinsicResolver {
     // attribute so the YAML serializer can lower it to fn::select later.
     return <SelectValue>{
       kind: 'select',
-      index,
+      index: normalizedIndex,
       values: list,
     };
   }
@@ -835,6 +856,10 @@ function isStringLikeValue(value: PropertyValue): boolean {
     default:
       return false;
   }
+}
+
+function canSelectWithIndexValue(value: PropertyValue): boolean {
+  return typeof value === 'number' || isStringLikeValue(value);
 }
 
 function makeMapping(

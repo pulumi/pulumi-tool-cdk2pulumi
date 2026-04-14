@@ -174,6 +174,6 @@ export interface GetAzsValue {
 
 export interface SelectValue {
   kind: 'select';
-  index: number;
+  index: PropertyValue;
   values: PropertyValue;
 }
