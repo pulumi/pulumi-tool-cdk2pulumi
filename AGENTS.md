@@ -31,6 +31,7 @@ Run all project tasks through Projen:
 - Unit tests (fast): `npx projen test:unit`
 - Unit tests (CI/non-mutating): `npx projen test:unit:ci`
 - Integration/synth tests: `npx projen test:integration`
+- Runtime tests (local-only for now; not in CI): `npx projen test:runtime`
 - Full test suite: `npx projen test`
 - Lint (non-mutating): `npx projen lint:check`
 - AI verification bundle: `npx projen verify:ai`
@@ -72,6 +73,7 @@ Escalate before proceeding when:
 
 - `src/core/**` or `src/cli/**`: run `npx projen compile` and `npx projen test:unit`.
 - CLI output/serialization/analyzer behavior: also run `npx projen test:integration`.
+- Runtime validation coverage (`test/runtime/**`) is local-only for now; do not claim CI coverage for it unless a dedicated CI path is added.
 - `.projenrc.ts`: run `npx projen` then `npx projen build`.
 - `schemas/aws-native-metadata.json` or identifier datasets: run `npx projen extract-identifiers`, then `npx projen build`.
 - Specs/docs: update related checklists and command/path references in the same PR.

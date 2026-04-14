@@ -311,12 +311,21 @@
         }
       ]
     },
+    "test:runtime": {
+      "name": "test:runtime",
+      "description": "Runs Pulumi runtime validation tests (requires Pulumi CLI and AWS credentials).",
+      "steps": [
+        {
+          "exec": "npx jest --runInBand --collectCoverage=false --testPathPatterns=\"\\.runtime\\.test\\.ts$\""
+        }
+      ]
+    },
     "test:unit": {
       "name": "test:unit",
       "description": "Runs fast unit tests only (skips integration/synth tests).",
       "steps": [
         {
-          "exec": "npx jest --collectCoverage=false --testPathIgnorePatterns=\"\\.integration\\.test\\.ts$|\\.synth\\.test\\.ts$\""
+          "exec": "npx jest --collectCoverage=false --testPathIgnorePatterns=\"\\.integration\\.test\\.ts$|\\.synth\\.test\\.ts$|\\.runtime\\.test\\.ts$\""
         }
       ]
     },
@@ -325,7 +334,7 @@
       "description": "Runs non-mutating unit tests for CI/PR validation.",
       "steps": [
         {
-          "exec": "npx jest --ci --collectCoverage=false --testPathIgnorePatterns=\"\\.integration\\.test\\.ts$|\\.synth\\.test\\.ts$\""
+          "exec": "npx jest --ci --collectCoverage=false --testPathIgnorePatterns=\"\\.integration\\.test\\.ts$|\\.synth\\.test\\.ts$|\\.runtime\\.test\\.ts$\""
         }
       ]
     },
@@ -334,7 +343,7 @@
       "description": "Watches fast unit tests only (skips integration/synth tests).",
       "steps": [
         {
-          "exec": "npx jest --collectCoverage=false --watch --testPathIgnorePatterns=\"\\.integration\\.test\\.ts$|\\.synth\\.test\\.ts$\""
+          "exec": "npx jest --collectCoverage=false --watch --testPathIgnorePatterns=\"\\.integration\\.test\\.ts$|\\.synth\\.test\\.ts$|\\.runtime\\.test\\.ts$\""
         }
       ]
     },

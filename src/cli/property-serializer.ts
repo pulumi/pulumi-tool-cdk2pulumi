@@ -208,19 +208,17 @@ function serializeGetAzsValue(
   value: GetAzsValue,
   ctx: PropertySerializationContext,
 ) {
-  const invokeExpression: Record<string, any> = {
-    function: 'aws-native:getAzs',
-    return: 'azs',
-  };
-
-  if (value.region !== undefined) {
-    invokeExpression.arguments = {
-      region: serializePropertyValue(value.region, ctx),
-    };
-  }
-
   return {
-    'fn::invoke': invokeExpression,
+    'fn::invoke': {
+      function: 'aws-native:getAzs',
+      arguments:
+        value.region === undefined
+          ? {}
+          : {
+              region: serializePropertyValue(value.region, ctx),
+            },
+      return: 'azs',
+    },
   };
 }
 
@@ -229,6 +227,10 @@ function serializeSelectValue(
   value: SelectValue,
   ctx: PropertySerializationContext,
 ) {
+  if (!canSelectFromValue(value.values)) {
+    throw new Error('Fn::Select values must be a list or symbolic list value');
+  }
+
   return {
     'fn::select': [value.index, serializePropertyValue(value.values, ctx)],
   };
@@ -266,6 +268,31 @@ function isParameterReference(
     'kind' in value &&
     value.kind === 'parameter'
   );
+}
+
+function canSelectFromValue(value: PropertyValue): boolean {
+  if (Array.isArray(value)) {
+    return true;
+  }
+
+  if (typeof value !== 'object' || value === null) {
+    return false;
+  }
+
+  switch (value.kind) {
+    case 'resourceAttribute':
+    case 'stackOutput':
+    case 'parameter':
+    case 'concat':
+    case 'cidr':
+    case 'getAzs':
+    case 'select':
+    case 'ssmDynamicReference':
+    case 'secretsManagerDynamicReference':
+      return true;
+    default:
+      return false;
+  }
 }
 
 function serializeSsmDynamicReference(value: SsmDynamicReferenceValue) {

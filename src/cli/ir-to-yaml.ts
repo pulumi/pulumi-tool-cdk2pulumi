@@ -448,6 +448,13 @@ function resolveStackOutputReferences(
       ) {
         return resolvedValues[value.index] as PropertyValue;
       }
+
+      if (!canSelectFromValue(resolvedValues)) {
+        throw new Error(
+          `Fn::Select values at ${formatPropertyPath(path)} must resolve to a list or symbolic list value`,
+        );
+      }
+
       return {
         kind: 'select',
         index: value.index,
@@ -491,4 +498,29 @@ function isPropertyMap(value: PropertyValue): value is PropertyMap {
     !Array.isArray(value) &&
     !('kind' in value)
   );
+}
+
+function canSelectFromValue(value: PropertyValue): boolean {
+  if (Array.isArray(value)) {
+    return true;
+  }
+
+  if (typeof value !== 'object' || value === null) {
+    return false;
+  }
+
+  switch (value.kind) {
+    case 'resourceAttribute':
+    case 'stackOutput':
+    case 'parameter':
+    case 'concat':
+    case 'cidr':
+    case 'getAzs':
+    case 'select':
+    case 'ssmDynamicReference':
+    case 'secretsManagerDynamicReference':
+      return true;
+    default:
+      return false;
+  }
 }

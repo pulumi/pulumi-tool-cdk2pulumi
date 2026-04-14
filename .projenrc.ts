@@ -92,18 +92,24 @@ project.addTask('extract-identifiers', {
 });
 
 project.addTask('test:unit', {
-  exec: 'npx jest --collectCoverage=false --testPathIgnorePatterns="\\.integration\\.test\\.ts$|\\.synth\\.test\\.ts$"',
+  exec: 'npx jest --collectCoverage=false --testPathIgnorePatterns="\\.integration\\.test\\.ts$|\\.synth\\.test\\.ts$|\\.runtime\\.test\\.ts$"',
   description: 'Runs fast unit tests only (skips integration/synth tests).',
 });
 
 project.addTask('test:unit:watch', {
-  exec: 'npx jest --collectCoverage=false --watch --testPathIgnorePatterns="\\.integration\\.test\\.ts$|\\.synth\\.test\\.ts$"',
+  exec: 'npx jest --collectCoverage=false --watch --testPathIgnorePatterns="\\.integration\\.test\\.ts$|\\.synth\\.test\\.ts$|\\.runtime\\.test\\.ts$"',
   description: 'Watches fast unit tests only (skips integration/synth tests).',
 });
 
 project.addTask('test:integration', {
   exec: 'npx jest --collectCoverage=false --testPathPatterns="(\\.integration|\\.synth)\\.test\\.ts$"',
   description: 'Runs integration and synth tests only.',
+});
+
+project.addTask('test:runtime', {
+  exec: 'npx jest --runInBand --collectCoverage=false --testPathPatterns="\\.runtime\\.test\\.ts$"',
+  description:
+    'Runs Pulumi runtime validation tests (requires Pulumi CLI and AWS credentials).',
 });
 
 project.addTask('lint:check', {
@@ -113,7 +119,7 @@ project.addTask('lint:check', {
 });
 
 project.addTask('test:unit:ci', {
-  exec: 'npx jest --ci --collectCoverage=false --testPathIgnorePatterns="\\.integration\\.test\\.ts$|\\.synth\\.test\\.ts$"',
+  exec: 'npx jest --ci --collectCoverage=false --testPathIgnorePatterns="\\.integration\\.test\\.ts$|\\.synth\\.test\\.ts$|\\.runtime\\.test\\.ts$"',
   description: 'Runs non-mutating unit tests for CI/PR validation.',
 });
 

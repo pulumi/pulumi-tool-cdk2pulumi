@@ -389,6 +389,7 @@ describe('serializeProgramIr', () => {
           {
             'fn::invoke': {
               function: 'aws-native:getAzs',
+              arguments: {},
               return: 'azs',
             },
           },
@@ -569,5 +570,52 @@ describe('serializeProgramIr', () => {
         ],
       },
     });
+  });
+
+  test('throws when stack-output flattening leaves fn::select with a non-list value', () => {
+    const program: ProgramIR = {
+      stacks: [
+        {
+          stackId: 'Producer',
+          stackPath: 'Stacks/Producer',
+          outputs: [
+            {
+              name: 'AzLookup',
+              value: {
+                foo: 'bar',
+              },
+            },
+          ],
+          resources: [],
+        },
+        {
+          stackId: 'Consumer',
+          stackPath: 'Stacks/Consumer',
+          resources: [
+            {
+              logicalId: 'Subnet',
+              cfnType: 'AWS::EC2::Subnet',
+              cfnProperties: {},
+              typeToken: 'aws-native:ec2:Subnet',
+              props: {
+                availabilityZone: {
+                  kind: 'select',
+                  index: 0,
+                  values: {
+                    kind: 'stackOutput',
+                    stackPath: 'Stacks/Producer',
+                    outputName: 'AzLookup',
+                  },
+                },
+              },
+            },
+          ],
+        },
+      ],
+    };
+
+    expect(() => serializeProgramIr(program)).toThrow(
+      'Fn::Select values at availabilityZone must resolve to a list or symbolic list value',
+    );
   });
 });

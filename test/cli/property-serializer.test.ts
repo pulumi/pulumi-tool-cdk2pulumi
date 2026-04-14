@@ -144,6 +144,7 @@ describe('serializePropertyValue', () => {
         {
           'fn::invoke': {
             function: 'aws-native:getAzs',
+            arguments: {},
             return: 'azs',
           },
         },

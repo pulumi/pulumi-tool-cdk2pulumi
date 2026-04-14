@@ -12,6 +12,9 @@ npm run test:unit
 # Integration smoke tests (synth + CLI)
 npm run test:integration
 
+# Pulumi runtime validation (local-only for now; requires Pulumi CLI + AWS credentials)
+npm run test:runtime
+
 # Full suite with coverage
 npm test
 ```
@@ -22,6 +25,12 @@ npm test
 - **Smoke/integration tests**: End-to-end pipeline checks that synthesize a CDK app and run the CLI.
   These use the `*.synth.test.ts` naming convention and live under `test/synth/`.
   Prefer `runCliWithOptions` + a report summary snapshot over direct IR/YAML snapshots.
+- **Runtime validation tests**: Targeted Pulumi CLI previews against generated `Pulumi.yaml`.
+  These live under `test/runtime/` and are executed only by `test:runtime` because they require
+  a real Pulumi installation plus AWS credentials for provider-backed invokes.
+  They are local-only for now and are not part of the default CI suite yet.
+  Ensure the Pulumi CLI is available and AWS credentials are present in the environment before
+  invoking `npx projen test:runtime`.
 
 ## Patterns and Conventions
 
@@ -43,6 +52,7 @@ npm test
 
 - If you are testing CDK behavior or the end-to-end pipeline, add a smoke test.
 - If you are testing pure logic or a bug fix, add a unit test.
+- If you need to prove Pulumi itself accepts and evaluates generated YAML, add a runtime test.
 - Keep smoke tests focused on a single end-to-end behavior and avoid heavy mocking.
 - Use `summarizeConversionReport` in `test/synth/helpers.ts` to snapshot stable summaries.
 

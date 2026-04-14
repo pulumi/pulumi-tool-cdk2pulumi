@@ -301,10 +301,12 @@ export class IrIntrinsicResolver {
 
   // Keep the IR semantic here and let the CLI/runtime layer decide how to materialize CIDR math.
   private resolveCidr(params: [any, any, any]): PropertyValue | undefined {
-    if (!Array.isArray(params) || params.length !== 3) {
-      throw new Error(
-        `Fn::Cidr requires exactly 3 parameters, got ${params.length}`,
-      );
+    if (!Array.isArray(params)) {
+      throw new Error('Fn::Cidr expects an array of 3 parameters');
+    }
+
+    if (params.length !== 3) {
+      throw new Error(`Fn::Cidr requires exactly 3 parameters, got ${params.length}`);
     }
 
     const [ipBlockExpr, countExpr, cidrBitsExpr] = params;

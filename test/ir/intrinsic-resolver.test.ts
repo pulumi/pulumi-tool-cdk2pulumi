@@ -203,6 +203,15 @@ describe('IrIntrinsicResolver intrinsics', () => {
     } satisfies CidrValue);
   });
 
+  test('throws a descriptive error when Fn::Cidr params are not an array', () => {
+    const resolver = createResolver();
+    expect(() =>
+      resolver.resolveValue({
+        'Fn::Cidr': 'bad',
+      }),
+    ).toThrow('Fn::Cidr expects an array of 3 parameters');
+  });
+
   test('lowers Fn::GetAZs to semantic getAzs IR', () => {
     const resolver = createResolver();
     expect(
