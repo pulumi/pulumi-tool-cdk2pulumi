@@ -43,8 +43,23 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+      id-token: write
     if: ${{ needs.upgrade.outputs.patch_created }}
     steps:
+      - id: esc
+        uses: pulumi/esc-action@9840934db12128a33f6afb60b17d9de8f7ec5519
+        with:
+          environment: imports/github-secrets
+          export-environment-variables: false
+          oidc-auth: true
+          oidc-organization: pulumi
+          oidc-requested-token-type: urn:pulumi:token-type:access_token:organization
+      - name: Generate token
+        id: generate_token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ steps.esc.outputs.PULUMI_PROVIDER_AUTOMATION_APP_ID }}
+          private-key: ${{ steps.esc.outputs.PULUMI_PROVIDER_AUTOMATION_PRIVATE_KEY }}
       - name: Checkout
         uses: actions/checkout@v5
         with:
@@ -58,13 +73,13 @@ jobs:
         run: '[ -s ${{ runner.temp }}/repo.patch ] && git apply ${{ runner.temp }}/repo.patch || echo "Empty patch. Skipping."'
       - name: Set git identity
         run: |-
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
+          git config user.name "bot@pulumi.com"
+          git config user.email "bot@pulumi.com"
       - name: Create Pull Request
         id: create-pr
         uses: peter-evans/create-pull-request@v7
         with:
-          token: ${{ secrets.PROJEN_GITHUB_TOKEN }}
+          token: ${{ steps.generate_token.outputs.token }}
           commit-message: |-
             chore(deps): upgrade dependencies
 
@@ -85,6 +100,6 @@ jobs:
             ------
 
             *Automatically created by projen via the "upgrade-main" workflow*
-          author: github-actions <github-actions@github.com>
-          committer: github-actions <github-actions@github.com>
+          author: bot@pulumi.com <bot@pulumi.com>
+          committer: bot@pulumi.com <bot@pulumi.com>
           signoff: true

@@ -1,4 +1,9 @@
-import { TypeScriptProject } from '@hallcor/pulumi-projen-project-types';
+import {
+  GithubCredentials,
+  PulumiEscSetup,
+  PulumiToken,
+  TypeScriptProject,
+} from '@hallcor/pulumi-projen-project-types';
 import { AiInstructions, javascript, Project, TextFile } from 'projen';
 
 const project = new TypeScriptProject({
@@ -15,6 +20,19 @@ const project = new TypeScriptProject({
   releaseToNpm: false,
   name: 'cdk2pulumi',
   projenrcTs: true,
+  workflowGitIdentity: {
+    email: 'bot@pulumi.com',
+    name: 'bot@pulumi.com',
+  },
+  projenCredentials: GithubCredentials.fromApp({
+    clientIdSecret: 'PULUMI_PROVIDER_AUTOMATION_APP_ID',
+    privateKeySecret: 'PULUMI_PROVIDER_AUTOMATION_PRIVATE_KEY',
+    pulumiEscSetup: PulumiEscSetup.fromOidcAuth({
+      environment: 'imports/github-secrets',
+      organization: 'pulumi',
+      requestedToken: PulumiToken.fromOrgToken(),
+    }),
+  }),
   packageManager: javascript.NodePackageManager.NPM,
   pullRequestTemplateContents: [
     '## Summary',
@@ -180,5 +198,10 @@ project.gitignore.exclude(
   'Pulumi.yaml.report.json',
   'Pulumi.*.yaml',
   'test/**/cdk.out',
+);
+
+project.github?.actions.set(
+  'pulumi/esc-action@v1',
+  'pulumi/esc-action@9840934db12128a33f6afb60b17d9de8f7ec5519',
 );
 project.synth();
