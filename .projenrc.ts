@@ -202,4 +202,9 @@ project.gitignore.exclude(
   'Pulumi.*.yaml',
   'test/**/cdk.out',
 );
+
+project.github?.actions.set(
+  'pulumi/esc-action@v1',
+  'pulumi/esc-action@9840934db12128a33f6afb60b17d9de8f7ec5519',
+);
 project.synth();
