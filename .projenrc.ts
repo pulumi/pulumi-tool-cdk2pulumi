@@ -1,5 +1,4 @@
 import {
-  ExportEnvironmentVariables,
   GithubCredentials,
   PulumiEscSetup,
   PulumiToken,
@@ -26,14 +25,12 @@ const project = new TypeScriptProject({
     name: 'bot@pulumi.com',
   },
   projenCredentials: GithubCredentials.fromApp({
+    clientIdSecret: 'PULUMI_PROVIDER_AUTOMATION_APP_ID',
+    privateKeySecret: 'PULUMI_PROVIDER_AUTOMATION_PRIVATE_KEY',
     pulumiEscSetup: PulumiEscSetup.fromOidcAuth({
       environment: 'imports/github-secrets',
       organization: 'pulumi',
       requestedToken: PulumiToken.fromOrgToken(),
-      exportEnvironmentVariables: ExportEnvironmentVariables.fromMapping([
-        'PROJEN_APP_CLIENT_ID=PULUMI_PROVIDER_AUTOMATION_APP_ID',
-        'PROJEN_APP_PRIVATE_KEY=PULUMI_PROVIDER_AUTOMATION_PRIVATE_KEY',
-      ]),
     }),
   }),
   packageManager: javascript.NodePackageManager.NPM,
