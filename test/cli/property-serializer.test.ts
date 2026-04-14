@@ -172,6 +172,19 @@ describe('serializePropertyValue', () => {
     });
   });
 
+  test('throws for non-numeric literal string select indices', () => {
+    const ctx = makeCtx();
+    const select: SelectValue = {
+      kind: 'select',
+      index: 'not-a-number',
+      values: ['a', 'b', 'c'],
+    };
+
+    expect(() => serializePropertyValue(select, ctx)).toThrow(
+      'Fn::Select index must resolve to a number or string-compatible value',
+    );
+  });
+
   test('serializes SSM dynamic references', () => {
     const ctx = makeCtx();
     const ssm: SsmDynamicReferenceValue = {

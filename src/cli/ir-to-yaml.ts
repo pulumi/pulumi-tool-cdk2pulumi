@@ -540,8 +540,12 @@ function canSelectFromValue(value: PropertyValue): boolean {
 }
 
 function canSelectWithIndexValue(value: PropertyValue): boolean {
-  if (typeof value === 'number' || typeof value === 'string') {
+  if (typeof value === 'number') {
     return true;
+  }
+
+  if (typeof value === 'string') {
+    return /^-?\d+$/.test(value);
   }
 
   if (typeof value !== 'object' || value === null || Array.isArray(value)) {

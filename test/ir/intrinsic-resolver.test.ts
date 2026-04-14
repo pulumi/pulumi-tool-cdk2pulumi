@@ -212,11 +212,31 @@ describe('IrIntrinsicResolver intrinsics', () => {
     ).toThrow('Fn::Cidr expects an array of 3 parameters');
   });
 
+  test('throws a descriptive error when Fn::Cidr params have the wrong arity', () => {
+    const resolver = createResolver();
+    expect(() =>
+      resolver.resolveValue({
+        'Fn::Cidr': ['10.0.0.0/16', 4],
+      }),
+    ).toThrow('Fn::Cidr requires exactly 3 parameters, got 2');
+  });
+
   test('lowers Fn::GetAZs to semantic getAzs IR', () => {
     const resolver = createResolver();
     expect(
       resolver.resolveValue({
         'Fn::GetAZs': '',
+      }),
+    ).toEqual({
+      kind: 'getAzs',
+    } satisfies GetAzsValue);
+  });
+
+  test('treats Fn::GetAZs null the same as the current region', () => {
+    const resolver = createResolver();
+    expect(
+      resolver.resolveValue({
+        'Fn::GetAZs': null,
       }),
     ).toEqual({
       kind: 'getAzs',
@@ -296,6 +316,15 @@ describe('IrIntrinsicResolver intrinsics', () => {
         kind: 'getAzs',
       },
     } satisfies SelectValue);
+  });
+
+  test('returns undefined for Fn::Select with a non-numeric literal string index over symbolic lists', () => {
+    const resolver = createResolver();
+    expect(
+      resolver.resolveValue({
+        'Fn::Select': ['not-a-number', { 'Fn::GetAZs': '' }],
+      }),
+    ).toBeUndefined();
   });
 
   test('preserves Fn::Select with parameter index over symbolic lists', () => {

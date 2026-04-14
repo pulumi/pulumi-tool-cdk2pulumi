@@ -356,6 +356,7 @@ export class IrIntrinsicResolver {
   private resolveGetAzs(regionExpr: any): PropertyValue | undefined {
     if (
       regionExpr === '' ||
+      regionExpr === null ||
       regionExpr === undefined ||
       isAwsRegionPseudoParameterRef(regionExpr)
     ) {
@@ -859,7 +860,15 @@ function isStringLikeValue(value: PropertyValue): boolean {
 }
 
 function canSelectWithIndexValue(value: PropertyValue): boolean {
-  return typeof value === 'number' || isStringLikeValue(value);
+  if (typeof value === 'number') {
+    return true;
+  }
+
+  if (typeof value === 'string') {
+    return /^-?\d+$/.test(value);
+  }
+
+  return isStringLikeValue(value);
 }
 
 function makeMapping(
