@@ -22,6 +22,7 @@
     "release": "npx projen release",
     "test": "npx projen test",
     "test:integration": "npx projen test:integration",
+    "test:runtime": "npx projen test:runtime",
     "test:unit": "npx projen test:unit",
     "test:unit:ci": "npx projen test:unit:ci",
     "test:unit:watch": "npx projen test:unit:watch",

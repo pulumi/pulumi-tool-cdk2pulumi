@@ -79,6 +79,9 @@ npm run test:unit
 # Integration + synth tests
 npm run test:integration
 
+# Pulumi runtime validation (local-only for now; requires Pulumi CLI + AWS credentials)
+npm run test:runtime
+
 # Full suite with coverage
 npm test
 ```

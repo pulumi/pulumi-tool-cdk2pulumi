@@ -3,8 +3,11 @@ import {
   serializePropertyValue,
 } from '../../src/cli/property-serializer';
 import {
+  CidrValue,
   ConcatValue,
+  GetAzsValue,
   ResourceAttributeReference,
+  SelectValue,
   SsmDynamicReferenceValue,
   SecretsManagerDynamicReferenceValue,
   StackAddress,
@@ -17,6 +20,7 @@ function makeCtx(
     getResourceName: (addr: StackAddress) => `${addr.stackPath}-${addr.id}`,
     getStackOutputName: () => 'AppOutputs_bucketName',
     getParameterDefault: () => 'param-default',
+    getParameterType: () => undefined,
     ...overrides,
   };
 }
@@ -92,6 +96,93 @@ describe('serializePropertyValue', () => {
     expect(serializePropertyValue(concat, ctx)).toEqual({
       'fn::join': ['-', ['prefix', '${AppOutputs_bucketName}']],
     });
+  });
+
+  test('serializes cidr values into fn::invoke', () => {
+    const ctx = makeCtx({
+      getParameterDefault: () => '4',
+      getParameterType: () => 'Number',
+    });
+    const cidr: CidrValue = {
+      kind: 'cidr',
+      ipBlock: '10.0.0.0/16',
+      count: {
+        kind: 'parameter',
+        stackPath: 'Stacks/Main',
+        parameterName: 'CidrCount',
+      },
+      cidrBits: 8,
+    };
+
+    expect(serializePropertyValue(cidr, ctx)).toEqual({
+      'fn::invoke': {
+        function: 'aws-native:cidr',
+        arguments: {
+          ipBlock: '10.0.0.0/16',
+          count: 4,
+          cidrBits: 8,
+        },
+        return: 'subnets',
+      },
+    });
+  });
+
+  test('serializes getAzs and select values into fn::select', () => {
+    const ctx = makeCtx();
+    const getAzs: GetAzsValue = {
+      kind: 'getAzs',
+    };
+    const select: SelectValue = {
+      kind: 'select',
+      index: 0,
+      values: getAzs,
+    };
+
+    expect(serializePropertyValue(select, ctx)).toEqual({
+      'fn::select': [
+        0,
+        {
+          'fn::invoke': {
+            function: 'aws-native:getAzs',
+            arguments: {},
+            return: 'azs',
+          },
+        },
+      ],
+    });
+  });
+
+  test('serializes parameter-backed select indices using Number defaults', () => {
+    const ctx = makeCtx({
+      getParameterDefault: () => '1',
+      getParameterType: () => 'Number',
+    });
+    const select: SelectValue = {
+      kind: 'select',
+      index: {
+        kind: 'parameter',
+        stackPath: 'Stacks/Main',
+        parameterName: 'ItemIndex',
+      },
+      values: ['a', 'b', 'c'],
+    };
+
+    expect(serializePropertyValue(select, ctx)).toEqual({
+      'fn::select': [1, ['a', 'b', 'c']],
+    });
+  });
+
+  test('throws for non-numeric literal string select indices', () => {
+    const ctx = makeCtx();
+    const select: SelectValue = {
+      kind: 'select',
+      index: 'not-a-number',
+      values: ['a', 'b', 'c'],
+    };
+
+    expect(() => serializePropertyValue(select, ctx)).toThrow(
+      'Fn::Select index must resolve to a number or string-compatible value',
+    );
   });
 
   test('serializes SSM dynamic references', () => {

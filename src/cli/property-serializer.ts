@@ -1,9 +1,12 @@
 import {
+  CidrValue,
   ConcatValue,
+  GetAzsValue,
   ParameterReference,
   PropertyMap,
   PropertyValue,
   ResourceAttributeReference,
+  SelectValue,
   SecretsManagerDynamicReferenceValue,
   StackAddress,
   StackOutputReference,
@@ -17,6 +20,10 @@ export interface PropertySerializationContext {
     stackPath: string,
     parameterName: string,
   ): PropertyValue | undefined;
+  getParameterType?(
+    stackPath: string,
+    parameterName: string,
+  ): string | undefined;
 }
 
 export function serializePropertyValue(
@@ -57,6 +64,12 @@ export function serializePropertyValue(
       return serializeParameterReference(value, ctx);
     case 'concat':
       return serializeConcatValue(value, ctx);
+    case 'cidr':
+      return serializeCidrValue(value, ctx);
+    case 'getAzs':
+      return serializeGetAzsValue(value, ctx);
+    case 'select':
+      return serializeSelectValue(value, ctx);
     case 'ssmDynamicReference':
       return serializeSsmDynamicReference(value);
     case 'secretsManagerDynamicReference':
@@ -112,6 +125,14 @@ function serializeParameterReference(
   value: ParameterReference,
   ctx: PropertySerializationContext,
 ): any {
+  return serializeParameterReferenceDefault(value, ctx);
+}
+
+function serializeParameterReferenceDefault(
+  value: ParameterReference,
+  ctx: PropertySerializationContext,
+  options?: { coerceNumber?: boolean },
+): any {
   const defaultValue = ctx.getParameterDefault(
     value.stackPath,
     value.parameterName,
@@ -121,7 +142,26 @@ function serializeParameterReference(
       `Cannot serialize reference to parameter ${value.parameterName} in stack ${value.stackPath} because it does not have a default value`,
     );
   }
-  return serializePropertyValue(defaultValue, ctx);
+
+  const serializedDefault = serializePropertyValue(defaultValue, ctx);
+  if (!options?.coerceNumber) {
+    return serializedDefault;
+  }
+
+  return coerceParameterValue(
+    ctx.getParameterType?.(value.stackPath, value.parameterName),
+    serializedDefault,
+  );
+}
+
+// Preserve Pulumi YAML typing for Number-typed parameters when they are inlined.
+function coerceParameterValue(type: string | undefined, value: any): any {
+  if (type !== 'Number' || typeof value !== 'string') {
+    return value;
+  }
+
+  const parsed = Number(value);
+  return Number.isNaN(parsed) ? value : parsed;
 }
 
 function serializeConcatValue(
@@ -143,6 +183,151 @@ function serializeConcatValue(
       value.values.map((item) => serializePropertyValue(item, ctx)),
     ],
   };
+}
+
+// Map the provider-agnostic CIDR node to the AWS Native helper at YAML serialization time.
+function serializeCidrValue(
+  value: CidrValue,
+  ctx: PropertySerializationContext,
+) {
+  return {
+    'fn::invoke': {
+      function: 'aws-native:cidr',
+      arguments: {
+        ipBlock: serializePropertyValue(value.ipBlock, ctx),
+        count: serializeNumericPropertyValue(value.count, ctx),
+        cidrBits: serializeNumericPropertyValue(value.cidrBits, ctx),
+      },
+      return: 'subnets',
+    },
+  };
+}
+
+// Map the provider-agnostic GetAZs node to the AWS Native helper at YAML serialization time.
+function serializeGetAzsValue(
+  value: GetAzsValue,
+  ctx: PropertySerializationContext,
+) {
+  return {
+    'fn::invoke': {
+      function: 'aws-native:getAzs',
+      arguments:
+        value.region === undefined
+          ? {}
+          : {
+              region: serializePropertyValue(value.region, ctx),
+            },
+      return: 'azs',
+    },
+  };
+}
+
+// Keep symbolic list indexing intact for invoke results and unresolved attribute lists.
+function serializeSelectValue(
+  value: SelectValue,
+  ctx: PropertySerializationContext,
+) {
+  if (!canSelectFromValue(value.values)) {
+    throw new Error('Fn::Select values must be a list or symbolic list value');
+  }
+  if (!canSelectWithIndexValue(value.index)) {
+    throw new Error(
+      'Fn::Select index must resolve to a number or string-compatible value',
+    );
+  }
+
+  return {
+    'fn::select': [
+      serializeNumericPropertyValue(value.index, ctx),
+      serializePropertyValue(value.values, ctx),
+    ],
+  };
+}
+
+function serializeNumericPropertyValue(
+  value: PropertyValue,
+  ctx: PropertySerializationContext,
+) {
+  if (isParameterReference(value)) {
+    return serializeParameterReferenceDefault(value, ctx, {
+      coerceNumber: true,
+    });
+  }
+
+  return coerceNumericScalar(serializePropertyValue(value, ctx));
+}
+
+function coerceNumericScalar(value: any): any {
+  if (typeof value !== 'string') {
+    return value;
+  }
+
+  const parsed = Number(value);
+  return Number.isNaN(parsed) ? value : parsed;
+}
+
+function canSelectWithIndexValue(value: PropertyValue): boolean {
+  if (typeof value === 'number') {
+    return true;
+  }
+
+  if (typeof value === 'string') {
+    return /^-?\d+$/.test(value);
+  }
+
+  if (typeof value !== 'object' || value === null || Array.isArray(value)) {
+    return false;
+  }
+
+  switch (value.kind) {
+    case 'resourceAttribute':
+    case 'stackOutput':
+    case 'parameter':
+    case 'concat':
+    case 'select':
+    case 'ssmDynamicReference':
+    case 'secretsManagerDynamicReference':
+      return true;
+    default:
+      return false;
+  }
+}
+
+function isParameterReference(
+  value: PropertyValue,
+): value is ParameterReference {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    !Array.isArray(value) &&
+    'kind' in value &&
+    value.kind === 'parameter'
+  );
+}
+
+function canSelectFromValue(value: PropertyValue): boolean {
+  if (Array.isArray(value)) {
+    return true;
+  }
+
+  if (typeof value !== 'object' || value === null) {
+    return false;
+  }
+
+  switch (value.kind) {
+    case 'resourceAttribute':
+    case 'stackOutput':
+    case 'parameter':
+    case 'concat':
+    case 'cidr':
+    case 'getAzs':
+    case 'select':
+    case 'ssmDynamicReference':
+    case 'secretsManagerDynamicReference':
+      return true;
+    default:
+      return false;
+  }
 }
 
 function serializeSsmDynamicReference(value: SsmDynamicReferenceValue) {

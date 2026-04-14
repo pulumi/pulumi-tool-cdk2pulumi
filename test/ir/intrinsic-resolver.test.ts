@@ -1,9 +1,12 @@
 import {
+  CidrValue,
   CloudFormationTemplate,
   ConcatValue,
+  GetAzsValue,
   PropertyValue,
   ResourceAttributeReference,
   CfRefBehavior,
+  SelectValue,
   StackOutputReference,
 } from '../../src/core';
 import { IntrinsicValueAdapter } from '../../src/core/converters/intrinsic-value-adapter';
@@ -186,22 +189,282 @@ describe('IrIntrinsicResolver intrinsics', () => {
     );
   });
 
-  test('throws for unsupported Fn::Cidr', () => {
+  test('lowers Fn::Cidr to semantic cidr IR', () => {
     const resolver = createResolver();
-    expect(() =>
+    expect(
       resolver.resolveValue({
         'Fn::Cidr': ['10.0.0.0/16', 4, 8],
       }),
-    ).toThrow('Fn::Cidr is not supported in IR conversion yet');
+    ).toEqual({
+      kind: 'cidr',
+      ipBlock: '10.0.0.0/16',
+      count: 4,
+      cidrBits: 8,
+    } satisfies CidrValue);
   });
 
-  test('throws for unsupported Fn::GetAZs', () => {
+  test('throws a descriptive error when Fn::Cidr params are not an array', () => {
     const resolver = createResolver();
     expect(() =>
       resolver.resolveValue({
+        'Fn::Cidr': 'bad',
+      }),
+    ).toThrow('Fn::Cidr expects an array of 3 parameters');
+  });
+
+  test('throws a descriptive error when Fn::Cidr params have the wrong arity', () => {
+    const resolver = createResolver();
+    expect(() =>
+      resolver.resolveValue({
+        'Fn::Cidr': ['10.0.0.0/16', 4],
+      }),
+    ).toThrow('Fn::Cidr requires exactly 3 parameters, got 2');
+  });
+
+  test('lowers Fn::GetAZs to semantic getAzs IR', () => {
+    const resolver = createResolver();
+    expect(
+      resolver.resolveValue({
         'Fn::GetAZs': '',
       }),
-    ).toThrow('Fn::GetAZs is not supported in IR conversion yet');
+    ).toEqual({
+      kind: 'getAzs',
+    } satisfies GetAzsValue);
+  });
+
+  test('treats Fn::GetAZs null the same as the current region', () => {
+    const resolver = createResolver();
+    expect(
+      resolver.resolveValue({
+        'Fn::GetAZs': null,
+      }),
+    ).toEqual({
+      kind: 'getAzs',
+    } satisfies GetAzsValue);
+  });
+
+  test('lowers Fn::GetAZs with explicit region to semantic getAzs IR', () => {
+    const resolver = createResolver();
+    expect(
+      resolver.resolveValue({
+        'Fn::GetAZs': 'us-west-2',
+      }),
+    ).toEqual({
+      kind: 'getAzs',
+      region: 'us-west-2',
+    } satisfies GetAzsValue);
+  });
+
+  test('lowers Fn::GetAZs with parameter region to semantic getAzs IR', () => {
+    const resolver = createResolver({
+      Parameters: {
+        TargetRegion: {
+          Type: 'String',
+          Default: 'us-east-1',
+        },
+      },
+    });
+
+    expect(
+      resolver.resolveValue({
+        'Fn::GetAZs': {
+          Ref: 'TargetRegion',
+        },
+      }),
+    ).toEqual({
+      kind: 'getAzs',
+      region: {
+        kind: 'parameter',
+        stackPath: 'App/Main',
+        parameterName: 'TargetRegion',
+      },
+    } satisfies GetAzsValue);
+  });
+
+  test('throws when Fn::GetAZs region cannot be resolved', () => {
+    const resolver = createResolver();
+    expect(() =>
+      resolver.resolveValue({
+        'Fn::GetAZs': {
+          Ref: 'MissingRegion',
+        },
+      }),
+    ).toThrow(
+      'Fn::GetAZs region must resolve to a string, parameter, stack output, or resource attribute',
+    );
+  });
+
+  test('throws when Fn::GetAZs region resolves to a non-string-like value', () => {
+    const resolver = createResolver();
+    expect(() =>
+      resolver.resolveValue({
+        'Fn::GetAZs': 42,
+      }),
+    ).toThrow('Fn::GetAZs region must resolve to a string-compatible value');
+  });
+
+  test('preserves Fn::Select over symbolic lists', () => {
+    const resolver = createResolver();
+    expect(
+      resolver.resolveValue({
+        'Fn::Select': [1, { 'Fn::GetAZs': '' }],
+      }),
+    ).toEqual({
+      kind: 'select',
+      index: 1,
+      values: {
+        kind: 'getAzs',
+      },
+    } satisfies SelectValue);
+  });
+
+  test('returns undefined for Fn::Select with a non-numeric literal string index over symbolic lists', () => {
+    const resolver = createResolver();
+    expect(
+      resolver.resolveValue({
+        'Fn::Select': ['not-a-number', { 'Fn::GetAZs': '' }],
+      }),
+    ).toBeUndefined();
+  });
+
+  test('preserves Fn::Select with parameter index over symbolic lists', () => {
+    const resolver = createResolver({
+      Parameters: {
+        AzIndex: {
+          Type: 'Number',
+          Default: '1',
+        },
+      },
+    });
+
+    expect(
+      resolver.resolveValue({
+        'Fn::Select': [{ Ref: 'AzIndex' }, { 'Fn::GetAZs': '' }],
+      }),
+    ).toEqual({
+      kind: 'select',
+      index: {
+        kind: 'parameter',
+        stackPath: 'App/Main',
+        parameterName: 'AzIndex',
+      },
+      values: {
+        kind: 'getAzs',
+      },
+    } satisfies SelectValue);
+  });
+
+  test('preserves Fn::Select with parameter index over concrete lists', () => {
+    const resolver = createResolver({
+      Parameters: {
+        ItemIndex: {
+          Type: 'Number',
+          Default: '1',
+        },
+      },
+    });
+
+    expect(
+      resolver.resolveValue({
+        'Fn::Select': [{ Ref: 'ItemIndex' }, ['a', 'b', 'c']],
+      }),
+    ).toEqual({
+      kind: 'select',
+      index: {
+        kind: 'parameter',
+        stackPath: 'App/Main',
+        parameterName: 'ItemIndex',
+      },
+      values: ['a', 'b', 'c'],
+    } satisfies SelectValue);
+  });
+
+  test('resolves nested Fn::Select and Fn::Cidr for symbolic IPv6 cidr flows', () => {
+    const resolver = createResolver({
+      Resources: {
+        Vpc: {
+          Type: 'AWS::EC2::VPC',
+          Properties: {},
+        },
+      },
+    });
+
+    expect(
+      resolver.resolveValue({
+        'Fn::Select': [
+          0,
+          {
+            'Fn::Cidr': [
+              {
+                'Fn::Select': [0, { 'Fn::GetAtt': ['Vpc', 'Ipv6CidrBlocks'] }],
+              },
+              256,
+              64,
+            ],
+          },
+        ],
+      }),
+    ).toEqual({
+      kind: 'select',
+      index: 0,
+      values: {
+        kind: 'cidr',
+        ipBlock: {
+          kind: 'select',
+          index: 0,
+          values: {
+            kind: 'resourceAttribute',
+            resource: { stackPath: 'App/Main', id: 'Vpc' },
+            attributeName: 'Ipv6CidrBlocks',
+            propertyName: 'Ipv6CidrBlocks',
+          },
+        },
+        count: 256,
+        cidrBits: 64,
+      },
+    } satisfies SelectValue);
+  });
+
+  test('keeps parameter-backed Fn::Cidr arguments symbolic in IR', () => {
+    const resolver = createResolver({
+      Parameters: {
+        CidrCount: {
+          Type: 'Number',
+          Default: '256',
+        },
+        CidrBits: {
+          Type: 'Number',
+          Default: '64',
+        },
+      },
+    });
+
+    expect(
+      resolver.resolveValue({
+        'Fn::Cidr': [
+          '10.0.0.0/16',
+          {
+            Ref: 'CidrCount',
+          },
+          {
+            Ref: 'CidrBits',
+          },
+        ],
+      }),
+    ).toEqual({
+      kind: 'cidr',
+      ipBlock: '10.0.0.0/16',
+      count: {
+        kind: 'parameter',
+        stackPath: 'App/Main',
+        parameterName: 'CidrCount',
+      },
+      cidrBits: {
+        kind: 'parameter',
+        stackPath: 'App/Main',
+        parameterName: 'CidrBits',
+      },
+    } satisfies CidrValue);
   });
 
   test('treats AWS::NoValue Ref as undefined', () => {

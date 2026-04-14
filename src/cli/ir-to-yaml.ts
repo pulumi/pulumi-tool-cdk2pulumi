@@ -44,6 +44,7 @@ export function serializeProgramIr(
 ): string {
   const resourceNames = new ResourceNameAllocator(program);
   const parameterDefaults = collectParameterDefaults(program);
+  const parameterTypes = collectParameterTypes(program);
   const stackOutputs = collectStackOutputs(program);
   const includedStackPaths = new Set(
     program.stacks.map((stack) => stack.stackPath),
@@ -59,6 +60,8 @@ export function serializeProgramIr(
       externalStackOutputName(stackPath, outputName),
     getParameterDefault: (stackPath, parameterName) =>
       parameterDefaults.get(parameterKey(stackPath, parameterName)),
+    getParameterType: (stackPath, parameterName) =>
+      parameterTypes.get(parameterKey(stackPath, parameterName)),
   };
 
   const document: PulumiYamlDocument = {
@@ -294,6 +297,24 @@ function collectParameterDefaults(
   return defaults;
 }
 
+// Track parameter types alongside defaults so serializer code can make targeted coercions
+// for numeric-only helper arguments without changing general Ref serialization semantics.
+function collectParameterTypes(program: ProgramIR): Map<string, string> {
+  const parameterTypes = new Map<string, string>();
+  for (const stack of program.stacks) {
+    if (!stack.parameters) {
+      continue;
+    }
+    for (const parameter of stack.parameters) {
+      parameterTypes.set(
+        parameterKey(stack.stackPath, parameter.name),
+        parameter.type,
+      );
+    }
+  }
+  return parameterTypes;
+}
+
 function parameterKey(stackPath: string, parameterName: string): string {
   return `${stackPath}::${parameterName}`;
 }
@@ -386,6 +407,74 @@ function resolveStackOutputReferences(
           resolveStackOutputReferences(item, options, seen, path),
         ),
       };
+    case 'cidr':
+      return {
+        kind: 'cidr',
+        ipBlock: resolveStackOutputReferences(
+          value.ipBlock,
+          options,
+          seen,
+          path,
+        ),
+        count: resolveStackOutputReferences(value.count, options, seen, path),
+        cidrBits: resolveStackOutputReferences(
+          value.cidrBits,
+          options,
+          seen,
+          path,
+        ),
+      };
+    case 'getAzs':
+      return {
+        kind: 'getAzs',
+        region:
+          value.region === undefined
+            ? undefined
+            : resolveStackOutputReferences(value.region, options, seen, path),
+      };
+    case 'select': {
+      const resolvedIndex = resolveStackOutputReferences(
+        value.index,
+        options,
+        seen,
+        path,
+      );
+      // If stack-output flattening resolves the list all the way to an array, reduce the
+      // select eagerly; otherwise keep the symbolic select so YAML can evaluate it later.
+      const resolvedValues = resolveStackOutputReferences(
+        value.values,
+        options,
+        seen,
+        path,
+      );
+      const concreteIndex = parseSelectIndex(resolvedIndex);
+      if (
+        Array.isArray(resolvedValues) &&
+        concreteIndex !== undefined &&
+        concreteIndex >= 0 &&
+        concreteIndex < resolvedValues.length
+      ) {
+        return resolvedValues[concreteIndex];
+      }
+
+      if (!canSelectWithIndexValue(resolvedIndex)) {
+        throw new Error(
+          `Fn::Select index at ${formatPropertyPath(path)} must resolve to a number or string-compatible value`,
+        );
+      }
+
+      if (!canSelectFromValue(resolvedValues)) {
+        throw new Error(
+          `Fn::Select values at ${formatPropertyPath(path)} must resolve to a list or symbolic list value`,
+        );
+      }
+
+      return {
+        kind: 'select',
+        index: resolvedIndex,
+        values: resolvedValues,
+      };
+    }
     default:
       return value;
   }
@@ -423,4 +512,69 @@ function isPropertyMap(value: PropertyValue): value is PropertyMap {
     !Array.isArray(value) &&
     !('kind' in value)
   );
+}
+
+function canSelectFromValue(value: PropertyValue): boolean {
+  if (Array.isArray(value)) {
+    return true;
+  }
+
+  if (typeof value !== 'object' || value === null) {
+    return false;
+  }
+
+  switch (value.kind) {
+    case 'resourceAttribute':
+    case 'stackOutput':
+    case 'parameter':
+    case 'concat':
+    case 'cidr':
+    case 'getAzs':
+    case 'select':
+    case 'ssmDynamicReference':
+    case 'secretsManagerDynamicReference':
+      return true;
+    default:
+      return false;
+  }
+}
+
+function canSelectWithIndexValue(value: PropertyValue): boolean {
+  if (typeof value === 'number') {
+    return true;
+  }
+
+  if (typeof value === 'string') {
+    return /^-?\d+$/.test(value);
+  }
+
+  if (typeof value !== 'object' || value === null || Array.isArray(value)) {
+    return false;
+  }
+
+  switch (value.kind) {
+    case 'resourceAttribute':
+    case 'stackOutput':
+    case 'parameter':
+    case 'concat':
+    case 'select':
+    case 'ssmDynamicReference':
+    case 'secretsManagerDynamicReference':
+      return true;
+    default:
+      return false;
+  }
+}
+
+function parseSelectIndex(value: PropertyValue): number | undefined {
+  if (typeof value === 'number') {
+    return value;
+  }
+
+  if (typeof value !== 'string') {
+    return undefined;
+  }
+
+  const parsed = parseInt(value, 10);
+  return Number.isNaN(parsed) ? undefined : parsed;
 }

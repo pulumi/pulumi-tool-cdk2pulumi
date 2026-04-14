@@ -15,7 +15,7 @@ This document explains how the convert-core package resolves CloudFormation intr
 
 - Filters out `AWS::NoValue`, recurses through objects/arrays, and parses dynamic reference strings (SSM/Secrets Manager) into structured `DynamicReferenceValue`s (`src/core/resolvers/dynamic-references.ts`).
 - Handles `Ref`/`Fn::GetAtt` via an `IntrinsicValueAdapter`. The default `IrIntrinsicValueAdapter` converts attribute usage into `ResourceAttributeReference` objects so later phases know which Pulumi resource/property to reference (`src/core/resolvers/intrinsic-value-adapter.ts`). Metadata (`cfRef` definitions in `src/core/metadata.ts`) controls how `Ref` maps to Pulumi properties, including concatenations when CloudFormation exposes composite identifiers.
-- Emits richer IR nodes for structural intrinsics. For example `Fn::Join`, `Fn::Sub`, and other string-building constructs become `ConcatValue` records whenever they cannot be fully reduced to a literal, ensuring the serializer recreates the `fn::join`/`${name}` mix correctly.
+- Emits richer IR nodes for structural intrinsics. For example `Fn::Join`, `Fn::Sub`, and other string-building constructs become `ConcatValue` records whenever they cannot be fully reduced to a literal, ensuring the serializer recreates the `fn::join`/`${name}` mix correctly. Intrinsics such as `Fn::Cidr` and `Fn::GetAZs` become semantic IR records (`CidrValue` / `GetAzsValue`), and symbolic list indexing is preserved as `SelectValue`, including symbolic indices that only resolve later from parameter defaults or stack outputs.
 - Produces dedicated reference shapes for stack parameters, stack outputs, and cross-stack exports so the serializer can inline parameter defaults and resolve stack-output dependencies (`resolveRef`, `resolveImportValue`).
 
 ## Serialization
@@ -24,7 +24,7 @@ When `serializeProgramIr` runs, it:
 
 - Allocates Pulumi resource names and gathers parameter defaults and stack outputs.
 - Replaces stack-output references with their resolved values (including nested references) to keep YAML self-contained.
-- Calls `serializePropertyValue`, which mirrors the resolver’s `PropertyValue` union: primitives become literals; `ResourceAttributeReference` → `${name.property}`; `stackOutput` → `${outputName}`; `parameter` references substitute their default values; `ConcatValue` prints as `fn::join`; dynamic references become `fn::invoke` (wrapped in `fn::secret` for secure values); any new `kind` must be supported here.
+- Calls `serializePropertyValue`, which mirrors the resolver’s `PropertyValue` union: primitives become literals; `ResourceAttributeReference` → `${name.property}`; `stackOutput` → `${outputName}`; `parameter` references substitute their default values; `ConcatValue` prints as `fn::join`; `CidrValue` / `GetAzsValue` print as provider-backed `fn::invoke`; `SelectValue` prints as `fn::select`; dynamic references become `fn::invoke` (wrapped in `fn::secret` for secure values); any new `kind` must be supported here.
 
 ## Adding Support for a New Intrinsic
 

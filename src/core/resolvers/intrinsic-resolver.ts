@@ -8,6 +8,9 @@ import {
   StackOutputReference,
   ParameterReference,
   ConcatValue,
+  CidrValue,
+  GetAzsValue,
+  SelectValue,
 } from '../ir';
 import { parseSub } from '../sub';
 import { tryParseDynamicReference } from './dynamic-references';
@@ -130,11 +133,11 @@ export class IrIntrinsicResolver {
     }
 
     if (isCidr(value)) {
-      throw new Error('Fn::Cidr is not supported in IR conversion yet');
+      return this.resolveCidr(value['Fn::Cidr']);
     }
 
     if (isGetAzs(value)) {
-      throw new Error('Fn::GetAZs is not supported in IR conversion yet');
+      return this.resolveGetAzs(value['Fn::GetAZs']);
     }
 
     if (isConditionFunction(value)) {
@@ -265,17 +268,121 @@ export class IrIntrinsicResolver {
   private resolveSelect(params: [any, any]): PropertyValue | undefined {
     const [indexExpr, listExpr] = params;
     const list = this.resolveValue(listExpr);
-    if (!Array.isArray(list)) {
+    if (list === undefined) {
       return undefined;
     }
 
     const indexValue = this.resolveValue(indexExpr);
-    const index = this.parseIndex(indexValue);
-    if (index === undefined || index < 0 || index >= list.length) {
+    if (indexValue === undefined) {
       return undefined;
     }
 
-    return list[index];
+    const normalizedIndex = normalizeNumberLikeValue(indexValue);
+    const index = this.parseIndex(normalizedIndex);
+
+    if (Array.isArray(list)) {
+      if (index !== undefined) {
+        if (index < 0 || index >= list.length) {
+          return undefined;
+        }
+
+        return list[index];
+      }
+
+      if (!canSelectWithIndexValue(normalizedIndex)) {
+        return undefined;
+      }
+
+      return <SelectValue>{
+        kind: 'select',
+        index: normalizedIndex,
+        values: list,
+      };
+    }
+
+    if (
+      !canSelectFromValue(list) ||
+      !canSelectWithIndexValue(normalizedIndex)
+    ) {
+      return undefined;
+    }
+
+    if (index !== undefined && index < 0) {
+      return undefined;
+    }
+
+    // Preserve symbolic selections when the list comes from another intrinsic or resource
+    // attribute so the YAML serializer can lower it to fn::select later.
+    return <SelectValue>{
+      kind: 'select',
+      index: normalizedIndex,
+      values: list,
+    };
+  }
+
+  // Keep the IR semantic here and let the CLI/runtime layer decide how to materialize CIDR math.
+  private resolveCidr(params: [any, any, any]): PropertyValue | undefined {
+    if (!Array.isArray(params)) {
+      throw new Error('Fn::Cidr expects an array of 3 parameters');
+    }
+
+    if (params.length !== 3) {
+      throw new Error(
+        `Fn::Cidr requires exactly 3 parameters, got ${params.length}`,
+      );
+    }
+
+    const [ipBlockExpr, countExpr, cidrBitsExpr] = params;
+    const ipBlock = this.resolveValue(ipBlockExpr);
+    const count = this.resolveValue(countExpr);
+    const cidrBits = this.resolveValue(cidrBitsExpr);
+    if (
+      ipBlock === undefined ||
+      count === undefined ||
+      cidrBits === undefined
+    ) {
+      return undefined;
+    }
+
+    return <CidrValue>{
+      kind: 'cidr',
+      ipBlock,
+      count: normalizeNumberLikeValue(count),
+      cidrBits: normalizeNumberLikeValue(cidrBits),
+    };
+  }
+
+  // Keep the CloudFormation semantics in IR; serialization/runtime can choose the provider helper.
+  private resolveGetAzs(regionExpr: any): PropertyValue | undefined {
+    if (
+      regionExpr === '' ||
+      regionExpr === null ||
+      regionExpr === undefined ||
+      isAwsRegionPseudoParameterRef(regionExpr)
+    ) {
+      return <GetAzsValue>{
+        kind: 'getAzs',
+      };
+    }
+
+    const region = this.resolveValue(regionExpr);
+    if (region === undefined) {
+      // Dropping an explicit region expression would silently change semantics to "current region".
+      throw new Error(
+        'Fn::GetAZs region must resolve to a string, parameter, stack output, or resource attribute',
+      );
+    }
+
+    if (!isStringLikeValue(region)) {
+      throw new Error(
+        'Fn::GetAZs region must resolve to a string-compatible value',
+      );
+    }
+
+    return <GetAzsValue>{
+      kind: 'getAzs',
+      region,
+    };
   }
 
   private resolveSub(params: any): PropertyValue | undefined {
@@ -682,6 +789,86 @@ function isNoValueIntrinsic(value: any): boolean {
   return (
     typeof value === 'object' && value !== null && value.Ref === 'AWS::NoValue'
   );
+}
+
+// Only preserve symbolic selects for values we know how to serialize back into Pulumi YAML.
+function canSelectFromValue(value: PropertyValue): boolean {
+  if (Array.isArray(value)) {
+    return true;
+  }
+
+  if (typeof value !== 'object' || value === null) {
+    return false;
+  }
+
+  switch (value.kind) {
+    case 'resourceAttribute':
+    case 'stackOutput':
+    case 'parameter':
+    case 'cidr':
+    case 'getAzs':
+    case 'select':
+    case 'concat':
+    case 'ssmDynamicReference':
+    case 'secretsManagerDynamicReference':
+      return true;
+    default:
+      return false;
+  }
+}
+
+// CloudFormation often represents numeric intrinsic inputs as strings; normalize the literal
+// cases early so invoke arguments keep the expected numeric types.
+function normalizeNumberLikeValue(value: PropertyValue): PropertyValue {
+  if (typeof value === 'string' && /^-?\d+$/.test(value)) {
+    return parseInt(value, 10);
+  }
+
+  return value;
+}
+
+// Fn::GetAZs treats Ref AWS::Region the same as an omitted/empty region.
+function isAwsRegionPseudoParameterRef(
+  value: any,
+): value is { Ref: 'AWS::Region' } {
+  return (
+    typeof value === 'object' && value !== null && value.Ref === 'AWS::Region'
+  );
+}
+
+function isStringLikeValue(value: PropertyValue): boolean {
+  if (typeof value === 'string') {
+    return true;
+  }
+
+  if (typeof value !== 'object' || value === null || Array.isArray(value)) {
+    return false;
+  }
+
+  switch (value.kind) {
+    case 'resourceAttribute':
+    case 'stackOutput':
+    case 'parameter':
+    case 'concat':
+    case 'select':
+    case 'ssmDynamicReference':
+    case 'secretsManagerDynamicReference':
+      return true;
+    default:
+      return false;
+  }
+}
+
+function canSelectWithIndexValue(value: PropertyValue): boolean {
+  if (typeof value === 'number') {
+    return true;
+  }
+
+  if (typeof value === 'string') {
+    return /^-?\d+$/.test(value);
+  }
+
+  return isStringLikeValue(value);
 }
 
 function makeMapping(
