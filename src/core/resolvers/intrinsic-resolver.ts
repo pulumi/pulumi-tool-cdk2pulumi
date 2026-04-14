@@ -306,7 +306,9 @@ export class IrIntrinsicResolver {
     }
 
     if (params.length !== 3) {
-      throw new Error(`Fn::Cidr requires exactly 3 parameters, got ${params.length}`);
+      throw new Error(
+        `Fn::Cidr requires exactly 3 parameters, got ${params.length}`,
+      );
     }
 
     const [ipBlockExpr, countExpr, cidrBitsExpr] = params;

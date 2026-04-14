@@ -3,13 +3,13 @@ import * as path from 'path';
 import * as cdk from 'aws-cdk-lib';
 import * as ssm from 'aws-cdk-lib/aws-ssm';
 import * as fs from 'fs-extra';
-import { runCliWithOptions } from '../../src/cli/cli-runner';
-import { synthesizeAssembly } from '../synth/helpers';
 import {
   assertAwsCredentialsAvailable,
   assertPulumiCliAvailable,
   runPulumiPreview,
 } from './helpers';
+import { runCliWithOptions } from '../../src/cli/cli-runner';
+import { synthesizeAssembly } from '../synth/helpers';
 
 const RUNTIME_TIMEOUT = 300000;
 

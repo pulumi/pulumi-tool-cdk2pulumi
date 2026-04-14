@@ -294,8 +294,7 @@
       "description": "Run tests",
       "steps": [
         {
-          "exec": "jest --passWithNoTests --updateSnapshot",
-          "receiveArgs": true
+          "exec": "jest --passWithNoTests --updateSnapshot --testPathIgnorePatterns=\"\\.runtime\\.test\\.ts$\""
         },
         {
           "spawn": "eslint"

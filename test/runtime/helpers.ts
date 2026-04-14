@@ -1,6 +1,6 @@
 import { execFileSync } from 'child_process';
-import * as fs from 'fs-extra';
 import * as path from 'path';
+import * as fs from 'fs-extra';
 
 export function assertPulumiCliAvailable(): void {
   runPulumiCommand(['version'], process.cwd(), process.env);

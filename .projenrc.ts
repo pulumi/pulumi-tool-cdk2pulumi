@@ -118,6 +118,11 @@ project.addTask('lint:check', {
   description: 'Runs eslint without applying fixes.',
 });
 
+project.testTask.reset(
+  'jest --passWithNoTests --updateSnapshot --testPathIgnorePatterns="\\.runtime\\.test\\.ts$"',
+);
+project.testTask.spawn(project.tasks.tryFind('eslint')!);
+
 project.addTask('test:unit:ci', {
   exec: 'npx jest --ci --collectCoverage=false --testPathIgnorePatterns="\\.integration\\.test\\.ts$|\\.synth\\.test\\.ts$|\\.runtime\\.test\\.ts$"',
   description: 'Runs non-mutating unit tests for CI/PR validation.',

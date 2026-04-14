@@ -34,10 +34,15 @@ Run all project tasks through Projen:
 - Runtime tests (local-only for now; not in CI): `npx projen test:runtime`
 - Full test suite: `npx projen test`
 - Lint (non-mutating): `npx projen lint:check`
+- Lint (mutating autofix): `npx projen eslint`
 - AI verification bundle: `npx projen verify:ai`
 - Full build: `npx projen build`
 - Regenerate project files after `.projenrc.ts` changes: `npx projen`
 - Regenerate primary identifiers from metadata: `npx projen extract-identifiers`
+
+Note:
+- `npx projen test` / `npx projen build` run the default Jest suite and then the mutating `eslint` task (`--fix`), so they may rewrite files.
+- `test:runtime` is intentionally excluded from the default `test`/`build` path until CI support is added.
 
 CLI local execution:
 
@@ -74,6 +79,7 @@ Escalate before proceeding when:
 - `src/core/**` or `src/cli/**`: run `npx projen compile` and `npx projen test:unit`.
 - CLI output/serialization/analyzer behavior: also run `npx projen test:integration`.
 - Runtime validation coverage (`test/runtime/**`) is local-only for now; do not claim CI coverage for it unless a dedicated CI path is added.
+- If you rely on `npx projen build` or `npx projen test` for validation, check for `eslint --fix` rewrites before finalizing or committing.
 - `.projenrc.ts`: run `npx projen` then `npx projen build`.
 - `schemas/aws-native-metadata.json` or identifier datasets: run `npx projen extract-identifiers`, then `npx projen build`.
 - Specs/docs: update related checklists and command/path references in the same PR.
