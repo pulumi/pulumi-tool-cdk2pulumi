@@ -49,12 +49,29 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      id-token: write
     if: always() && needs.build.outputs.self_mutation_happened && !(github.event.pull_request.head.repo.full_name != github.repository)
     steps:
+      - id: esc
+        uses: pulumi/esc-action@v1
+        with:
+          environment: imports/github-secrets
+          export-environment-variables: |-
+            PROJEN_APP_CLIENT_ID=PULUMI_PROVIDER_AUTOMATION_APP_ID
+            PROJEN_APP_PRIVATE_KEY=PULUMI_PROVIDER_AUTOMATION_PRIVATE_KEY
+          oidc-auth: true
+          oidc-organization: pulumi
+          oidc-requested-token-type: urn:pulumi:token-type:access_token:organization
+      - name: Generate token
+        id: generate_token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ env.PROJEN_APP_CLIENT_ID }}
+          private-key: ${{ env.PROJEN_APP_PRIVATE_KEY }}
       - name: Checkout
         uses: actions/checkout@v5
         with:
-          token: ${{ secrets.PROJEN_GITHUB_TOKEN }}
+          token: ${{ steps.generate_token.outputs.token }}
           ref: ${{ github.event.pull_request.head.ref }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}
       - name: Download patch
@@ -66,8 +83,8 @@ jobs:
         run: '[ -s ${{ runner.temp }}/repo.patch ] && git apply ${{ runner.temp }}/repo.patch || echo "Empty patch. Skipping."'
       - name: Set git identity
         run: |-
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
+          git config user.name "bot@pulumi.com"
+          git config user.email "bot@pulumi.com"
       - name: Push changes
         env:
           PULL_REQUEST_REF: ${{ github.event.pull_request.head.ref }}
