@@ -34,9 +34,9 @@
     "projen": "npx projen"
   },
   "devDependencies": {
-    "@aws-cdk/toolkit-lib": "^1.21.2",
+    "@aws-cdk/toolkit-lib": "^1.22.0",
     "@hallcor/pulumi-projen-project-types": "^0.0.65",
-    "@swc/core": "^1.15.24",
+    "@swc/core": "^1.15.30",
     "@swc/jest": "^0.2.39",
     "@types/fs-extra": "^11.0.4",
     "@types/jest": "^30.0.0",
@@ -54,15 +54,15 @@
     "jest": "^30.3.0",
     "jest-junit": "^16",
     "mock-fs": "^5.5.0",
-    "prettier": "^3.8.2",
+    "prettier": "^3.8.3",
     "projen": "^0.98.34",
     "ts-jest": "^29.4.9",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3"
   },
   "dependencies": {
-    "@aws-cdk/cdk-assets-lib": "^1.4.2",
-    "aws-cdk-lib": "^2.249.0",
+    "@aws-cdk/cdk-assets-lib": "^1.4.3",
+    "aws-cdk-lib": "^2.250.0",
     "fs-extra": "^11.3.4",
     "yaml": "^2.8.3"
   },
